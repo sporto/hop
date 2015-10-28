@@ -7,7 +7,7 @@ import Effects exposing (Effects, Never)
 import Html.Attributes exposing (href)
 
 type alias AppModel = {
-    }
+}
                       
 zeroModel: AppModel
 zeroModel =
@@ -36,6 +36,12 @@ menu address model =
   H.div [] [
     H.a [ href "#/users" ] [
       H.text "Users"
+    ],
+    H.a [ href "#/users/1" ] [
+      H.text "User 1"
+    ],
+    H.a [ href "#/users/1/edit" ] [
+      H.text "User 1 edit"
     ]
   ]
 
