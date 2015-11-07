@@ -1,4 +1,4 @@
--- Attempt to make my own StartApp alternative
+-- Try to integrate wih start app
 
 module App where
 
@@ -9,6 +9,8 @@ import Debug
 import StartApp
 import Effects exposing (Effects, Never)
 import Html.Attributes exposing (href)
+import History
+import Task exposing (Task)
 
 type alias AppModel = {
   count: Int
@@ -22,6 +24,7 @@ zeroModel =
 
 type Action
   = ChangeRoute String
+  | RouteChanged (Result () ())
   | Increment
   | NoOp
 
@@ -34,22 +37,30 @@ update action model =
   case action of
     Increment ->
       ({model | count <- model.count + 1 }, Effects.none)
+    ChangeRoute route ->
+      (model, goToRoute route)
     _ ->
       (model, Effects.none)
 
-view: Signal.Address Action -> AppModel -> H.Html
-view address model =
+view: Signal.Address Action -> Signal.Address Action -> AppModel -> H.Html
+view routerAddress address model =
   H.div [] [
     H.text "Hello",
     H.text (toString model.count)
-    , menu address model
+    , menu routerAddress address model
   ]
 
-menu: Signal.Address Action -> AppModel -> H.Html
-menu address model =
+menu: Signal.Address Action -> Signal.Address Action -> AppModel -> H.Html
+menu routerAddress address model =
   H.div [] [
-    H.button [ Html.Events.onClick address (ChangeRoute "users.show") ] [
+    H.button [ Html.Events.onClick address (Increment) ] [
+      H.text "Count"
+    ],
+    H.button [ Html.Events.onClick routerAddress (ChangeRoute "#users") ] [
       H.text "Users"
+    ],
+    H.button [ Html.Events.onClick routerAddress (ChangeRoute "#users/1") ] [
+      H.text "User 1"
     ],
     H.a [ href "#/users/1" ] [
       H.text "User 1"
@@ -59,28 +70,35 @@ menu address model =
     ]
   ]
 
-box: Signal.Mailbox Action
-box =
-  Signal.mailbox NoOp
+-- ROUTING
 
-modelEffectSignal: Signal (AppModel, Effects Action)
-modelEffectSignal =
-  Signal.foldp update zeroModel box.signal
+--type RouteAction
+--  = Nothing
 
-viewSignal: Signal H.Html
-viewSignal =
-  Signal.map (view box.address) modelEffectSignal
+routerMailbox: Signal.Mailbox Action
+routerMailbox = Signal.mailbox NoOp
 
---app =
-  --StartApp.start {
-  --  init = init,
-  --  update = update,
-  --  view = (view routerMailbox.address),
-  --  inputs = []
-  --}
+hashChangeSignal: Signal Action
+hashChangeSignal =
+  Signal.map (Debug.watch "dff") routerMailbox.signal
 
---routerMailbox: Signal.Mailbox RouteAction
---routerMailbox = Signal.mailbox NoOp
+app =
+  StartApp.start {
+    init = init,
+    update = update,
+    view = (view routerMailbox.address),
+    inputs = [hashChangeSignal]
+  }
+
+
+-- Effects
+
+goToRoute: String -> (Effects Action)
+goToRoute route =
+  History.setPath route
+    |> Task.toResult
+    |> Task.map RouteChanged
+    |> Effects.task
 
 --debugSignal: Signal (a -> a)
 --debugSignal =
@@ -108,6 +126,11 @@ viewSignal =
 
 main: Signal H.Html
 main =
-  viewSignal
+  app.html
+
+-- this is the important bit
+port tasks : Signal (Task.Task Never ())
+port tasks =
+  app.tasks
   
 

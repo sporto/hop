@@ -1,0 +1,23 @@
+{
+  "name": "elm-routing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "elm.js",
+  "dependencies": {
+    "babel-loader": "^5.3.2",
+    "css-loader": "^0.21.0",
+    "express": "^4.13.3",
+    "file-loader": "^0.8.4",
+    "less-loader": "^2.2.1",
+    "router5": "^1.0.0",
+    "webpack": "^1.12.2",
+    "webpack-dev-middleware": "^1.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node dev_server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
