@@ -24,7 +24,8 @@ zeroModel =
 
 type Action
   = ChangeRoute String
-  | RouteChanged (Result () ())
+  | ChangeRouteResult (Result () ())
+  | RouteChanged String
   | Increment
   | NoOp
 
@@ -39,6 +40,8 @@ update action model =
       ({model | count <- model.count + 1 }, Effects.none)
     ChangeRoute route ->
       (model, goToRoute route)
+    RouteChanged result ->
+      ({model | count <- model.count + 1 }, Effects.none)
     _ ->
       (model, Effects.none)
 
@@ -78,51 +81,31 @@ menu routerAddress address model =
 routerMailbox: Signal.Mailbox Action
 routerMailbox = Signal.mailbox NoOp
 
+--hashChangeSignal: Signal Action
+--hashChangeSignal =
+--  Signal.map (Debug.watch "dff") routerMailbox.signal
+
 hashChangeSignal: Signal Action
 hashChangeSignal =
-  Signal.map (Debug.watch "dff") routerMailbox.signal
+  Signal.map  (\s -> RouteChanged s) History.hash
 
 app =
   StartApp.start {
     init = init,
     update = update,
     view = (view routerMailbox.address),
-    inputs = [hashChangeSignal]
+    inputs = [routerMailbox.signal, hashChangeSignal]
   }
-
 
 -- Effects
 
+-- Maybe this should return Effects.none
 goToRoute: String -> (Effects Action)
 goToRoute route =
   History.setPath route
     |> Task.toResult
-    |> Task.map RouteChanged
+    |> Task.map ChangeRouteResult
     |> Effects.task
-
---debugSignal: Signal (a -> a)
---debugSignal =
---  Signal.map Debug.watch (Signal.map toString routerMailbox.signal)
-  --Signal.map (Debug.watch toString) routerMailbox.signal
-
---debugSignalFw =
---  Signal.forwardTo 
-
---port fooPort: Signal String
---port fooPort =
---  Signal.map toString debugSignal
-
-{-
- 1. click button
- 2. send hash change message to address in routerMailbox
- 3. mailbox sends change signal
- 4. change hash
-
- 5. React to hash change
- 6. send signal with changed address
- 7. update route model
- 8. update views (need to receive route model)
--}
 
 main: Signal H.Html
 main =
@@ -133,4 +116,7 @@ port tasks : Signal (Task.Task Never ())
 port tasks =
   app.tasks
   
+--port history : 
+--port history = 
+
 
