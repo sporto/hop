@@ -40,7 +40,8 @@ update action model =
       ({model | count <- model.count + 1 }, Effects.none)
     ChangeRoute route ->
       (model, goToRoute route)
-    RouteChanged result ->
+    RouteChanged route ->
+      -- Here we should receive a route model
       ({model | count <- model.count + 1 }, Effects.none)
     _ ->
       (model, Effects.none)
@@ -59,6 +60,7 @@ menu routerAddress address model =
     H.button [ Html.Events.onClick address (Increment) ] [
       H.text "Count"
     ],
+    -- Here we should change the route in a nicer way
     H.button [ Html.Events.onClick routerAddress (ChangeRoute "#users") ] [
       H.text "Users"
     ],
@@ -99,6 +101,7 @@ app =
 
 -- Effects
 
+-- Changes the hash
 -- Maybe this should return Effects.none
 goToRoute: String -> (Effects Action)
 goToRoute route =
@@ -111,12 +114,13 @@ main: Signal H.Html
 main =
   app.html
 
+-- What is missing?
+  -- Convert hash paths to a model
+  -- Create hash paths easily
+
 -- this is the important bit
 port tasks : Signal (Task.Task Never ())
 port tasks =
   app.tasks
-  
---port history : 
---port history = 
 
 
