@@ -13,7 +13,9 @@
     "webpack": "^1.12.2",
     "webpack-dev-middleware": "^1.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jsdom": "^7.0.2"
+  },
   "scripts": {
     "start": "node dev_server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
