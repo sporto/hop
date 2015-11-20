@@ -75,7 +75,7 @@ notFoundView address model =
     Html.text "Not Found"
   ]
 
----- "/users/1" --> ["users", "1"]
+---- "/users/:id" --> ["users", ":id"]
 parseRouteFragment: String -> List String
 parseRouteFragment route =
   let
