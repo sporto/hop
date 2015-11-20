@@ -1,15 +1,4 @@
--- Try to integrate wih start app
-
-{-- TODO
-
-- Match route on init
-- Pass query string to view
-- Pass query string to update
-- Match parts of fragment
-- Pass fragment params to view e.g :id
--}
-
-module App where
+module ExampleApp where
 
 import Html as H
 import Html.Events
