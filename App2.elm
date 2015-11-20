@@ -64,17 +64,17 @@ update action model =
     _ ->
       (model, Effects.none)
 
-view: Signal.Address Router.Action -> Signal.Address Action -> AppModel -> H.Html
-view routerAddress address model =
+view: Signal.Address Action -> AppModel -> H.Html
+view address model =
   H.div [] [
     H.text "Hello",
     H.text (toString model.count)
-    , menu routerAddress address model
+    , menu address model
     --, viewHandler routerAddress address model
   ]
 
-menu: Signal.Address Router.Action -> Signal.Address Action -> AppModel -> H.Html
-menu routerAddress address model =
+menu: Signal.Address Action -> AppModel -> H.Html
+menu address model =
   H.div [] [
     H.button [ Html.Events.onClick address (Increment) ] [
       H.text "Count"
@@ -94,20 +94,20 @@ menu routerAddress address model =
     ]
   ]
 
-usersView: Signal.Address Router.Action -> Signal.Address Action -> AppModel -> H.Html
-usersView routerAddress address model =
+usersView: Signal.Address Action -> AppModel -> H.Html
+usersView address model =
   H.div [] [
     H.text "Users"
   ]
 
-userView: Signal.Address Router.Action -> Signal.Address Action -> AppModel -> H.Html
-userView routerAddress address model =
+userView: Signal.Address Action -> AppModel -> H.Html
+userView address model =
   H.div [] [
     H.text "User"
   ]
 
-notFoundView: Signal.Address Router.Action -> Signal.Address Action -> AppModel -> H.Html
-notFoundView routerAddress address model =
+notFoundView: Signal.Address Action -> AppModel -> H.Html
+notFoundView address model =
   H.div [] [
     H.text "Not Found"
   ]
@@ -139,7 +139,7 @@ app =
   StartApp.start {
     init = init,
     update = update,
-    view = (view router.address),
+    view = view,
     inputs = [routerSignal]
   }
 
