@@ -1,6 +1,6 @@
 Progress so far:
 
-## App2
+## App
 
 - Upon click a button the hash changes
 
