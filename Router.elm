@@ -8,10 +8,10 @@ import Effects exposing (Effects, Never)
 import Debug
 import Html
 
-type alias View = (({}) -> ({}) -> Html.Html)
-type alias RouteDefinition = (String, View)
-type alias ApplicationAction = ({})
-type alias ApplicationModel = ({})
+--type alias View = Signal.Address ApplicationAction -> () -> Html.Html
+--type alias RouteDefinition = (String, View)
+--type alias ApplicationAction = ()
+--type alias ApplicationModel = ()
 
 type Action
   = NoOp
@@ -36,10 +36,10 @@ type Action
 new config =
   {
     signal = hashChangeSignal,
-    viewHandler = viewHandler
+    viewHandler = viewHandler config.routes
   }
 
-update: Action -> ({}, Effects Action)
+--update: Action -> ({}, Effects Action)
 update action =
   case action of
     GoToRoute route ->
@@ -65,21 +65,11 @@ update action =
 --routerMailbox: Signal.Mailbox Action
 --routerMailbox = Signal.mailbox NoOp
 
-viewHandler: Signal.Address ApplicationAction -> ApplicationModel -> Html.Html
-viewHandler address model =
-  notFoundView address model
-  --let
-  --  route =
-  --    matchedRoute model.routes model.url
-  --  view =
-  --    route
-  --      |> snd
-  --      |> Maybe.withDefault notFoundView
-  --in
-  --  view address model
+
 
 
 --notFoundView: Html.Html
+--notFoundView: Signal.Address () -> ApplicationModel -> Html.Html
 notFoundView address model =
   Html.div [] [
     Html.text "Not Found"
@@ -104,29 +94,36 @@ hashChangeSignal: Signal Action
 hashChangeSignal =
   Signal.map  (\urlString -> RouteChanged (Erl.parse urlString)) History.hash
 
+--viewHandler: Signal.Address ApplicationAction -> ApplicationModel -> Html.Html
+
+viewHandler routes address model =
+  let
+    view =
+      matchedView routes model.url
+  in
+    view address model
+
+--matchedView: List RouteDefinition -> Erl.Url -> View
+matchedView routes url =
+  notFoundView
+
+  --snd (matchedRoute routes url)
+
 {-
   Given the routes and the current url
   Return the route tuple that matches
 -}
-matchedRoute: List RouteDefinition -> Erl.Url -> RouteDefinition
+--matchedRoute: List RouteDefinition -> Erl.Url -> RouteDefinition
+--matchedRoute routes url =
+--  defaultRouteConf
+
 matchedRoute routes url =
   routes
     |> List.head
-    |> Maybe.withDefault  ("", notFoundView)
+    |> Maybe.withDefault defaultRouteConf
 
---firstRoute routes url =
---  routes
---    |> List.head
---    |> Maybe.withDefault ("", notFoundView)
-
-
--- matchRoute: Erl.Url -> view
-matchRoute routes url =
-  routes
-    |> List.head
-    |> Maybe.withDefault ("", notFoundView)
-    |> snd
-
+defaultRouteConf =
+  ("", notFoundView)
 
 ----matchRoute: Erl.Url -> view
 ---- match the url model to a view as given by routes

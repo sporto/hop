@@ -13,6 +13,8 @@ import Task exposing (Task)
 import Erl
 import Router
 
+--type alias View = Signal.Address Action -> AppModel -> H.Html
+
 type alias AppModel = {
   count: Int,
   url: Erl.Url
@@ -102,6 +104,7 @@ notFoundView address model =
 
 -- ROUTING
 
+--routes: List (String, View)
 routes =
   [
     ("/users", usersView),
