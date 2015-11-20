@@ -37,8 +37,7 @@ zeroModel =
   }
 
 type Action
-  = RouteChanged Erl.Url
-  | RouterAction Router.Action
+  = RouterAction Router.Action
   | Increment
   | NoOp
 
@@ -58,12 +57,13 @@ update action model =
       in
         Debug.log "App.RouterAction"
         (model, Effects.map RouterAction fx)
-    RouteChanged url ->
-      -- Here we should receive a route model
-      ({model | count <- model.count + 1 , url <- url }, Effects.none)
     _ ->
+      Debug.log "App.NoOp"
       (model, Effects.none)
 
+    --RouteChanged url ->
+    --  -- Here we should receive a route model
+    --  ({model | count <- model.count + 1 , url <- url }, Effects.none)
 view: Signal.Address Action -> AppModel -> H.Html
 view address model =
   H.div [] [
@@ -129,11 +129,12 @@ router =
 
 -----
 
---router.signal needs to resolve to an application signal
+-- In order to listen to hash changes
+-- Application has to include the signal coming from the router
+-- router.signal needs to resolve to an application signal
 -- router.Action != Action
-
 routerSignal =
-  Signal.map (\_ -> NoOp) router.signal
+  Signal.map (\action -> RouterAction action) router.signal
 
 app =
   StartApp.start {
@@ -142,8 +143,6 @@ app =
     view = view,
     inputs = [routerSignal]
   }
-
--- Effects
 
 main: Signal H.Html
 main =

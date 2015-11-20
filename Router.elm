@@ -28,14 +28,9 @@ type Action
 --    }
 
 new config =
-  let 
-    routerMailbox =
-      Signal.mailbox NoOp
-  in
-    {
-      address = routerMailbox.address,
-      signal =  routerMailbox.signal
-    }
+  {
+    signal = hashChangeSignal
+  }
 
 --    viewHandler = viewHandler
 
@@ -53,7 +48,7 @@ update action =
       Debug.log "GoToRouteResult"
       ({}, Effects.none)
     RouteChanged url ->
-      Debug.log "RouteChanged"
+      Debug.log "Router.RouteChanged"
       ({}, Effects.none)
     _ ->
       Debug.log "Router.NoOp"
