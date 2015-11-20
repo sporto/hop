@@ -6,6 +6,12 @@ import History
 import Task exposing (Task)
 import Effects exposing (Effects, Never)
 import Debug
+import Html
+
+type alias View = (({}) -> ({}) -> Html.Html)
+type alias RouteDefinition = (String, View)
+type alias ApplicationAction = ({})
+type alias ApplicationModel = ({})
 
 type Action
   = NoOp
@@ -29,10 +35,9 @@ type Action
 
 new config =
   {
-    signal = hashChangeSignal
+    signal = hashChangeSignal,
+    viewHandler = viewHandler
   }
-
---    viewHandler = viewHandler
 
 update: Action -> ({}, Effects Action)
 update action =
@@ -60,13 +65,25 @@ update action =
 --routerMailbox: Signal.Mailbox Action
 --routerMailbox = Signal.mailbox NoOp
 
-----viewHandler: Signal.Address Action -> Signal.Address Action -> AppModel -> H.Html
---viewHandler routerAddress address model =
---  let
---    view =
---      matchRoute model.routes model.url
---  in
---    view routerAddress address model
+viewHandler: Signal.Address ApplicationAction -> ApplicationModel -> Html.Html
+viewHandler address model =
+  notFoundView address model
+  --let
+  --  route =
+  --    matchedRoute model.routes model.url
+  --  view =
+  --    route
+  --      |> snd
+  --      |> Maybe.withDefault notFoundView
+  --in
+  --  view address model
+
+
+--notFoundView: Html.Html
+notFoundView address model =
+  Html.div [] [
+    Html.text "Not Found"
+  ]
 
 ---- "/users/1" --> ["users", "1"]
 --parseRouteFragment: String -> List String
@@ -86,6 +103,30 @@ We need to pass this signal to the main application
 hashChangeSignal: Signal Action
 hashChangeSignal =
   Signal.map  (\urlString -> RouteChanged (Erl.parse urlString)) History.hash
+
+{-
+  Given the routes and the current url
+  Return the route tuple that matches
+-}
+matchedRoute: List RouteDefinition -> Erl.Url -> RouteDefinition
+matchedRoute routes url =
+  routes
+    |> List.head
+    |> Maybe.withDefault  ("", notFoundView)
+
+--firstRoute routes url =
+--  routes
+--    |> List.head
+--    |> Maybe.withDefault ("", notFoundView)
+
+
+-- matchRoute: Erl.Url -> view
+matchRoute routes url =
+  routes
+    |> List.head
+    |> Maybe.withDefault ("", notFoundView)
+    |> snd
+
 
 ----matchRoute: Erl.Url -> view
 ---- match the url model to a view as given by routes

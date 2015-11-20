@@ -30,7 +30,6 @@ type Action
   | Increment
   | NoOp
 
--- TODO: match route on init
 init: (AppModel, Effects Action)
 init =
   (zeroModel, Effects.none)
@@ -59,7 +58,7 @@ view address model =
     H.text "Hello",
     H.text (toString model.count)
     , menu address model
-    --, viewHandler routerAddress address model
+    , router.viewHandler address model
   ]
 
 menu: Signal.Address Action -> AppModel -> H.Html
@@ -103,7 +102,6 @@ notFoundView address model =
 
 -- ROUTING
 
--- Todo initial matching
 routes =
   [
     ("/users", usersView),
@@ -116,12 +114,12 @@ router =
     routes = routes
   }
 
------
-
--- In order to listen to hash changes
--- Application has to include the signal coming from the router
--- router.signal needs to resolve to an application signal
--- router.Action != Action
+{- 
+In order to listen to hash changes
+Application has to include the signal coming from the router
+router.signal needs to resolve to an application signal
+router.Action != Action
+-}
 routerSignal =
   Signal.map (\action -> RouterAction action) router.signal
 
