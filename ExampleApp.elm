@@ -11,7 +11,7 @@ import Html.Attributes exposing (href)
 import History
 import Task exposing (Task)
 import Erl
-import Router
+import Routee
 
 --type alias View = Signal.Address Action -> AppModel -> H.Html
 
@@ -28,7 +28,7 @@ zeroModel =
   }
 
 type Action
-  = RouterAction Router.Action
+  = RouterAction Routee.Action
   | Increment
   | NoOp
 
@@ -43,7 +43,7 @@ update action model =
       ({model | count <- model.count + 1 }, Effects.none)
     RouterAction routerAction ->
       let
-        (updatedUrl, fx) = Router.update routerAction model.url
+        (updatedUrl, fx) = Routee.update routerAction model.url
       in
         Debug.log "App.RouterAction"
         ({model | url <- updatedUrl}, Effects.map RouterAction fx)
@@ -70,10 +70,10 @@ menu address model =
       H.text "Count"
     ],
     -- Here we should change the route in a nicer way
-    H.button [ Html.Events.onClick address (RouterAction (Router.GoToRoute "#users")) ] [
+    H.button [ Html.Events.onClick address (RouterAction (Routee.GoToRoute "#users")) ] [
       H.text "Users"
     ],
-    H.button [ Html.Events.onClick address (RouterAction (Router.GoToRoute "#users/1")) ] [
+    H.button [ Html.Events.onClick address (RouterAction (Routee.GoToRoute "#users/1")) ] [
       H.text "User 1"
     ],
     H.a [ href "#/users/1" ] [
@@ -113,7 +113,7 @@ routes =
   ]
 
 router = 
-  Router.new {
+  Routee.new {
     routes = routes
   }
 
