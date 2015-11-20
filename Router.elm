@@ -11,10 +11,21 @@ type Action
   = NoOp
   | GoToRoute String
   | GoToRouteResult (Result () ())
+  | RouteChanged Erl.Url
 
 --  = ChangeRoute String
 --  | GoToRouteResult (Result () ())
 --  | RouteChanged Erl.Url
+
+--new config =
+--  let 
+--    routerMailbox =
+--      Signal.mailbox NoOp
+--  in
+--    {
+--      address = routerMailbox.address,
+--      signal =  routerMailbox.signal
+--    }
 
 new config =
   let 
@@ -25,16 +36,27 @@ new config =
       address = routerMailbox.address,
       signal =  routerMailbox.signal
     }
+
 --    viewHandler = viewHandler
 
 update: Action -> ({}, Effects Action)
 update action =
   case action of
     GoToRoute route ->
+      -- What models should we return here?
+      -- Return the fx to change the route
       Debug.log "GoToRoute"
       ({}, goToRoute route)
+    GoToRouteResult result ->
+      -- Called after the route is changed
+      -- Do nothing
+      Debug.log "GoToRouteResult"
+      ({}, Effects.none)
+    RouteChanged url ->
+      Debug.log "RouteChanged"
+      ({}, Effects.none)
     _ ->
-      Debug.log "NoOp"
+      Debug.log "Router.NoOp"
       ({}, Effects.none)
 
 ---- We need our own mailbox
@@ -62,13 +84,13 @@ update action =
 --      |> String.split "/"
 --      |> List.filter notEmpty
 
----- Each time the hash is changed
----- get a signal
----- convert to model
----- pass to update function
---hashChangeSignal: Signal Action
---hashChangeSignal =
---  Signal.map  (\s -> RouteChanged (Erl.parse s)) History.hash
+{- 
+Each time the hash is changed get a signal
+We need to pass this signal to the main application
+-}
+hashChangeSignal: Signal Action
+hashChangeSignal =
+  Signal.map  (\urlString -> RouteChanged (Erl.parse urlString)) History.hash
 
 ----matchRoute: Erl.Url -> view
 ---- match the url model to a view as given by routes

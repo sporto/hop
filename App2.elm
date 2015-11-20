@@ -56,13 +56,12 @@ update action model =
       let
         (updated, fx) = Router.update routerAction
       in
-        Debug.log "RouterAction"
+        Debug.log "App.RouterAction"
         (model, Effects.map RouterAction fx)
     RouteChanged url ->
       -- Here we should receive a route model
       ({model | count <- model.count + 1 , url <- url }, Effects.none)
     _ ->
-      Debug.log "_"
       (model, Effects.none)
 
 view: Signal.Address Router.Action -> Signal.Address Action -> AppModel -> H.Html
