@@ -1,34 +1,48 @@
 -- Try to integrate wih start app
 
+{-- TODO
+
+- Match route on init
+- Pass query string to view
+- Pass query string to update
+- Match parts of fragment
+- Pass fragment params to view e.g :id
+-}
+
 module App where
 
 import Html as H
 import Html.Events
 import Debug
+import String
 
 import StartApp
 import Effects exposing (Effects, Never)
 import Html.Attributes exposing (href)
 import History
 import Task exposing (Task)
+import Erl
+import Router
 
 type alias AppModel = {
-  count: Int
+  count: Int,
+  url: Erl.Url
 }
                       
 zeroModel: AppModel
 zeroModel =
   {
-    count = 1
+    count = 1,
+    url = Erl.new
   }
 
 type Action
-  = ChangeRoute String
-  | ChangeRouteResult (Result () ())
-  | RouteChanged String
+  = RouteChanged Erl.Url
+  | RouterAction Router.Action
   | Increment
   | NoOp
 
+-- TODO: match route on init
 init: (AppModel, Effects Action)
 init =
   (zeroModel, Effects.none)
@@ -38,33 +52,39 @@ update action model =
   case action of
     Increment ->
       ({model | count <- model.count + 1 }, Effects.none)
-    ChangeRoute route ->
-      (model, goToRoute route)
-    RouteChanged route ->
+    RouterAction routerAction ->
+      let
+        (updated, fx) = Router.update routerAction
+      in
+        Debug.log "RouterAction"
+        (model, Effects.map RouterAction fx)
+    RouteChanged url ->
       -- Here we should receive a route model
-      ({model | count <- model.count + 1 }, Effects.none)
+      ({model | count <- model.count + 1 , url <- url }, Effects.none)
     _ ->
+      Debug.log "_"
       (model, Effects.none)
 
-view: Signal.Address Action -> Signal.Address Action -> AppModel -> H.Html
+view: Signal.Address Router.Action -> Signal.Address Action -> AppModel -> H.Html
 view routerAddress address model =
   H.div [] [
     H.text "Hello",
     H.text (toString model.count)
     , menu routerAddress address model
+    --, viewHandler routerAddress address model
   ]
 
-menu: Signal.Address Action -> Signal.Address Action -> AppModel -> H.Html
+menu: Signal.Address Router.Action -> Signal.Address Action -> AppModel -> H.Html
 menu routerAddress address model =
   H.div [] [
     H.button [ Html.Events.onClick address (Increment) ] [
       H.text "Count"
     ],
     -- Here we should change the route in a nicer way
-    H.button [ Html.Events.onClick routerAddress (ChangeRoute "#users") ] [
+    H.button [ Html.Events.onClick address (RouterAction (Router.GoToRoute "#users")) ] [
       H.text "Users"
     ],
-    H.button [ Html.Events.onClick routerAddress (ChangeRoute "#users/1") ] [
+    H.button [ Html.Events.onClick address (RouterAction (Router.GoToRoute "#users/1")) ] [
       H.text "User 1"
     ],
     H.a [ href "#/users/1" ] [
@@ -75,40 +95,56 @@ menu routerAddress address model =
     ]
   ]
 
+usersView: Signal.Address Router.Action -> Signal.Address Action -> AppModel -> H.Html
+usersView routerAddress address model =
+  H.div [] [
+    H.text "Users"
+  ]
+
+userView: Signal.Address Router.Action -> Signal.Address Action -> AppModel -> H.Html
+userView routerAddress address model =
+  H.div [] [
+    H.text "User"
+  ]
+
+notFoundView: Signal.Address Router.Action -> Signal.Address Action -> AppModel -> H.Html
+notFoundView routerAddress address model =
+  H.div [] [
+    H.text "Not Found"
+  ]
+
 -- ROUTING
 
---type RouteAction
---  = Nothing
+-- Todo initial matching
+routes =
+  [
+    ("/users", usersView),
+    ("/users/:id", userView),
+    ("*", notFoundView)
+  ]
 
-routerMailbox: Signal.Mailbox Action
-routerMailbox = Signal.mailbox NoOp
+router = 
+  Router.new {
+    routes = routes
+  }
 
---hashChangeSignal: Signal Action
---hashChangeSignal =
---  Signal.map (Debug.watch "dff") routerMailbox.signal
+-----
 
-hashChangeSignal: Signal Action
-hashChangeSignal =
-  Signal.map  (\s -> RouteChanged s) History.hash
+--router.signal needs to resolve to an application signal
+-- router.Action != Action
+
+routerSignal =
+  Signal.map (\_ -> NoOp) router.signal
 
 app =
   StartApp.start {
     init = init,
     update = update,
-    view = (view routerMailbox.address),
-    inputs = [routerMailbox.signal, hashChangeSignal]
+    view = (view router.address),
+    inputs = [routerSignal]
   }
 
 -- Effects
-
--- Changes the hash
--- Maybe this should return Effects.none
-goToRoute: String -> (Effects Action)
-goToRoute route =
-  History.setPath route
-    |> Task.toResult
-    |> Task.map ChangeRouteResult
-    |> Effects.task
 
 main: Signal H.Html
 main =
