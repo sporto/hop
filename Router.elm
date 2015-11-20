@@ -40,24 +40,24 @@ new config =
   }
 
 --update: Action -> ({}, Effects Action)
-update action =
+update action currentUrl =
   case action of
     GoToRoute route ->
       -- What models should we return here?
       -- Return the fx to change the route
       Debug.log "GoToRoute"
-      ({}, goToRoute route)
+      (currentUrl, goToRoute route)
     GoToRouteResult result ->
       -- Called after the route is changed
       -- Do nothing
       Debug.log "GoToRouteResult"
-      ({}, Effects.none)
+      (currentUrl, Effects.none)
     RouteChanged url ->
       Debug.log "Router.RouteChanged"
-      ({}, Effects.none)
+      (url, Effects.none)
     _ ->
       Debug.log "Router.NoOp"
-      ({}, Effects.none)
+      (currentUrl, Effects.none)
 
 ---- We need our own mailbox
 ---- because start app doesnt expose its signal
@@ -76,15 +76,15 @@ notFoundView address model =
   ]
 
 ---- "/users/1" --> ["users", "1"]
---parseRouteFragment: String -> List String
---parseRouteFragment route =
---  let
---    notEmpty x=
---      not (String.isEmpty x)
---  in    
---    route
---      |> String.split "/"
---      |> List.filter notEmpty
+parseRouteFragment: String -> List String
+parseRouteFragment route =
+  let
+    notEmpty x=
+      not (String.isEmpty x)
+  in    
+    route
+      |> String.split "/"
+      |> List.filter notEmpty
 
 {- 
 Each time the hash is changed get a signal
@@ -103,54 +103,46 @@ viewHandler routes address model =
   in
     view address model
 
+{-
+  Default router handler if not found
+-}
+defaultRouteConf =
+  ("*", notFoundView)
+
 --matchedView: List RouteDefinition -> Erl.Url -> View
 matchedView routes url =
-  notFoundView
-
-  --snd (matchedRoute routes url)
+  snd (matchedRoute routes url)
 
 {-
   Given the routes and the current url
   Return the route tuple that matches
 -}
---matchedRoute: List RouteDefinition -> Erl.Url -> RouteDefinition
---matchedRoute routes url =
---  defaultRouteConf
 
+---- match the url model to a view as given by routes
 matchedRoute routes url =
   routes
+    |> List.filter (isRouteMatch url)
     |> List.head
     |> Maybe.withDefault defaultRouteConf
 
-defaultRouteConf =
-  ("", notFoundView)
-
-----matchRoute: Erl.Url -> view
----- match the url model to a view as given by routes
---matchRoute routes url =
---  routes
---    |> List.filter (isRouteMatch url)
---    |> List.head
---    |> Maybe.withDefault ("", notFoundView)
---    |> snd
-
 ----isRouteMatch: Erl.Url -> (String, {}) -> Bool
---isRouteMatch url routeDef =
---  let
---    currentFragment =
---      url.fragment
---    currentLen =
---      List.length currentFragment
---    defFragment =
---      parseRouteFragment (fst routeDef)
---    defFragmentLen =
---      List.length defFragment
---  in
---    if currentLen == defFragmentLen then
---      -- Todo match parts of fragment
---      True
---    else
---      False
+isRouteMatch url routeDef =
+  let
+    currentFragment =
+      url.fragment
+    currentLen =
+      List.length currentFragment
+    definitionFragment =
+      parseRouteFragment (fst routeDef)
+    definitionFragmentLen =
+      List.length definitionFragment
+  in
+    if currentLen == definitionFragmentLen then
+      -- Todo match parts of fragment
+      True
+    else
+      Debug.log (toString url)
+      False
 
 
 -- Changes the hash

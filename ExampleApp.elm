@@ -43,10 +43,10 @@ update action model =
       ({model | count <- model.count + 1 }, Effects.none)
     RouterAction routerAction ->
       let
-        (updated, fx) = Router.update routerAction
+        (updatedUrl, fx) = Router.update routerAction model.url
       in
         Debug.log "App.RouterAction"
-        (model, Effects.map RouterAction fx)
+        ({model | url <- updatedUrl}, Effects.map RouterAction fx)
     _ ->
       Debug.log "App.NoOp"
       (model, Effects.none)
