@@ -119,6 +119,7 @@ matchedView routes url =
 -}
 
 ---- match the url model to a view as given by routes
+matchedRoute: List (String, a -> b -> Html.Html) -> Erl.Url -> (String, a -> b -> Html.Html)
 matchedRoute routes url =
   routes
     |> List.filter (isRouteMatch url)
