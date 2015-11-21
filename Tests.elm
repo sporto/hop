@@ -13,7 +13,7 @@ parseRouteFragmentTest =
   let
     inputs =
       [
-        ("/users/:id", ["users", "id"])
+        ("/users/:id", ["users", ":id"])
       ]
     run (input, expected) =
       test "parseRouteFragment"

@@ -4,11 +4,11 @@
   "description": "## TODO:",
   "main": "elm.js",
   "dependencies": {
-    "elm-test": "^0.6.5"
+
   },
   "devDependencies": {},
   "scripts": {
-    "test": "elm-test TestRunner.elm"
+    "test": ""
   },
   "repository": {
     "type": "git",
