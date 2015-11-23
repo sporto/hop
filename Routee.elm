@@ -7,11 +7,16 @@ import Task exposing (Task)
 import Effects exposing (Effects, Never)
 import Debug
 import Html
+import Lib.Matcher
 
---type alias View = Signal.Address ApplicationAction -> () -> Html.Html
+--type alias StartAppView a b = Signal.Address a -> b -> Html.Html
 --type alias RouteDefinition = (String, View)
 --type alias ApplicationAction = ()
 --type alias ApplicationModel = ()
+
+--type Handler appView
+--  = View appView
+--  | TestHandler String
 
 type Action
   = NoOp
@@ -33,6 +38,7 @@ type Action
 --      signal =  routerMailbox.signal
 --    }
 
+--new: { routes: List (String, Handler) } -> {}
 new config =
   {
     signal = hashChangeSignal,
@@ -68,24 +74,6 @@ update action currentUrl =
 
 
 
---notFoundView: Html.Html
---notFoundView: Signal.Address () -> ApplicationModel -> Html.Html
-notFoundView address model =
-  Html.div [] [
-    Html.text "Not Found"
-  ]
-
----- "/users/:id" --> ["users", ":id"]
-parseRouteFragment: String -> List String
-parseRouteFragment route =
-  let
-    notEmpty x=
-      not (String.isEmpty x)
-  in    
-    route
-      |> String.split "/"
-      |> List.filter notEmpty
-
 {- 
 Each time the hash is changed get a signal
 We need to pass this signal to the main application
@@ -99,52 +87,9 @@ hashChangeSignal =
 viewHandler routes address model =
   let
     view =
-      matchedView routes model.url
+      Lib.Matcher.matchedView routes model.url
   in
     view address model
-
-{-
-  Default router handler if not found
--}
-defaultRouteConf =
-  ("*", notFoundView)
-
---matchedView: List RouteDefinition -> Erl.Url -> View
-matchedView routes url =
-  snd (matchedRoute routes url)
-
-{-
-  Given the routes and the current url
-  Return the route tuple that matches
--}
-
----- match the url model to a view as given by routes
-matchedRoute: List (String, a -> b -> Html.Html) -> Erl.Url -> (String, a -> b -> Html.Html)
-matchedRoute routes url =
-  routes
-    |> List.filter (isRouteMatch url)
-    |> List.head
-    |> Maybe.withDefault defaultRouteConf
-
-----isRouteMatch: Erl.Url -> (String, {}) -> Bool
-isRouteMatch url routeDef =
-  let
-    currentFragment =
-      url.fragment
-    currentLen =
-      List.length currentFragment
-    definitionFragment =
-      parseRouteFragment (fst routeDef)
-    definitionFragmentLen =
-      List.length definitionFragment
-  in
-    if currentLen == definitionFragmentLen then
-      -- Todo match parts of fragment
-      True
-    else
-      Debug.log (toString url)
-      False
-
 
 -- Changes the hash
 -- Maybe this should return Effects.none
