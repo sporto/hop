@@ -30,6 +30,9 @@ zeroModel =
 type Action
   = RouterAction Routee.Action
   | Increment
+  | ShowUser
+  | ShowUsers
+  | ShowNotFound
   | NoOp
 
 init: (AppModel, Effects Action)
@@ -43,12 +46,15 @@ update action model =
       ({model | count <- model.count + 1 }, Effects.none)
     RouterAction routerAction ->
       let
-        (updatedUrl, fx) = Routee.update routerAction model.url
+        (updatedUrl, fx) = router.update routerAction model.url
       in
-        Debug.log "App.RouterAction"
         ({model | url <- updatedUrl}, Effects.map RouterAction fx)
+        --Debug.log "App.RouterAction"
+    ShowUser ->
+      -- how to call this??
+      (model, Effects.none)
     _ ->
-      Debug.log "App.NoOp"
+      --Debug.log "App.NoOp"
       (model, Effects.none)
 
     --RouteChanged url ->
@@ -60,7 +66,6 @@ view address model =
     H.text "Hello",
     H.text (toString model.count)
     , menu address model
-    , router.viewHandler address model
   ]
 
 menu: Signal.Address Action -> AppModel -> H.Html
@@ -107,14 +112,14 @@ notFoundView address model =
 --routes: List (String, View)
 routes =
   [
-    ("/users", usersView),
-    ("/users/:id", userView),
-    ("*", notFoundView)
+    ("/users", ShowUser),
+    ("/users/:id", ShowUsers)
   ]
 
 router = 
   Routee.new {
-    routes = routes
+    routes = routes,
+    notFoundAction = ShowNotFound
   }
 
 {- 

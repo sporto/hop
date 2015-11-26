@@ -3,13 +3,19 @@ module TestActions.Lib where
 import Maybe
 
 type Action
-  = LibAction
+  = LibAction1
   | LibAction2
 
-choose actions =
+--type UserAction action =
+--  action
+
+run: List action -> action -> action
+run actions notFound =
   actions
     |> List.head
-    |> Maybe.withDefault LibAction
+    |> Maybe.withDefault notFound
 
-new actions =
-  toString (choose actions)
+new config =
+  { 
+    run  = run config.actions config.notFound
+  }
