@@ -16,7 +16,6 @@ type Action
   | GoToRouteResult (Result () ())
   | RouteChanged Erl.Url
 
-
 --type alias StartAppView a b = Signal.Address a -> b -> Html.Html
 --type alias RouteDefinition = (String, View)
 --type alias ApplicationAction = ()
@@ -40,74 +39,44 @@ type Action
 --      signal =  routerMailbox.signal
 --    }
 
-type alias Config action = {
+type alias Config action model = {
     routes: List (String, action),
+    update: (action -> model -> (model, Effects action)),
     notFoundAction: action
   }
 
-type alias Library action = {
+type alias Library action model = {
     signal: Signal Action,
-    update: Action -> Erl.Url -> (Erl.Url, Effects Action)
+    update: Action -> model -> (model, Effects Action)
   }
 
-new: Config action -> Library action
+new: Config action model -> Library action model
 new config =
   {
     signal = hashChangeSignal,
-    update = update config.routes config.notFoundAction
+    update = update config.routes config.notFoundAction config.update
   }
 
 --update: Action -> ({}, Effects Action)
-update: List (String, action) -> action -> Action -> Erl.Url -> (Erl.Url, Effects Action)
-update routes notFoundAction action currentUrl =
-  case action of
+--update: List (String, action) -> action -> (action -> model -> (model, Effects action)) -> Action -> appModel -> (appModel, Effects Action)
+update routes notFoundAction userUpdate routerAction appModel =
+  case routerAction of
     GoToRoute route ->
-      -- What models should we return here?
-      -- Return the fx to change the route
-      --Debug.log "GoToRoute"
-      (currentUrl, goToRoute route)
-      --(currentUrl,  Effects.none)
+      (appModel, goToRouteFx route)
     GoToRouteResult result ->
-      -- Called after the route is changed
-      -- Do nothing
-      --Debug.log "GoToRouteResult"
-      (currentUrl, Effects.none)
-      -- I think the user needs to provide a function here
-      -- that changes the model
+      (appModel, Effects.none)
     RouteChanged url ->
       let
         userAction =
           actionForUrl routes notFoundAction url
-        fx =
-          --Effects.none
-          Task.succeed userAction
-            |> Effects.task
+        (updatedAppModel, fx) =
+          userUpdate userAction appModel
       in
-        (url, fx)
-      -- Called after changing the hash
-      -- Manually or through an interaction
-      -- We need to call the proper update function for the user
-      --let
-      --  userAction =
-      --    actionForUrl notFoundAction routes url
-      --  fx =
-      --    Effects.none
-      --    --Task.succeed userAction
-      --    --  |> Effects.task
-      --in
-      --  --Debug.log "Router.RouteChanged"
-      --  (url, fx)
+        Debug.log "RouteChanged"
+        (updatedAppModel, Effects.none)
     _ ->
       Debug.log "Router.NoOp"
-      (currentUrl, Effects.none)  
-
----- We need our own mailbox
----- because start app doesnt expose its signal
----- we need this signal in hashChangeSignal
---routerMailbox: Signal.Mailbox Action
---routerMailbox = Signal.mailbox NoOp
-
-
+      (appModel, Effects.none)  
 
 
 {- 
@@ -125,8 +94,8 @@ hashChangeSignal =
 
 -- Changes the hash
 -- Maybe this should return Effects.none
-goToRoute: String -> (Effects Action)
-goToRoute route =
+goToRouteFx: String -> (Effects Action)
+goToRouteFx route =
   History.setPath route
     |> Task.toResult
     |> Task.map GoToRouteResult

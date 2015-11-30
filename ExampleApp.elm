@@ -17,14 +17,16 @@ import Routee
 
 type alias AppModel = {
   count: Int,
-  url: Erl.Url
+  url: Erl.Url,
+  view: String
 }
                       
 zeroModel: AppModel
 zeroModel =
   {
     count = 1,
-    url = Erl.new
+    url = Erl.new,
+    view = ""
   }
 
 type Action
@@ -46,13 +48,16 @@ update action model =
       ({model | count <- model.count + 1 }, Effects.none)
     RouterAction routerAction ->
       let
-        (updatedUrl, fx) = router.update routerAction model.url
+        (updatedModel, fx) = router.update routerAction model
       in
-        ({model | url <- updatedUrl}, Effects.map RouterAction fx)
+        (updatedModel, Effects.map RouterAction fx)
         --Debug.log "App.RouterAction"
+    ShowUsers ->
+      Debug.log "ShowUsers"
+      ({model | view <- "users"}, Effects.none)
     ShowUser ->
-      -- how to call this??
-      (model, Effects.none)
+      Debug.log "ShowUser"
+      ({model | view <- "user"}, Effects.none)
     _ ->
       --Debug.log "App.NoOp"
       (model, Effects.none)
@@ -64,8 +69,10 @@ view: Signal.Address Action -> AppModel -> H.Html
 view address model =
   H.div [] [
     H.text "Hello",
-    H.text (toString model.count)
-    , menu address model
+    H.text (toString model.count),
+    menu address model,
+    maybeUseView address model,
+    maybeUsesView address model
   ]
 
 menu: Signal.Address Action -> AppModel -> H.Html
@@ -89,11 +96,27 @@ menu address model =
     ]
   ]
 
+maybeUsesView: Signal.Address Action -> AppModel -> H.Html
+maybeUsesView address model =
+  case model.view of
+    "users" ->
+      usersView address model
+    _ ->
+      H.div [] []
+
 usersView: Signal.Address Action -> AppModel -> H.Html
 usersView address model =
   H.div [] [
     H.text "Users"
   ]
+
+maybeUseView: Signal.Address Action -> AppModel -> H.Html
+maybeUseView address model =
+  case model.view of
+    "user" ->
+      userView address model
+    _ ->
+      H.div [] []
 
 userView: Signal.Address Action -> AppModel -> H.Html
 userView address model =
@@ -112,14 +135,15 @@ notFoundView address model =
 --routes: List (String, View)
 routes =
   [
-    ("/users", ShowUser),
-    ("/users/:id", ShowUsers)
+    ("/users", ShowUsers),
+    ("/users/:id", ShowUser)
   ]
 
 router = 
   Routee.new {
     routes = routes,
-    notFoundAction = ShowNotFound
+    notFoundAction = ShowNotFound,
+    update = update
   }
 
 {- 
