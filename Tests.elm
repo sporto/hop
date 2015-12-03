@@ -19,7 +19,7 @@ import ElmTest.Runner.Element exposing (runDisplay)
 --  let
 --    inputs =
 --      [
---        ("/users/:id", ["users", ":id"])
+--        ("/monkeys/:id", ["monkeys", ":id"])
 --      ]
 --    run (input, expected) =
 --      test "parseRouteFragment"
@@ -32,18 +32,33 @@ import ElmTest.Runner.Element exposing (runDisplay)
 
 type Action
   = NotFound
-  | Hello
+  | Monkeys
+  | Monkey
+  | MonkeyEdit
+  | MonkeyPunch
+  | Tigers
+  | Tiger
 
 routes = 
   [
-    ("/hello", Hello)
+    ("/monkeys", Monkeys),
+    ("/monkey/:id", Monkey),
+    ("/monkey/:id/edit", MonkeyEdit),
+    ("/monkey/:id/punch", MonkeyPunch),
+    ("/tigers", Tigers),
+    ("/tigers/:id", Tiger)
   ]
 
 actionForUrl =
   let
     inputs =
       [
-        ("#/hello/2", Hello)
+        ("#/monkeys", Monkeys),
+        ("#/monkeys/2", Monkey),
+        ("#/monkeys/2/edit", MonkeyEdit),
+        ("#/monkeys/2/punch", MonkeyPunch),
+        ("#/tigers", Tigers),
+        ("#/tigers/1", Tiger)
       ]
     toUrl string =
       Erl.parse string
