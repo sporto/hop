@@ -7,37 +7,12 @@ import Task exposing (Task)
 import Effects exposing (Effects, Never)
 import Debug
 import Html
---import Lib.Matcher
---import Lib.Actions as Actions
 
 type Action
   = NoOp
   | GoToRoute String
   | GoToRouteResult (Result () ())
   | RouteChanged Erl.Url
-
---type alias StartAppView a b = Signal.Address a -> b -> Html.Html
---type alias RouteDefinition = (String, View)
---type alias ApplicationAction = ()
---type alias ApplicationModel = ()
-
---type Handler appView
---  = View appView
---  | TestHandler String
-
---  = ChangeRoute String
---  | GoToRouteResult (Result () ())
---  | RouteChanged Erl.Url
-
---new config =
---  let 
---    routerMailbox =
---      Signal.mailbox NoOp
---  in
---    {
---      address = routerMailbox.address,
---      signal =  routerMailbox.signal
---    }
 
 type alias Config action model = {
     routes: List (String, action),
@@ -57,7 +32,6 @@ new config =
     update = update config.routes config.notFoundAction config.update
   }
 
---update: Action -> ({}, Effects Action)
 --update: List (String, action) -> action -> (action -> model -> (model, Effects action)) -> Action -> appModel -> (appModel, Effects Action)
 update routes notFoundAction userUpdate routerAction appModel =
   case routerAction of
@@ -76,7 +50,7 @@ update routes notFoundAction userUpdate routerAction appModel =
         (updatedAppModel, Effects.none)
     _ ->
       Debug.log "Router.NoOp"
-      (appModel, Effects.none)  
+      (appModel, Effects.none)
 
 
 {- 
@@ -86,11 +60,6 @@ We need to pass this signal to the main application
 hashChangeSignal: Signal Action
 hashChangeSignal =
   Signal.map  (\urlString -> RouteChanged (Erl.parse urlString)) History.hash
-
---userAction: Signal.Address ApplicationAction -> ApplicationModel -> Html.Html
-
---userAction routes address model =
---  Lib.Matcher.actionForUrl routes model.url
 
 -- Changes the hash
 -- Maybe this should return Effects.none
@@ -123,7 +92,6 @@ actionForUrl routes notFoundAction url =
   Return the route tuple that matches
 -}
 
----- match the url model to a view as given by routes
 --matchedRoute: List (String, a -> b -> Html.Html) -> Erl.Url -> (String, a -> b -> Html.Html)
 matchedRoute routes url =
   routes

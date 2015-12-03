@@ -51,7 +51,6 @@ update action model =
         (updatedModel, fx) = router.update routerAction model
       in
         (updatedModel, Effects.map RouterAction fx)
-        --Debug.log "App.RouterAction"
     ShowUsers ->
       Debug.log "ShowUsers"
       ({model | view <- "users"}, Effects.none)
@@ -59,12 +58,8 @@ update action model =
       Debug.log "ShowUser"
       ({model | view <- "user"}, Effects.none)
     _ ->
-      --Debug.log "App.NoOp"
       (model, Effects.none)
 
-    --RouteChanged url ->
-    --  -- Here we should receive a route model
-    --  ({model | count <- model.count + 1 , url <- url }, Effects.none)
 view: Signal.Address Action -> AppModel -> H.Html
 view address model =
   H.div [] [

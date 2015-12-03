@@ -2,11 +2,12 @@
 
 ## TODO:
 
-- Application needs to provide an outlet to render current view
-- When hash changes, resolve the intended view and show that
+- When hash changes, resolve the intended action and call it
+- Make sure it works with nested components
 - Show initial view upon load
-- Pass current fragment params to view e.g. :userId = 1
+- Pass current fragment params to the actions e.g. :userId = 1
 - Pass query string to view
+- Move the router signal to Routee
 
 ## Running tests
 
