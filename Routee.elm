@@ -25,6 +25,8 @@ type alias Library action model = {
     update: Action -> model -> (model, Effects Action)
   }
 
+type alias RouteDefinition action = (String, action)
+
 new: Config action model -> Library action model
 new config =
   {
@@ -32,7 +34,7 @@ new config =
     update = update config.routes config.notFoundAction config.update
   }
 
---update: List (String, action) -> action -> (action -> model -> (model, Effects action)) -> Action -> appModel -> (appModel, Effects Action)
+update: List (RouteDefinition action) -> action -> (action -> appModel -> (appModel, Effects action)) -> Action -> appModel -> (appModel, Effects Action)
 update routes notFoundAction userUpdate routerAction appModel =
   case routerAction of
     GoToRoute route ->
@@ -81,7 +83,7 @@ parseRouteFragment route =
       |> String.split "/"
       |> List.filter notEmpty
 
---actionForUrl: List RouteDefinition -> Erl.Url -> View
+actionForUrl: List (RouteDefinition action) -> action -> Erl.Url -> action
 actionForUrl routes notFoundAction url =
   matchedRoute routes url
     |> Maybe.withDefault ("", notFoundAction)
@@ -91,14 +93,13 @@ actionForUrl routes notFoundAction url =
   Given the routes and the current url
   Return the route tuple that matches
 -}
-
---matchedRoute: List (String, a -> b -> Html.Html) -> Erl.Url -> (String, a -> b -> Html.Html)
+matchedRoute: List (RouteDefinition action) -> Erl.Url -> Maybe (RouteDefinition action)
 matchedRoute routes url =
   routes
     |> List.filter (isRouteMatch url)
     |> List.head
 
-----isRouteMatch: Erl.Url -> (String, {}) -> Bool
+isRouteMatch: Erl.Url -> (RouteDefinition action) -> Bool
 isRouteMatch url routeDef =
   let
     currentFragment =

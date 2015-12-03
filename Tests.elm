@@ -5,7 +5,7 @@ import Dict
 import Erl
 import Routee
 import Html
-import Lib.Matcher
+import Routee
 
 import ElmTest.Test exposing (test, Test, suite)
 import ElmTest.Assertion exposing (assert, assertEqual)
@@ -15,40 +15,46 @@ import ElmTest.Runner.Element exposing (runDisplay)
 --viewUsers address model = 
 --  Html.div [] []
 
-parseRouteFragmentTest =
-  let
-    inputs =
-      [
-        ("/users/:id", ["users", ":id"])
-      ]
-    run (input, expected) =
-      test "parseRouteFragment"
-        (assertEqual expected (Lib.Matcher.parseRouteFragment input))
-  in
-    suite "parseRouteFragment"
-      (List.map run inputs)
+--parseRouteFragmentTest =
+--  let
+--    inputs =
+--      [
+--        ("/users/:id", ["users", ":id"])
+--      ]
+--    run (input, expected) =
+--      test "parseRouteFragment"
+--        (assertEqual expected (Lib.Matcher.parseRouteFragment input))
+--  in
+--    suite "parseRouteFragment"
+--      (List.map run inputs)
 
 -- matchedView
 
+type Action
+  = NotFound
+  | Hello
+
 routes = 
   [
-    ("/hello", 1)
+    ("/hello", Hello)
   ]
 
-matchedRouteTest =
+actionForUrl =
   let
     inputs =
       [
-        ("#/hello/2", 1)
+        ("#/hello/2", Hello)
       ]
     toUrl string =
       Erl.parse string
     run (input, expected) =
       let
+        url =
+          toUrl input
         actual =
-          Lib.Matcher.matchedView routes (toUrl input)
+          Routee.actionForUrl routes NotFound url
       in
-        test "matchedRoute"
+        test "actionForUrl"
           (assertEqual expected actual)
   in
     suite "matchedRoute"
@@ -59,7 +65,6 @@ all: Test
 all = 
   suite "Tests"
     [ 
-      matchedRouteTest,
-      parseRouteFragmentTest
+      actionForUrl
     ]
 
