@@ -102,18 +102,28 @@ matchedRoute routes url =
 isRouteMatch: Erl.Url -> (RouteDefinition action) -> Bool
 isRouteMatch url routeDef =
   let
-    currentFragment =
+    currentFragmentList =
       url.fragment
     currentLen =
-      List.length currentFragment
-    definitionFragment =
+      List.length currentFragmentList
+    definitionFragmentList =
       parseRouteFragment (fst routeDef)
     definitionFragmentLen =
-      List.length definitionFragment
+      List.length definitionFragmentList
+    combinedCurrentAndDefinition =
+      List.map2 (,) currentFragmentList definitionFragmentList
   in
     if currentLen == definitionFragmentLen then
-      -- Todo match parts of fragment
-      True
+      List.all isRouteFragmentMatch combinedCurrentAndDefinition
     else
-      --Debug.log (toString url)
       False
+
+-- (":id", "1")
+isRouteFragmentMatch: (String, String) -> Bool
+isRouteFragmentMatch (actual, def) =
+  if String.startsWith ":" def then
+    Debug.log (actual ++ def)
+    True
+  else
+    Debug.log (actual ++ def)
+    (def == actual)

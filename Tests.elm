@@ -42,9 +42,9 @@ type Action
 routes = 
   [
     ("/monkeys", Monkeys),
-    ("/monkey/:id", Monkey),
-    ("/monkey/:id/edit", MonkeyEdit),
-    ("/monkey/:id/punch", MonkeyPunch),
+    ("/monkeys/:id", Monkey),
+    ("/monkeys/:id/edit", MonkeyEdit),
+    ("/monkeys/:id/punch", MonkeyPunch),
     ("/tigers", Tigers),
     ("/tigers/:id", Tiger)
   ]
