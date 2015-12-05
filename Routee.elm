@@ -7,12 +7,15 @@ import Task exposing (Task)
 import Effects exposing (Effects, Never)
 import Debug
 import Html
+import Dict
 
 type Action
   = NoOp
   | GoToRoute String
   | GoToRouteResult (Result () ())
   | RouteChanged Erl.Url
+
+type alias Params = Dict.Dict String String
 
 type alias Config action model = {
     routes: List (String, action),
@@ -27,15 +30,15 @@ type alias Library action model = {
 
 type alias RouteDefinition action = (String, action)
 
-new: Config action model -> Library action model
+--new: Config action model -> Library action model
 new config =
   {
     signal = hashChangeSignal,
-    update = update config.routes config.notFoundAction config.update
+    update = update config
   }
 
-update: List (RouteDefinition action) -> action -> (action -> appModel -> (appModel, Effects action)) -> Action -> appModel -> (appModel, Effects Action)
-update routes notFoundAction userUpdate routerAction appModel =
+--update: List (RouteDefinition action) -> action -> (action -> appModel -> (appModel, Effects action)) -> Action -> appModel -> (appModel, Effects Action)
+update config routerAction appModel =
   case routerAction of
     GoToRoute route ->
       (appModel, goToRouteFx route)
@@ -43,17 +46,18 @@ update routes notFoundAction userUpdate routerAction appModel =
       (appModel, Effects.none)
     RouteChanged url ->
       let
+        params =
+          Dict.empty
         userAction =
-          actionForUrl routes notFoundAction url
+          actionForUrl config url
         (updatedAppModel, fx) =
-          userUpdate userAction appModel
+          config.update (userAction params) appModel
       in
         Debug.log "RouteChanged"
         (updatedAppModel, Effects.none)
     _ ->
       Debug.log "Router.NoOp"
       (appModel, Effects.none)
-
 
 {- 
 Each time the hash is changed get a signal
@@ -83,10 +87,10 @@ parseRouteFragment route =
       |> String.split "/"
       |> List.filter notEmpty
 
-actionForUrl: List (RouteDefinition action) -> action -> Erl.Url -> action
-actionForUrl routes notFoundAction url =
-  matchedRoute routes url
-    |> Maybe.withDefault ("", notFoundAction)
+--actionForUrl: List (RouteDefinition action) -> action -> Erl.Url -> action
+actionForUrl config url =
+  matchedRoute config.routes url
+    |> Maybe.withDefault ("", config.notFoundAction)
     |> snd
 
 {-

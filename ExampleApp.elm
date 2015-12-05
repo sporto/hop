@@ -32,9 +32,9 @@ zeroModel =
 type Action
   = RouterAction Routee.Action
   | Increment
-  | ShowUser
-  | ShowUsers
-  | ShowNotFound
+  | ShowUser Routee.Params
+  | ShowUsers Routee.Params
+  | ShowNotFound Routee.Params
   | NoOp
 
 init: (AppModel, Effects Action)
@@ -51,10 +51,9 @@ update action model =
         (updatedModel, fx) = router.update routerAction model
       in
         (updatedModel, Effects.map RouterAction fx)
-    ShowUsers ->
-      Debug.log "ShowUsers"
+    ShowUsers params ->
       ({model | view <- "users"}, Effects.none)
-    ShowUser ->
+    ShowUser params ->
       Debug.log "ShowUser"
       ({model | view <- "user"}, Effects.none)
     _ ->

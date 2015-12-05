@@ -11,24 +11,18 @@ import ElmTest.Test exposing (test, Test, suite)
 import ElmTest.Assertion exposing (assert, assertEqual)
 import ElmTest.Runner.Element exposing (runDisplay)
 
--- Dummies
---viewUsers address model = 
---  Html.div [] []
-
---parseRouteFragmentTest =
---  let
---    inputs =
---      [
---        ("/monkeys/:id", ["monkeys", ":id"])
---      ]
---    run (input, expected) =
---      test "parseRouteFragment"
---        (assertEqual expected (Lib.Matcher.parseRouteFragment input))
---  in
---    suite "parseRouteFragment"
---      (List.map run inputs)
-
--- matchedView
+parseRouteFragment =
+  let
+    inputs =
+      [
+        ("/monkeys/:id", ["monkeys", ":id"])
+      ]
+    run (input, expected) =
+      test "parseRouteFragment"
+        (assertEqual expected (Routee.parseRouteFragment input))
+  in
+    suite "parseRouteFragment"
+      (List.map run inputs)
 
 type Action
   = NotFound
@@ -75,11 +69,11 @@ actionForUrl =
     suite "matchedRoute"
       (List.map run inputs)
 
--- suite : String -> List Test -> Test
 all: Test
 all = 
   suite "Tests"
     [ 
-      actionForUrl
+      actionForUrl,
+      parseRouteFragment
     ]
 
