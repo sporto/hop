@@ -45,10 +45,10 @@ update config routerAction appModel =
       (appModel, Effects.none)
     RouteChanged url ->
       let
+        (route, userAction) =
+          routeDefintionForUrl config url
         params =
-          Dict.empty
-        userAction =
-          actionForUrl config url
+          paramsForRoute route url
         (updatedAppModel, fx) =
           config.update (userAction params) appModel
       in
@@ -66,7 +66,9 @@ hashChangeSignal: Signal Action
 hashChangeSignal =
   Signal.map  (\urlString -> RouteChanged (Erl.parse urlString)) History.hash
 
--- Changes the hash
+{-
+Changes the hash
+ -}
 goToRouteFx: String -> (Effects Action)
 goToRouteFx route =
   History.setPath route
@@ -74,7 +76,9 @@ goToRouteFx route =
     |> Task.map GoToRouteResult
     |> Effects.task
 
----- "/users/:id" --> ["users", ":id"]
+{-
+"/users/:id" --> ["users", ":id"]
+-}
 parseRouteFragment: String -> List String
 parseRouteFragment route =
   let
@@ -86,10 +90,9 @@ parseRouteFragment route =
       |> List.filter notEmpty
 
 --actionForUrl: List (RouteDefinition action) -> action -> Erl.Url -> action
-actionForUrl config url =
+routeDefintionForUrl config url =
   matchedRoute config.routes url
     |> Maybe.withDefault ("", config.notFoundAction)
-    |> snd
 
 {-
   Given the routes and the current url
@@ -101,6 +104,10 @@ matchedRoute routes url =
     |> List.filter (isRouteMatch url)
     |> List.head
 
+{-
+  Given an url and a route definition
+  Return Bool if it matches
+-}
 isRouteMatch: Erl.Url -> (RouteDefinition action) -> Bool
 isRouteMatch url routeDef =
   let
@@ -120,7 +127,10 @@ isRouteMatch url routeDef =
     else
       False
 
--- (":id", "1")
+{-
+  Check if a route fragments matches 
+  eg. (":id", "1") == True
+-}
 isRouteFragmentMatch: (String, String) -> Bool
 isRouteFragmentMatch (actual, def) =
   if String.startsWith ":" def then
@@ -129,3 +139,11 @@ isRouteFragmentMatch (actual, def) =
   else
     Debug.log (actual ++ def)
     (def == actual)
+
+{-
+  Given a config object and a current Url
+  Return the params
+-}
+paramsForRoute: String -> Erl.Url -> Dict.Dict String String
+paramsForRoute route url =
+  Dict.empty

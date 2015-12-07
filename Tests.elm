@@ -44,7 +44,7 @@ routes =
 update = 
   1
 
-actionForUrl =
+routeDefintionForUrl =
   let
     inputs =
       [
@@ -63,24 +63,42 @@ actionForUrl =
         routes = routes,
         update = update
       }
-    run (input, expected) =
+    run (input, expectedAction) =
       let
         url =
           toUrl input
-        actual =
-          Routee.actionForUrl config url
+        (_, actualAction) =
+          Routee.routeDefintionForUrl config url
       in
-        test "actionForUrl"
-          (assertEqual expected actual)
+        test "routeDefintionForUrl"
+          (assertEqual expectedAction actualAction)
   in
     suite "matchedRoute"
+      (List.map run inputs)
+
+paramsForRoute = 
+  let
+    inputs =
+      [
+        ("/monkeys/:id", Erl.parse "#/monkeys/2", Dict.singleton "id" "2")
+      ]
+    run (route, url, expectedParams) =
+      let
+        actualParams =
+          Routee.paramsForRoute route url
+      in
+        test "paramsForRoute"
+          (assertEqual expectedParams actualParams)
+  in
+    suite "paramsForRoute"
       (List.map run inputs)
 
 all: Test
 all = 
   suite "Tests"
     [ 
-      actionForUrl,
-      parseRouteFragment
+      routeDefintionForUrl,
+      parseRouteFragment,
+      paramsForRoute
     ]
 
