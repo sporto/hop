@@ -23,10 +23,10 @@ type alias Config action model = {
     notFoundAction: action
   }
 
-type alias Library action model = {
-    signal: Signal Action,
-    update: Action -> model -> (model, Effects Action)
-  }
+--type alias Library action model = {
+--    signal: Signal Action,
+--    update: Action -> model -> (model, Effects Action)
+--  }
 
 type alias RouteDefinition action = (String, action)
 

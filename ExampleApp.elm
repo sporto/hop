@@ -45,17 +45,17 @@ update: Action -> AppModel -> (AppModel, Effects Action)
 update action model =
   case action of
     Increment ->
-      ({model | count <- model.count + 1 }, Effects.none)
+      ({model | count = model.count + 1 }, Effects.none)
     RouterAction routerAction ->
       let
         (updatedModel, fx) = router.update routerAction model
       in
         (updatedModel, Effects.map RouterAction fx)
     ShowUsers params ->
-      ({model | view <- "users"}, Effects.none)
+      ({model | view = "users"}, Effects.none)
     ShowUser params ->
       Debug.log "ShowUser"
-      ({model | view <- "user"}, Effects.none)
+      ({model | view = "user"}, Effects.none)
     _ ->
       (model, Effects.none)
 
