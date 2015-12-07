@@ -17,27 +17,26 @@ type Action
 
 type alias Params = Dict.Dict String String
 
-type alias Config action model = {
-    routes: List (String, action),
-    update: (action -> model -> (model, Effects action)),
-    notFoundAction: action
-  }
+--type alias Config action model = {
+--    notFoundAction: action,
+--    routes: List (String, action),
+--    update: (action -> model -> (model, Effects action))
+--  }
 
---type alias Library action model = {
+--type alias Library model = {
 --    signal: Signal Action,
 --    update: Action -> model -> (model, Effects Action)
 --  }
 
 type alias RouteDefinition action = (String, action)
 
---new: Config action model -> Library action model
+--new: Config action model -> Library model
 new config =
   {
     signal = hashChangeSignal,
     update = update config
   }
 
---update: List (RouteDefinition action) -> action -> (action -> appModel -> (appModel, Effects action)) -> Action -> appModel -> (appModel, Effects Action)
 update config routerAction appModel =
   case routerAction of
     GoToRoute route ->
@@ -68,7 +67,6 @@ hashChangeSignal =
   Signal.map  (\urlString -> RouteChanged (Erl.parse urlString)) History.hash
 
 -- Changes the hash
--- Maybe this should return Effects.none
 goToRouteFx: String -> (Effects Action)
 goToRouteFx route =
   History.setPath route

@@ -7,9 +7,7 @@ import Routee
 import Html
 import Routee
 
-import ElmTest.Test exposing (test, Test, suite)
-import ElmTest.Assertion exposing (assert, assertEqual)
-import ElmTest.Runner.Element exposing (runDisplay)
+import ElmTest exposing (..)
 
 parseRouteFragment =
   let
@@ -43,6 +41,9 @@ routes =
     ("/tigers/:id", Tiger)
   ]
 
+update = 
+  1
+
 actionForUrl =
   let
     inputs =
@@ -56,12 +57,18 @@ actionForUrl =
       ]
     toUrl string =
       Erl.parse string
+    config =
+      {
+        notFoundAction = NotFound,
+        routes = routes,
+        update = update
+      }
     run (input, expected) =
       let
         url =
           toUrl input
         actual =
-          Routee.actionForUrl routes NotFound url
+          Routee.actionForUrl config url
       in
         test "actionForUrl"
           (assertEqual expected actual)
