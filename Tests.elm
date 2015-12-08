@@ -80,7 +80,13 @@ paramsForRoute =
   let
     inputs =
       [
-        ("/monkeys/:id", Erl.parse "#/monkeys/2", Dict.singleton "id" "2")
+        ("/monkeys/:id", Erl.parse "#/monkeys/2", Dict.singleton "id" "2"),
+        ("/monkeys/:id", Erl.parse "#/monkeys/2/edit", Dict.singleton "id" "2"),
+        (
+          "/pirates/:pirateId/monkeys/:id",
+          Erl.parse "#/pirates/1/monkeys/2/edit",
+          Dict.fromList [("pirateId", "1"), ("id","2")]
+        )
       ]
     run (route, url, expectedParams) =
       let

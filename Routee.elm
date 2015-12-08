@@ -77,6 +77,7 @@ goToRouteFx route =
     |> Effects.task
 
 {-
+Take the route defintion and return a List
 "/users/:id" --> ["users", ":id"]
 -}
 parseRouteFragment: String -> List String
@@ -127,17 +128,19 @@ isRouteMatch url routeDef =
     else
       False
 
+isRouteFragmentPlaceholder: String -> Bool
+isRouteFragmentPlaceholder fragment =
+  String.startsWith ":" fragment
+
 {-
   Check if a route fragments matches 
   eg. (":id", "1") == True
 -}
 isRouteFragmentMatch: (String, String) -> Bool
 isRouteFragmentMatch (actual, def) =
-  if String.startsWith ":" def then
-    Debug.log (actual ++ def)
+  if isRouteFragmentPlaceholder def then
     True
   else
-    Debug.log (actual ++ def)
     (def == actual)
 
 {-
@@ -146,4 +149,17 @@ isRouteFragmentMatch (actual, def) =
 -}
 paramsForRoute: String -> Erl.Url -> Dict.Dict String String
 paramsForRoute route url =
-  Dict.empty
+  let
+    routeFragments =
+      parseRouteFragment route
+    maybeParam routeFragment urlFragment =
+      if isRouteFragmentPlaceholder routeFragment then
+        (String.dropLeft 1 routeFragment, urlFragment)
+      else
+        ("", "")
+    params =
+      List.map2 maybeParam routeFragments url.fragment
+    relevantParams =
+      List.filter (\(x, _) -> not (String.isEmpty x)) params
+  in
+    Dict.fromList relevantParams

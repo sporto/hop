@@ -4,6 +4,7 @@ import Html as H
 import Html.Events
 import Debug
 import String
+import Dict
 
 import StartApp
 import Effects exposing (Effects, Never)
@@ -18,22 +19,25 @@ import Routee
 type alias AppModel = {
   count: Int,
   url: Erl.Url,
-  view: String
+  view: String,
+  routeParams: Dict.Dict String String
 }
-                      
+
 zeroModel: AppModel
 zeroModel =
   {
     count = 1,
     url = Erl.new,
-    view = ""
+    view = "",
+    routeParams = Dict.empty
   }
 
 type Action
   = RouterAction Routee.Action
   | Increment
-  | ShowUser Routee.Params
   | ShowUsers Routee.Params
+  | ShowUser Routee.Params
+  | ShowUserEdit Routee.Params
   | ShowNotFound Routee.Params
   | NoOp
 
@@ -52,21 +56,25 @@ update action model =
       in
         (updatedModel, Effects.map RouterAction fx)
     ShowUsers params ->
-      ({model | view = "users"}, Effects.none)
+      ({model | view = "users", routeParams = params}, Effects.none)
     ShowUser params ->
-      Debug.log "ShowUser"
-      ({model | view = "user"}, Effects.none)
+      ({model | view = "user", routeParams = params}, Effects.none)
+    ShowUserEdit params ->
+      ({model | view = "userEdit", routeParams = params}, Effects.none)
     _ ->
       (model, Effects.none)
 
 view: Signal.Address Action -> AppModel -> H.Html
 view address model =
   H.div [] [
-    H.text "Hello",
     H.text (toString model.count),
     menu address model,
+    H.h2 [] [
+      H.text "Rendered view:"
+    ],
+    maybeUsesView address model,
     maybeUseView address model,
-    maybeUsesView address model
+    maybeUseEditView address model
   ]
 
 menu: Signal.Address Action -> AppModel -> H.Html
@@ -75,19 +83,32 @@ menu address model =
     H.button [ Html.Events.onClick address (Increment) ] [
       H.text "Count"
     ],
+
+    H.span [] [ H.text "Using actions: " ],
     -- Here we should change the route in a nicer way
-    H.button [ Html.Events.onClick address (RouterAction (Routee.GoToRoute "#users")) ] [
-      H.text "Users"
-    ],
-    H.button [ Html.Events.onClick address (RouterAction (Routee.GoToRoute "#users/1")) ] [
-      H.text "User 1"
-    ],
-    H.a [ href "#/users/1" ] [
-      H.text "User 1"
-    ],
-    H.a [ href "#/users/1/edit" ] [
-      H.text "User 1 edit"
-    ]
+    menuBtn address "#users" "Users",
+    menuBtn address "#users/1" "User 1",
+    menuBtn address "#users/2" "User 2",
+    menuBtn address "#users/2/edit" "User Edit 1",
+
+    H.span [] [ H.text " Plain a tags: " ],
+    menuLink "#/users" "Users",
+    H.text "|",
+    menuLink "#/users/1" "User 1",
+    H.text "|",
+    menuLink "#/users/2" "User 2",
+    H.text "|",
+    menuLink "#/users/2/edit" "User 1 edit"
+  ]
+
+menuBtn address path label =
+ H.button [ Html.Events.onClick address (RouterAction (Routee.GoToRoute path)) ] [
+  H.text label
+ ]
+
+menuLink path label =
+ H.a [ href path ] [
+    H.text label
   ]
 
 maybeUsesView: Signal.Address Action -> AppModel -> H.Html
@@ -112,11 +133,33 @@ maybeUseView address model =
     _ ->
       H.div [] []
 
+maybeUseEditView: Signal.Address Action -> AppModel -> H.Html
+maybeUseEditView address model =
+  case model.view of
+    "userEdit" ->
+      userEditView address model
+    _ ->
+      H.div [] []
+
 userView: Signal.Address Action -> AppModel -> H.Html
 userView address model =
-  H.div [] [
-    H.text "User"
-  ]
+  let
+    userId =
+      Dict.get "id" model.routeParams |> Maybe.withDefault ""
+  in
+    H.div [] [
+      H.text ("User " ++ userId)
+    ]
+
+userEditView: Signal.Address Action -> AppModel -> H.Html
+userEditView address model =
+  let
+    userId =
+      Dict.get "id" model.routeParams |> Maybe.withDefault ""
+  in
+    H.div [] [
+      H.text ("User Edit " ++ userId)
+    ]
 
 notFoundView: Signal.Address Action -> AppModel -> H.Html
 notFoundView address model =
@@ -130,7 +173,8 @@ notFoundView address model =
 routes =
   [
     ("/users", ShowUsers),
-    ("/users/:id", ShowUser)
+    ("/users/:id", ShowUser),
+    ("/users/:id/edit", ShowUserEdit)
   ]
 
 router = 
