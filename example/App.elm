@@ -3,6 +3,7 @@ module Example.App where
 import Html as H
 import Html.Events
 import Dict
+import Debug
 
 import StartApp
 import Effects exposing (Effects, Never)
@@ -67,8 +68,12 @@ update action model =
         (updatedModel, fx) = router.update routerAction model
       in
         (updatedModel, Effects.map RouterAction fx)
-    --ShowUserEdit subAction ->
-    --  ({model | view = "users", routeParams = params}, Effects.none)
+    UserEditAction subAction ->
+      let
+        (user, fx) =
+          UserEdit.update subAction model.selectedUser
+      in
+        ({model | selectedUser = user}, Effects.map UserEditAction fx)
     ShowUsers params ->
       ({model | view = "users", routeParams = params}, Effects.none)
     ShowUser params ->
