@@ -7,7 +7,6 @@ import Dict
 import StartApp
 import Effects exposing (Effects, Never)
 import Html.Attributes exposing (href)
---import History
 import Task exposing (Task)
 import Erl
 import Routee
@@ -33,7 +32,7 @@ user2 : Models.User
 user2 =
   Models.User "2" "Sally"
 
-zeroModel: AppModel
+zeroModel : AppModel
 zeroModel =
   {
     count = 1,
@@ -54,11 +53,11 @@ type Action
   | ShowNotFound Routee.Params
   | NoOp
 
-init: (AppModel, Effects Action)
+init : (AppModel, Effects Action)
 init =
   (zeroModel, Effects.none)
 
-update: Action -> AppModel -> (AppModel, Effects Action)
+update : Action -> AppModel -> (AppModel, Effects Action)
 update action model =
   case action of
     Increment ->
@@ -68,6 +67,8 @@ update action model =
         (updatedModel, fx) = router.update routerAction model
       in
         (updatedModel, Effects.map RouterAction fx)
+    --ShowUserEdit subAction ->
+    --  ({model | view = "users", routeParams = params}, Effects.none)
     ShowUsers params ->
       ({model | view = "users", routeParams = params}, Effects.none)
     ShowUser params ->
@@ -77,7 +78,7 @@ update action model =
     _ ->
       (model, Effects.none)
 
-view: Signal.Address Action -> AppModel -> H.Html
+view : Signal.Address Action -> AppModel -> H.Html
 view address model =
   H.div [] [
     H.text (toString model.count),
@@ -85,12 +86,12 @@ view address model =
     H.h2 [] [
       H.text "Rendered view:"
     ],
-    maybeUsesView address model,
-    maybeUseView address model,
+    maybeUsersView address model,
+    maybeUserView address model,
     maybeUseEditView address model
   ]
 
-menu: Signal.Address Action -> AppModel -> H.Html
+menu : Signal.Address Action -> AppModel -> H.Html
 menu address model =
   H.div [] [
     H.button [ Html.Events.onClick address (Increment) ] [
@@ -115,39 +116,41 @@ menu address model =
     menuLink "#/users/2/edit" "User 1 edit"
   ]
 
+menuBtn : Signal.Address Action -> String -> String -> H.Html
 menuBtn address path label =
  H.button [ Html.Events.onClick address (RouterAction (Routee.GoToRoute path)) ] [
   H.text label
  ]
 
+menuLink : String -> String -> H.Html
 menuLink path label =
  H.a [ href path ] [
     H.text label
   ]
 
-maybeUsesView: Signal.Address Action -> AppModel -> H.Html
-maybeUsesView address model =
+maybeUsersView : Signal.Address Action -> AppModel -> H.Html
+maybeUsersView address model =
   case model.view of
     "users" ->
       usersView address model
     _ ->
       H.div [] []
 
-usersView: Signal.Address Action -> AppModel -> H.Html
+usersView : Signal.Address Action -> AppModel -> H.Html
 usersView address model =
   H.div [] [
     H.text "Users"
   ]
 
-maybeUseView: Signal.Address Action -> AppModel -> H.Html
-maybeUseView address model =
+maybeUserView : Signal.Address Action -> AppModel -> H.Html
+maybeUserView address model =
   case model.view of
     "user" ->
       userView address model
     _ ->
       H.div [] []
 
-maybeUseEditView: Signal.Address Action -> AppModel -> H.Html
+maybeUseEditView : Signal.Address Action -> AppModel -> H.Html
 maybeUseEditView address model =
   case model.view of
     "userEdit" ->
@@ -167,7 +170,7 @@ maybeUseEditView address model =
     _ ->
       emptyView
 
-userView: Signal.Address Action -> AppModel -> H.Html
+userView : Signal.Address Action -> AppModel -> H.Html
 userView address model =
   let
     userId =
@@ -177,6 +180,7 @@ userView address model =
       H.text ("User " ++ userId)
     ]
 
+emptyView : H.Html
 emptyView =
   H.div [] []
 
@@ -186,16 +190,6 @@ getUser users id =
     |> List.filter (\user -> user.id == id)
     |> List.head
 
---userEditView: Signal.Address Action -> AppModel -> H.Html
---userEditView address model =
---  let
---    userId =
---      Dict.get "id" model.routeParams |> Maybe.withDefault ""
---  in
---    H.div [] [
---      H.text ("User Edit " ++ userId)
---    ]
-
 notFoundView: Signal.Address Action -> AppModel -> H.Html
 notFoundView address model =
   H.div [] [
@@ -204,7 +198,7 @@ notFoundView address model =
 
 -- ROUTING
 
---routes: List (String, View)
+--routes : List (String, Action)
 routes =
   [
     ("/users", ShowUsers),
