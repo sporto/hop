@@ -1,40 +1,53 @@
-module ExampleApp where
+module Example.App where
 
 import Html as H
 import Html.Events
-import Debug
-import String
 import Dict
 
 import StartApp
 import Effects exposing (Effects, Never)
 import Html.Attributes exposing (href)
-import History
+--import History
 import Task exposing (Task)
 import Erl
 import Routee
+import Example.UserEdit as UserEdit
+import Example.Models as Models
 
 --type alias View = Signal.Address Action -> AppModel -> H.Html
 
 type alias AppModel = {
   count: Int,
+  routeParams: Dict.Dict String String,
+  selectedUser: Models.User,
   url: Erl.Url,
-  view: String,
-  routeParams: Dict.Dict String String
+  users: Models.UserList,
+  view: String
 }
+
+user1 : Models.User
+user1 =
+  Models.User "1" "Sam"
+
+user2 : Models.User
+user2 =
+  Models.User "2" "Sally"
 
 zeroModel: AppModel
 zeroModel =
   {
     count = 1,
+    routeParams = Dict.empty,
+    selectedUser = Models.User "" "",
     url = Erl.new,
-    view = "",
-    routeParams = Dict.empty
+    users = [user1, user2],
+    view = ""
   }
 
 type Action
   = RouterAction Routee.Action
   | Increment
+  | UserEditAction UserEdit.Action
   | ShowUsers Routee.Params
   | ShowUser Routee.Params
   | ShowUserEdit Routee.Params
@@ -89,7 +102,8 @@ menu address model =
     menuBtn address "#users" "Users",
     menuBtn address "#users/1" "User 1",
     menuBtn address "#users/2" "User 2",
-    menuBtn address "#users/2/edit" "User Edit 1",
+    menuBtn address "#users/1/edit" "User Edit 1",
+    menuBtn address "#users/2/edit" "User Edit 2",
 
     H.span [] [ H.text " Plain a tags: " ],
     menuLink "#/users" "Users",
@@ -137,9 +151,21 @@ maybeUseEditView: Signal.Address Action -> AppModel -> H.Html
 maybeUseEditView address model =
   case model.view of
     "userEdit" ->
-      userEditView address model
+      let
+        userId =
+          model.routeParams
+            |> Dict.get "id"
+            |> Maybe.withDefault ""
+        maybeSelectedUser =
+          getUser model.users userId
+      in
+        case maybeSelectedUser of
+          Just user ->
+            UserEdit.view (Signal.forwardTo address UserEditAction) user
+          _ ->
+            emptyView
     _ ->
-      H.div [] []
+      emptyView
 
 userView: Signal.Address Action -> AppModel -> H.Html
 userView address model =
@@ -151,15 +177,24 @@ userView address model =
       H.text ("User " ++ userId)
     ]
 
-userEditView: Signal.Address Action -> AppModel -> H.Html
-userEditView address model =
-  let
-    userId =
-      Dict.get "id" model.routeParams |> Maybe.withDefault ""
-  in
-    H.div [] [
-      H.text ("User Edit " ++ userId)
-    ]
+emptyView =
+  H.div [] []
+
+getUser: Models.UserList -> String -> Maybe Models.User
+getUser users id =
+  users
+    |> List.filter (\user -> user.id == id)
+    |> List.head
+
+--userEditView: Signal.Address Action -> AppModel -> H.Html
+--userEditView address model =
+--  let
+--    userId =
+--      Dict.get "id" model.routeParams |> Maybe.withDefault ""
+--  in
+--    H.div [] [
+--      H.text ("User Edit " ++ userId)
+--    ]
 
 notFoundView: Signal.Address Action -> AppModel -> H.Html
 notFoundView address model =
