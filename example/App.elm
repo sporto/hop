@@ -66,11 +66,11 @@ update action model =
       ({model | count = model.count + 1 }, Effects.none)
     NavigateTo path ->
       (model, Effects.map RouterAction (router.navigateTo path))
-    RouterAction routerAction ->
-      let
-        (updatedModel, fx) = router.update routerAction model
-      in
-        (updatedModel, Effects.map RouterAction fx)
+    --RouterAction routerAction ->
+    --  let
+    --    (updatedModel, fx) = router.update routerAction model
+    --  in
+    --    (updatedModel, Effects.map RouterAction fx)
     UserEditAction subAction ->
       let
         (user, fx) =
@@ -80,6 +80,7 @@ update action model =
     ShowUsers params ->
       ({model | view = "users", routeParams = params}, Effects.none)
     ShowUser params ->
+      Debug.log "ShowUser"
       ({model | view = "user", routeParams = params}, Effects.none)
     ShowUserEdit params ->
       ({model | view = "userEdit", routeParams = params}, Effects.none)
@@ -218,24 +219,15 @@ router =
   Routee.new {
     routes = routes,
     notFoundAction = ShowNotFound,
-    update = update
+    theAction = ShowUser
   }
-
-{- 
-In order to listen to hash changes
-Application has to include the signal coming from the router
-router.signal needs to resolve to an application signal
-router.Action != Action
--}
-routerSignal =
-  Signal.map (\action -> RouterAction action) router.signal
 
 app =
   StartApp.start {
     init = init,
     update = update,
     view = view,
-    inputs = [routerSignal]
+    inputs = [router.signal]
   }
 
 main: Signal H.Html

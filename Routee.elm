@@ -11,7 +11,7 @@ import Dict
 
 type Action
   = NoOp
-  | GoToRouteResult (Result () ())
+  | GoToRouteResult (Result () ()) -- We don't care about this one, remove
   | RouteChanged Erl.Url
 
 type alias Params = Dict.Dict String String
@@ -32,43 +32,53 @@ type alias RouteDefinition action = (String, action)
 --new: Config action model -> Library model
 new config =
   {
-    signal = hashChangeSignal,
-    update = update config,
-    navigateTo = goToRouteFx
+    signal = hashChangeSignal config,
+    navigateTo = goToRouteFx config
   }
 
-update config routerAction appModel =
-  case routerAction of
-    GoToRouteResult result ->
-      (appModel, Effects.none)
-    RouteChanged url ->
-      let
-        (route, userAction) =
-          routeDefintionForUrl config url
-        params =
-          paramsForRoute route url
-        (updatedAppModel, fx) =
-          config.update (userAction params) appModel
-      in
-        Debug.log "RouteChanged"
-        (updatedAppModel, Effects.none)
-    _ ->
-      Debug.log "Router.NoOp"
-      (appModel, Effects.none)
+--update config routerAction appModel =
+--  case routerAction of
+--    RouteChanged url ->
+--      let
+--        (route, userAction) =
+--          routeDefintionForUrl config url
+--        params =
+--          paramsForRoute route url
+--        (updatedAppModel, fx) =
+--          config.update (userAction params) appModel
+--      in
+--        Debug.log "RouteChanged"
+--        (updatedAppModel, Effects.none)
+--    _ ->
+--      Debug.log "Router.NoOp"
+--      (appModel, Effects.none)
 
 {- 
 Each time the hash is changed get a signal
 We need to pass this signal to the main application
+-- ! And here as well, map to the correct user'action
 -}
-hashChangeSignal: Signal Action
-hashChangeSignal =
-  Signal.map  (\urlString -> RouteChanged (Erl.parse urlString)) History.hash
+--hashChangeSignal: Signal Action
+hashChangeSignal config =
+    Signal.map (userActionFromUrlString config) History.hash
+
+userActionFromUrlString config urlString =
+  let
+    url
+      = Erl.parse urlString
+    (route, userAction) =
+      routeDefintionForUrl config url
+    params =
+      paramsForRoute route url
+  in
+    userAction params
 
 {-
 Changes the hash
+-- The trick might be to call the correct user's action here
  -}
-goToRouteFx: String -> (Effects Action)
-goToRouteFx route =
+--goToRouteFx: String -> (Effects Action)
+goToRouteFx config route =
   History.setPath route
     |> Task.toResult
     |> Task.map GoToRouteResult
