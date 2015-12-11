@@ -3,17 +3,23 @@ module Example.UserEdit where
 import Html as H
 import Html.Events
 import Effects exposing (Effects, Never)
+import Routee
 
 import Example.Models as Models
 
 type Action
   = Save
+  | RouterAction Routee.Action
   | Show String
   | Cancel
 
 update : Action -> Models.User -> (Models.User, Effects Action)
 update action user =
-  (user, Effects.none)
+  case action of
+    Show id ->
+      (user, Effects.map RouterAction (Routee.navigateTo ("/users/" ++ id)))
+    _ ->
+      (user, Effects.none)
 
 view : Signal.Address Action -> Models.User -> H.Html
 view address model =

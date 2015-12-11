@@ -104,20 +104,20 @@ menu address model =
 
     H.span [] [ H.text "Using actions: " ],
     -- Here we should change the route in a nicer way
-    menuBtn address "#users" "Users",
-    menuBtn address "#users/1" "User 1",
-    menuBtn address "#users/2" "User 2",
-    menuBtn address "#users/1/edit" "User Edit 1",
-    menuBtn address "#users/2/edit" "User Edit 2",
+    menuBtn address "/users" "Users",
+    menuBtn address "/users/1" "User 1",
+    menuBtn address "/users/2" "User 2",
+    menuBtn address "/users/1/edit" "User Edit 1",
+    menuBtn address "/users/2/edit" "User Edit 2",
 
     H.span [] [ H.text " Plain a tags: " ],
-    menuLink "#/users" "Users",
+    menuLink "/users" "Users",
     H.text "|",
-    menuLink "#/users/1" "User 1",
+    menuLink "/users/1" "User 1",
     H.text "|",
-    menuLink "#/users/2" "User 2",
+    menuLink "/users/2" "User 2",
     H.text "|",
-    menuLink "#/users/2/edit" "User 1 edit"
+    menuLink "/users/2/edit" "User 1 edit"
   ]
 
 menuBtn : Signal.Address Action -> String -> String -> H.Html

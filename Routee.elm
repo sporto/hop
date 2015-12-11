@@ -32,7 +32,7 @@ type alias RouteDefinition action = (String, action)
 new config =
   {
     signal = hashChangeSignal config,
-    navigateTo = goToRouteFx config
+    navigateTo = navigateTo
   }
 
 {- 
@@ -58,12 +58,17 @@ userActionFromUrlString config urlString =
 {-
 Changes the hash
  -}
---goToRouteFx: String -> (Effects Action)
-goToRouteFx config route =
-  History.setPath route
-    |> Task.toResult
-    |> Task.map GoToRouteResult
-    |> Effects.task
+--navigateTo: String -> (Effects Action)
+-- Assume route doesnt have a hash
+navigateTo route =
+  let
+    route' =
+      "#" ++ route
+  in
+    History.setPath route'
+      |> Task.toResult
+      |> Task.map GoToRouteResult
+      |> Effects.task
 
 {-
 Take the route defintion and return a List
