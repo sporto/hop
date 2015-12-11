@@ -66,11 +66,6 @@ update action model =
       ({model | count = model.count + 1 }, Effects.none)
     NavigateTo path ->
       (model, Effects.map RouterAction (router.navigateTo path))
-    --RouterAction routerAction ->
-    --  let
-    --    (updatedModel, fx) = router.update routerAction model
-    --  in
-    --    (updatedModel, Effects.map RouterAction fx)
     UserEditAction subAction ->
       let
         (user, fx) =
@@ -218,8 +213,7 @@ routes =
 router = 
   Routee.new {
     routes = routes,
-    notFoundAction = ShowNotFound,
-    theAction = ShowUser
+    notFoundAction = ShowNotFound
   }
 
 app =

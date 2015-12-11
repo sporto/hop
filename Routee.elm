@@ -12,7 +12,6 @@ import Dict
 type Action
   = NoOp
   | GoToRouteResult (Result () ()) -- We don't care about this one, remove
-  | RouteChanged Erl.Url
 
 type alias Params = Dict.Dict String String
 
@@ -36,23 +35,6 @@ new config =
     navigateTo = goToRouteFx config
   }
 
---update config routerAction appModel =
---  case routerAction of
---    RouteChanged url ->
---      let
---        (route, userAction) =
---          routeDefintionForUrl config url
---        params =
---          paramsForRoute route url
---        (updatedAppModel, fx) =
---          config.update (userAction params) appModel
---      in
---        Debug.log "RouteChanged"
---        (updatedAppModel, Effects.none)
---    _ ->
---      Debug.log "Router.NoOp"
---      (appModel, Effects.none)
-
 {- 
 Each time the hash is changed get a signal
 We need to pass this signal to the main application
@@ -75,7 +57,6 @@ userActionFromUrlString config urlString =
 
 {-
 Changes the hash
--- The trick might be to call the correct user's action here
  -}
 --goToRouteFx: String -> (Effects Action)
 goToRouteFx config route =
