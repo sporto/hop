@@ -31,8 +31,7 @@ type alias RouteDefinition action = (String, action)
 --new: Config action model -> Library model
 new config =
   {
-    signal = hashChangeSignal config,
-    navigateTo = navigateTo
+    signal = hashChangeSignal config
   }
 
 {- 

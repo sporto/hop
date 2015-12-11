@@ -65,7 +65,7 @@ update action model =
     Increment ->
       ({model | count = model.count + 1 }, Effects.none)
     NavigateTo path ->
-      (model, Effects.map RouterAction (router.navigateTo path))
+      (model, Effects.map RouterAction (Routee.navigateTo path))
     UserEditAction subAction ->
       let
         (user, fx) =
