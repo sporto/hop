@@ -11,7 +11,6 @@ import Dict
 
 type Action
   = NoOp
-  | GoToRoute String
   | GoToRouteResult (Result () ())
   | RouteChanged Erl.Url
 
@@ -34,13 +33,12 @@ type alias RouteDefinition action = (String, action)
 new config =
   {
     signal = hashChangeSignal,
-    update = update config
+    update = update config,
+    navigateTo = goToRouteFx
   }
 
 update config routerAction appModel =
   case routerAction of
-    GoToRoute route ->
-      (appModel, goToRouteFx route)
     GoToRouteResult result ->
       (appModel, Effects.none)
     RouteChanged url ->

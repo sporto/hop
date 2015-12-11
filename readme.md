@@ -2,6 +2,10 @@
 
 ## TODO:
 
+- Call Router from sub view
+	- Sub view should not call a parent action, only its own
+	- Maybe the whole thing needs to be done using effects instead of actions?
+
 - When hash changes, resolve the intended action and call it
 - Make sure it works with nested components
 - Show initial view upon load

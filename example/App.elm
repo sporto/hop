@@ -47,6 +47,7 @@ zeroModel =
 type Action
   = RouterAction Routee.Action
   | Increment
+  | NavigateTo String
   | UserEditAction UserEdit.Action
   | ShowUsers Routee.Params
   | ShowUser Routee.Params
@@ -63,6 +64,8 @@ update action model =
   case action of
     Increment ->
       ({model | count = model.count + 1 }, Effects.none)
+    NavigateTo path ->
+      (model, Effects.map RouterAction (router.navigateTo path))
     RouterAction routerAction ->
       let
         (updatedModel, fx) = router.update routerAction model
@@ -123,7 +126,7 @@ menu address model =
 
 menuBtn : Signal.Address Action -> String -> String -> H.Html
 menuBtn address path label =
- H.button [ Html.Events.onClick address (RouterAction (Routee.GoToRoute path)) ] [
+ H.button [ Html.Events.onClick address (NavigateTo path) ] [
   H.text label
  ]
 
