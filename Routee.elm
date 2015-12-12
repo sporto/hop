@@ -5,8 +5,6 @@ import String
 import History
 import Task exposing (Task)
 import Effects exposing (Effects, Never)
-import Debug
-import Html
 import Dict
 
 type Action
@@ -14,6 +12,8 @@ type Action
   | GoToRouteResult (Result () ()) -- We don't care about this one, remove
 
 type alias Params = Dict.Dict String String
+
+type alias UserPartialAction action = Params -> action
 
 type alias Config partialAction = {
     notFoundAction: partialAction,
@@ -26,7 +26,7 @@ type alias Router action = {
 
 type alias RouteDefinition action = (String, action)
 
---new: Config partialAction -> Router action
+new: Config (UserPartialAction action) -> Router action
 new config =
   {
     signal = hashChangeSignal config
@@ -37,10 +37,11 @@ Each time the hash is changed get a signal
 We need to pass this signal to the main application
 -- ! And here as well, map to the correct user'action
 -}
---hashChangeSignal : Config action -> Signal action
+hashChangeSignal : Config (UserPartialAction action) -> Signal action
 hashChangeSignal config =
     Signal.map (userActionFromUrlString config) History.hash
 
+userActionFromUrlString : Config (UserPartialAction action) -> String -> action
 userActionFromUrlString config urlString =
   let
     url
@@ -55,8 +56,7 @@ userActionFromUrlString config urlString =
 {-
 Changes the hash
  -}
---navigateTo: String -> (Effects Action)
--- Assume route doesnt have a hash
+navigateTo: String -> (Effects Action)
 navigateTo route =
   let
     route' =
