@@ -15,20 +15,18 @@ type Action
 
 type alias Params = Dict.Dict String String
 
---type alias Config action model = {
---    notFoundAction: action,
---    routes: List (String, action),
---    update: (action -> model -> (model, Effects action))
---  }
+type alias Config partialAction = {
+    notFoundAction: partialAction,
+    routes: List (RouteDefinition partialAction)
+  }
 
---type alias Library model = {
---    signal: Signal Action,
---    update: Action -> model -> (model, Effects Action)
---  }
+type alias Router action = {
+    signal: Signal action
+  }
 
 type alias RouteDefinition action = (String, action)
 
---new: Config action model -> Library model
+--new: Config partialAction -> Router action
 new config =
   {
     signal = hashChangeSignal config
@@ -39,7 +37,7 @@ Each time the hash is changed get a signal
 We need to pass this signal to the main application
 -- ! And here as well, map to the correct user'action
 -}
---hashChangeSignal: Signal Action
+--hashChangeSignal : Config action -> Signal action
 hashChangeSignal config =
     Signal.map (userActionFromUrlString config) History.hash
 
@@ -78,12 +76,12 @@ parseRouteFragment route =
   let
     notEmpty x=
       not (String.isEmpty x)
-  in    
+  in
     route
       |> String.split "/"
       |> List.filter notEmpty
 
---actionForUrl: List (RouteDefinition action) -> action -> Erl.Url -> action
+routeDefintionForUrl : Config partialAction -> Erl.Url -> RouteDefinition partialAction
 routeDefintionForUrl config url =
   matchedRoute config.routes url
     |> Maybe.withDefault ("", config.notFoundAction)

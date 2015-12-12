@@ -228,11 +228,6 @@ main: Signal H.Html
 main =
   app.html
 
--- What is missing?
-  -- Convert hash paths to a model
-  -- Create hash paths easily
-
--- this is the important bit
 port tasks : Signal (Task.Task Never ())
 port tasks =
   app.tasks
