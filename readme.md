@@ -2,16 +2,19 @@
 
 ## TODO:
 
-- Call Router from sub view
-	- Sub view should not call a parent action, only its own
-	- Maybe the whole thing needs to be done using effects instead of actions?
-
-- When hash changes, resolve the intended action and call it
-- Make sure it works with nested components
 - Show initial view upon load
-- Pass current fragment params to the actions e.g. :userId = 1
+
+Query Strings:
+
+- Call router with query string
+	- remove qs
+	- set part of qs (add or replace)
+	- remove part of qa
 - Pass query string to view
-- Move the router signal to Routee
+
+- Navigate without adding to history
+- More tests
+- Docs
 
 ## Running tests
 
