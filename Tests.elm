@@ -41,9 +41,6 @@ routes =
     ("/tigers/:id", Tiger)
   ]
 
-update = 
-  1
-
 routeDefintionForUrl =
   let
     inputs =
@@ -60,8 +57,7 @@ routeDefintionForUrl =
     config =
       {
         notFoundAction = NotFound,
-        routes = routes,
-        update = update
+        routes = routes
       }
     run (input, expectedAction) =
       let
@@ -82,6 +78,7 @@ paramsForRoute =
       [
         ("/monkeys/:id", Erl.parse "#/monkeys/2", Dict.singleton "id" "2"),
         ("/monkeys/:id", Erl.parse "#/monkeys/2/edit", Dict.singleton "id" "2"),
+        ("/monkeys", Erl.parse "#/monkeys?color=red", Dict.singleton "color" "red"),
         (
           "/pirates/:pirateId/monkeys/:id",
           Erl.parse "#/pirates/1/monkeys/2/edit",

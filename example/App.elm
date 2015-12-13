@@ -67,9 +67,9 @@ update action model =
       ({model | count = model.count + 1 }, Effects.none)
     NavigateTo path ->
       (model, Effects.map RouterAction (Routee.navigateTo path))
-    SetQuery dict ->
-      --(model, Effects.map RouterAction (Routee.setQuery dict))
-      (model, Effects.none)
+    SetQuery query ->
+      (model, Effects.map RouterAction (Routee.setQuery query))
+      --(model, Effects.none)
     UserEditAction subAction ->
       let
         (user, fx) =

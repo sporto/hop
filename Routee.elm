@@ -67,9 +67,9 @@ navigateTo route =
       |> Task.map GoToRouteResult
       |> Effects.task
 
---setQuery : Params -> (Effects Action)
---setQuery params =
---  History
+setQuery : Params -> (Effects Action)
+setQuery params =
+  Effects.none
 
 {-
 Take the route defintion and return a List
