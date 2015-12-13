@@ -19,9 +19,8 @@ import Example.Models as Models
 
 type alias AppModel = {
   count: Int,
-  routeParams: Dict.Dict String String,
+  routeParams: Routee.Params,
   selectedUser: Models.User,
-  url: Erl.Url,
   users: Models.UserList,
   view: String
 }
@@ -40,7 +39,6 @@ zeroModel =
     count = 1,
     routeParams = Dict.empty,
     selectedUser = Models.User "" "",
-    url = Erl.new,
     users = [user1, user2],
     view = ""
   }
@@ -49,6 +47,7 @@ type Action
   = RouterAction Routee.Action
   | Increment
   | NavigateTo String
+  | SetQuery Routee.Params
   | UserEditAction UserEdit.Action
   | ShowUsers Routee.Params
   | ShowUser Routee.Params
@@ -68,6 +67,9 @@ update action model =
       ({model | count = model.count + 1 }, Effects.none)
     NavigateTo path ->
       (model, Effects.map RouterAction (Routee.navigateTo path))
+    SetQuery dict ->
+      --(model, Effects.map RouterAction (Routee.setQuery dict))
+      (model, Effects.none)
     UserEditAction subAction ->
       let
         (user, fx) =
@@ -117,19 +119,20 @@ menu address model =
       menuBtn address (NavigateTo "/users/2") "User 2",
       menuBtn address (NavigateTo "/users/1/edit") "User Edit 1",
       menuBtn address (NavigateTo "/users/2/edit") "User Edit 2",
+      H.br [] [],
       menuBtn address (NavigateTo "/search?keyword=Hello") "Search for Hello",
-      menuBtn address (NavigateTo "/search?keyword=Hello") "Add to query string"
+      menuBtn address (SetQuery (Dict.singleton "color" "red")) "Add to query string"
     ],
 
     H.div [] [
       H.div [] [ H.text "Plain a tags: " ],
-      menuLink "/users" "Users",
+      menuLink "#/users" "Users",
       H.text "|",
-      menuLink "/users/1" "User 1",
+      menuLink "#/users/1" "User 1",
       H.text "|",
-      menuLink "/users/2" "User 2",
+      menuLink "#/users/2" "User 2",
       H.text "|",
-      menuLink "/users/2/edit" "User 1 edit"
+      menuLink "#/users/2/edit" "User 1 edit"
     ]
   ]
 

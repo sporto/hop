@@ -56,7 +56,7 @@ userActionFromUrlString config urlString =
 {-
 Changes the hash
  -}
-navigateTo: String -> (Effects Action)
+navigateTo : String -> (Effects Action)
 navigateTo route =
   let
     route' =
@@ -66,6 +66,10 @@ navigateTo route =
       |> Task.toResult
       |> Task.map GoToRouteResult
       |> Effects.task
+
+--setQuery : Params -> (Effects Action)
+--setQuery params =
+--  History
 
 {-
 Take the route defintion and return a List
