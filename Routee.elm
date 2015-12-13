@@ -137,6 +137,7 @@ isRouteFragmentMatch (actual, def) =
 {-
   Given a route and a current Url
   Return the params
+  Includes the query string
   e.g. "/users/:id" -> url -> dict
 -}
 paramsForRoute: String -> Erl.Url -> Dict.Dict String String
