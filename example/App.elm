@@ -10,6 +10,7 @@ import Effects exposing (Effects, Never)
 import Html.Attributes exposing (href)
 import Task exposing (Task)
 import Erl
+import Debug
 import Routee
 import Example.UserEdit as UserEdit
 import Example.Models as Models
@@ -52,6 +53,7 @@ type Action
   | ShowUsers Routee.Params
   | ShowUser Routee.Params
   | ShowUserEdit Routee.Params
+  | ShowSearch Routee.Params
   | ShowNotFound Routee.Params
   | NoOp
 
@@ -59,6 +61,7 @@ init : (AppModel, Effects Action)
 init =
   (zeroModel, Effects.none)
 
+-- TODO: is routeParams = params necessary?
 update : Action -> AppModel -> (AppModel, Effects Action)
 update action model =
   case action of
@@ -79,6 +82,10 @@ update action model =
       ({model | view = "user", routeParams = params}, Effects.none)
     ShowUserEdit params ->
       ({model | view = "userEdit", routeParams = params}, Effects.none)
+    ShowSearch params ->
+      ({model | view = "search", routeParams = params}, Effects.none)
+    ShowNotFound params ->
+      ({model | view = "notFound", routeParams = params}, Effects.none)
     _ ->
       (model, Effects.none)
 
@@ -92,7 +99,9 @@ view address model =
     ],
     maybeUsersView address model,
     maybeUserView address model,
-    maybeUseEditView address model
+    maybeUseEditView address model,
+    maybeNotFoundView address model,
+    maybeSearchView address model
   ]
 
 menu : Signal.Address Action -> AppModel -> H.Html
@@ -109,6 +118,7 @@ menu address model =
     menuBtn address "/users/2" "User 2",
     menuBtn address "/users/1/edit" "User Edit 1",
     menuBtn address "/users/2/edit" "User Edit 2",
+    menuBtn address "/search?keyword=Hello" "Search for Hello",
 
     H.span [] [ H.text " Plain a tags: " ],
     menuLink "/users" "Users",
@@ -174,6 +184,22 @@ maybeUseEditView address model =
     _ ->
       emptyView
 
+maybeSearchView : Signal.Address Action -> AppModel -> H.Html
+maybeSearchView address model =
+  case model.view of
+    "search" ->
+      searchView address model
+    _ ->
+      H.div [] []
+
+maybeNotFoundView : Signal.Address Action -> AppModel -> H.Html
+maybeNotFoundView address model =
+  case model.view of
+    "notFound" ->
+      notFoundView address model
+    _ ->
+      H.div [] []
+
 userView : Signal.Address Action -> AppModel -> H.Html
 userView address model =
   let
@@ -194,6 +220,12 @@ getUser users id =
     |> List.filter (\user -> user.id == id)
     |> List.head
 
+searchView: Signal.Address Action -> AppModel -> H.Html
+searchView address model =
+  H.div [] [
+    H.text "Search"
+  ]
+
 notFoundView: Signal.Address Action -> AppModel -> H.Html
 notFoundView address model =
   H.div [] [
@@ -207,7 +239,8 @@ routes =
   [
     ("/users", ShowUsers),
     ("/users/:id", ShowUser),
-    ("/users/:id/edit", ShowUserEdit)
+    ("/users/:id/edit", ShowUserEdit),
+    ("/search", ShowSearch)
   ]
 
 router = 

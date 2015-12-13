@@ -11,8 +11,10 @@ Query Strings:
 	- set part of qs (add or replace)
 	- remove part of qa
 - Pass query string to view
+- Change hash without changing query
 
 - Navigate without adding to history
+- Named routes maybe (Using the given action)
 - More tests
 - Docs
 
