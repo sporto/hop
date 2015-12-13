@@ -61,7 +61,6 @@ init : (AppModel, Effects Action)
 init =
   (zeroModel, Effects.none)
 
--- TODO: is routeParams = params necessary?
 update : Action -> AppModel -> (AppModel, Effects Action)
 update action model =
   case action of
@@ -110,24 +109,27 @@ menu address model =
     H.button [ Html.Events.onClick address (Increment) ] [
       H.text "Count"
     ],
+    H.div [] [
+      H.div [] [ H.text "Using actions: " ],
+      -- Here we should change the route in a nicer way
+      menuBtn address "/users" "Users",
+      menuBtn address "/users/1" "User 1",
+      menuBtn address "/users/2" "User 2",
+      menuBtn address "/users/1/edit" "User Edit 1",
+      menuBtn address "/users/2/edit" "User Edit 2",
+      menuBtn address "/search?keyword=Hello" "Search for Hello"
+    ],
 
-    H.span [] [ H.text "Using actions: " ],
-    -- Here we should change the route in a nicer way
-    menuBtn address "/users" "Users",
-    menuBtn address "/users/1" "User 1",
-    menuBtn address "/users/2" "User 2",
-    menuBtn address "/users/1/edit" "User Edit 1",
-    menuBtn address "/users/2/edit" "User Edit 2",
-    menuBtn address "/search?keyword=Hello" "Search for Hello",
-
-    H.span [] [ H.text " Plain a tags: " ],
-    menuLink "/users" "Users",
-    H.text "|",
-    menuLink "/users/1" "User 1",
-    H.text "|",
-    menuLink "/users/2" "User 2",
-    H.text "|",
-    menuLink "/users/2/edit" "User 1 edit"
+    H.div [] [
+      H.div [] [ H.text "Plain a tags: " ],
+      menuLink "/users" "Users",
+      H.text "|",
+      menuLink "/users/1" "User 1",
+      H.text "|",
+      menuLink "/users/2" "User 2",
+      H.text "|",
+      menuLink "/users/2/edit" "User 1 edit"
+    ]
   ]
 
 menuBtn : Signal.Address Action -> String -> String -> H.Html
@@ -222,9 +224,13 @@ getUser users id =
 
 searchView: Signal.Address Action -> AppModel -> H.Html
 searchView address model =
-  H.div [] [
-    H.text "Search"
-  ]
+  let
+    keyword =
+      Dict.get "keyword" model.routeParams |> Maybe.withDefault ""
+  in
+    H.div [] [
+      H.text ("Search " ++ keyword)
+    ]
 
 notFoundView: Signal.Address Action -> AppModel -> H.Html
 notFoundView address model =

@@ -135,8 +135,9 @@ isRouteFragmentMatch (actual, def) =
     (def == actual)
 
 {-
-  Given a config object and a current Url
+  Given a route and a current Url
   Return the params
+  e.g. "/users/:id" -> url -> dict
 -}
 paramsForRoute: String -> Erl.Url -> Dict.Dict String String
 paramsForRoute route url =
@@ -154,3 +155,4 @@ paramsForRoute route url =
       List.filter (\(x, _) -> not (String.isEmpty x)) params
   in
     Dict.fromList relevantParams
+      |> Dict.union url.query
