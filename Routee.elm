@@ -71,7 +71,8 @@ userActionFromUrlString config urlString =
     userAction payload
 
 {-
-Changes the hash
+  Changes the location (hash and query)
+  using a string
  -}
 navigateTo : String -> (Effects Action)
 navigateTo route =
@@ -89,14 +90,15 @@ navigateTo route =
       |> Task.map GoToRouteResult
       |> Effects.task
 
-setQuery : Erl.Url -> Params -> (Effects Action)
-setQuery currentUrl query =
+{-
+  Change the location
+  using a Erl.Url record
+-}
+navigateToUrl : Erl.Url -> (Effects Action)
+navigateToUrl url =
   let
-    urlWithQuery =
-      Dict.toList query
-        |> List.foldl (\(key, val) -> Erl.setQuery key val ) currentUrl
     path =
-      Erl.toString urlWithQuery
+      Erl.toString url
     route =
       String.split "#" path
         |> List.drop 1
@@ -105,20 +107,22 @@ setQuery currentUrl query =
   in
     navigateTo route
 
+setQuery : Erl.Url -> Params -> (Effects Action)
+setQuery currentUrl query =
+  let
+    urlWithQuery =
+      Dict.toList query
+        |> List.foldl (\(key, val) -> Erl.setQuery key val ) currentUrl
+  in
+    navigateToUrl urlWithQuery
+
 clearQuery : Erl.Url -> (Effects Action)
 clearQuery currentUrl =
   let
-    withoutQuery =
+    urlWithoutQuery =
       Erl.clearQuery currentUrl
-    path =
-      Erl.toString withoutQuery
-    route =
-      String.split "#" path
-        |> List.drop 1
-        |> List.head
-        |> Maybe.withDefault ""
   in
-    navigateTo route 
+    navigateToUrl urlWithoutQuery
 
 {-
 Take the route defintion and return a List
