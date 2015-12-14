@@ -8,15 +8,15 @@ To navigate to a different route you call `Routee.navigateTo`, this will return 
 
 This router is made to work with StartApp. At the moment only hash routes are supported i.e. `#/users/1`.
 
-# Setup
+## Setup
 
-## Import Routee
+### Import Routee
 
 ```elm
 import Routee
 ```
 
-## Define actions to be called when a route matches:
+### Define actions to be called when a route matches:
 
 ```elm
 type Action
@@ -30,7 +30,7 @@ type Action
 
 You need to define an action for when a route is not found e.g. `ShowNotFound`.
 
-## Define your routes:
+### Define your routes:
 
 ```elm
 routes = [
@@ -43,7 +43,7 @@ This is a list of tuples with: (`route to match`, `action to call`).
 
 To define dynamic parameter use `:`, this parameters will be filled by the router e.g. `/posts/:postId/comments/:commentId`.
 
-## Create the router
+### Create the router
 
 ```elm
 router =
@@ -68,7 +68,7 @@ router =
 
 `payload` is an initial payload when the router is created.
 
-## Add the router signal to StartApp inputs
+### Add the router signal to StartApp inputs
 
 Your start app configuration should include the router signal:
 
@@ -84,7 +84,7 @@ app =
 
 This will allow the router to send signal to your application when the location changes.
 
-## Add fields to your model
+### Add fields to your model
 
 Your model needs to store the routerPayload:
 
@@ -103,7 +103,7 @@ type alias Model {
 }
 ```
 
-## Add update actions
+### Add update actions
 
 Add entries to update for actions related to routing:
 
@@ -114,7 +114,7 @@ update action model =
 			({model | currentView = "users", routerPayload = payload}, Effects.none)
 ```
 
-## Wire up your views
+### Wire up your views
 
 Your views need to decide what to show. Use the attribute `model.currentView` for this. 
 
@@ -153,11 +153,11 @@ Dict {
 }
 ```
 
-# Navigation
+## Navigation
 
 You have two way to navigate:
 
-## 1. Using plain `a` tags
+### 1. Using plain `a` tags
 
 ```elm
 	a [ href "#/users/1" ] [ text "User" ]
@@ -165,7 +165,7 @@ You have two way to navigate:
 
 Note that you must add the `#` in this case.
 
-## 2. Using Routee effects
+### 2. Using Routee effects
 
 __Add two actions__
 
@@ -203,13 +203,13 @@ update action model =
 
 
 
-# Running tests
+# Test
 
 ```
 elm reactor
 ```
 
-Open /localhost:8000/TestRunner.elm
+Open `/localhost:8000/TestRunner.elm`
 
 ## Running in Docker
 
