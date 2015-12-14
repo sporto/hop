@@ -45,7 +45,7 @@ new config =
     payload = newPayload
   }
 
-{- 
+{-
 Each time the hash is changed get a signal
 We need to pass this signal to the main application
 -- ! And here as well, map to the correct user'action

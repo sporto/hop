@@ -9,7 +9,6 @@ import StartApp
 import Effects exposing (Effects, Never)
 import Html.Attributes exposing (href)
 import Task exposing (Task)
-import Erl
 import Debug
 import Routee
 import Example.UserEdit as UserEdit
@@ -122,11 +121,11 @@ menu address model =
       menuBtn address (NavigateTo "/users/1/edit") "User Edit 1",
       menuBtn address (NavigateTo "/users/2/edit") "User Edit 2",
       H.br [] [],
-      menuBtn address (NavigateTo "/search?keyword=Hello") "Search for Hello",
-      menuBtn address (SetQuery (Dict.singleton "color" "red")) "Add to query color=red",
-      menuBtn address (SetQuery (Dict.singleton "size" "big")) "Add to query size=big",
-      menuBtn address (SetQuery (Dict.singleton "color" "")) "Remove color",
-      menuBtn address (ClearQuery) "Remove query"
+      menuBtn address (NavigateTo "/search?keyword=elm") "Go to search with query",
+      menuBtn address (SetQuery (Dict.singleton "color" "red")) "Add to query `color=red`",
+      menuBtn address (SetQuery (Dict.singleton "size" "big")) "Add to query `size=big`",
+      menuBtn address (SetQuery (Dict.singleton "color" "")) "Clear query `color`",
+      menuBtn address (ClearQuery) "Clear all query"
     ],
 
     H.div [] [
