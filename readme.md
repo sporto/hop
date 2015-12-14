@@ -35,7 +35,7 @@ You need to define an action for when a route is not found e.g. `ShowNotFound`.
 ```elm
 routes = [
 		("/users", ShowUsers),
-    ("/users/:id", ShowUser)
+		("/users/:id", ShowUser)
 	]
 ```
 
