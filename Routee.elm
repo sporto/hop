@@ -105,6 +105,21 @@ setQuery currentUrl query =
   in
     navigateTo route
 
+clearQuery : Erl.Url -> (Effects Action)
+clearQuery currentUrl =
+  let
+    withoutQuery =
+      Erl.clearQuery currentUrl
+    path =
+      Erl.toString withoutQuery
+    route =
+      String.split "#" path
+        |> List.drop 1
+        |> List.head
+        |> Maybe.withDefault ""
+  in
+    navigateTo route 
+
 {-
 Take the route defintion and return a List
 "/users/:id" --> ["users", ":id"]

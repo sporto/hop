@@ -48,6 +48,7 @@ type Action
   | Increment
   | NavigateTo String
   | SetQuery (Dict.Dict String String)
+  | ClearQuery
   | UserEditAction UserEdit.Action
   | ShowUsers Routee.Payload
   | ShowUser Routee.Payload
@@ -69,6 +70,8 @@ update action model =
       (model, Effects.map RouterAction (Routee.navigateTo path))
     SetQuery query ->
       (model, Effects.map RouterAction (Routee.setQuery model.routerPayload.url query))
+    ClearQuery ->
+      (model, Effects.map RouterAction (Routee.clearQuery model.routerPayload.url))
     UserEditAction subAction ->
       let
         (user, fx) =
@@ -120,7 +123,10 @@ menu address model =
       menuBtn address (NavigateTo "/users/2/edit") "User Edit 2",
       H.br [] [],
       menuBtn address (NavigateTo "/search?keyword=Hello") "Search for Hello",
-      menuBtn address (SetQuery (Dict.singleton "color" "red")) "Add to query string"
+      menuBtn address (SetQuery (Dict.singleton "color" "red")) "Add to query color=red",
+      menuBtn address (SetQuery (Dict.singleton "size" "big")) "Add to query size=big",
+      menuBtn address (SetQuery (Dict.singleton "color" "")) "Remove color",
+      menuBtn address (ClearQuery) "Remove query"
     ],
 
     H.div [] [
