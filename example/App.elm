@@ -47,7 +47,7 @@ type Action
   = RouterAction Routee.Action
   | Increment
   | NavigateTo String
-  | SetQuery Routee.Payload
+  | SetQuery (Dict.Dict String String)
   | UserEditAction UserEdit.Action
   | ShowUsers Routee.Payload
   | ShowUser Routee.Payload
@@ -68,8 +68,7 @@ update action model =
     NavigateTo path ->
       (model, Effects.map RouterAction (Routee.navigateTo path))
     SetQuery query ->
-      --(model, Effects.map RouterAction (Routee.setQuery query))
-      (model, Effects.none)
+      (model, Effects.map RouterAction (Routee.setQuery model.routerPayload.url query))
     UserEditAction subAction ->
       let
         (user, fx) =
@@ -120,8 +119,8 @@ menu address model =
       menuBtn address (NavigateTo "/users/1/edit") "User Edit 1",
       menuBtn address (NavigateTo "/users/2/edit") "User Edit 2",
       H.br [] [],
-      menuBtn address (NavigateTo "/search?keyword=Hello") "Search for Hello"
-      --menuBtn address (SetQuery (Dict.singleton "color" "red")) "Add to query string"
+      menuBtn address (NavigateTo "/search?keyword=Hello") "Search for Hello",
+      menuBtn address (SetQuery (Dict.singleton "color" "red")) "Add to query string"
     ],
 
     H.div [] [
@@ -211,9 +210,11 @@ userView address model =
   let
     userId =
       Dict.get "id" model.routerPayload.params |> Maybe.withDefault ""
+    color =
+      Dict.get "color" model.routerPayload.params |> Maybe.withDefault ""
   in
     H.div [] [
-      H.text ("User " ++ userId)
+      H.text ("User " ++ userId ++ " " ++ color)
     ]
 
 emptyView : H.Html

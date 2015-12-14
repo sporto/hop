@@ -76,17 +76,34 @@ Changes the hash
 navigateTo : String -> (Effects Action)
 navigateTo route =
   let
-    route' =
-      "#" ++ route
+    withSlash =
+      if String.startsWith "/" route then
+        route
+      else
+        "/" ++ route
+    withHash =
+      "#" ++ withSlash
   in
-    History.setPath route'
+    History.setPath withHash
       |> Task.toResult
       |> Task.map GoToRouteResult
       |> Effects.task
 
-setQuery : Params -> (Effects Action)
-setQuery params =
-  Effects.none
+setQuery : Erl.Url -> Params -> (Effects Action)
+setQuery currentUrl query =
+  let
+    urlWithQuery =
+      Dict.toList query
+        |> List.foldl (\(key, val) -> Erl.setQuery key val ) currentUrl
+    path =
+      Erl.toString urlWithQuery
+    route =
+      String.split "#" path
+        |> List.drop 1
+        |> List.head
+        |> Maybe.withDefault ""
+  in
+    navigateTo route
 
 {-
 Take the route defintion and return a List
