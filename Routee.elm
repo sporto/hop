@@ -13,7 +13,12 @@ type Action
 
 type alias Params = Dict.Dict String String
 
-type alias UserPartialAction action = Params -> action
+type alias Payload = {
+    params: Params,
+    url: Erl.Url
+  }
+
+type alias UserPartialAction action = Payload -> action
 
 type alias Config partialAction = {
     notFoundAction: partialAction,
@@ -21,15 +26,23 @@ type alias Config partialAction = {
   }
 
 type alias Router action = {
-    signal: Signal action
+    signal: Signal action,
+    payload: Payload
   }
 
 type alias RouteDefinition action = (String, action)
 
+newPayload : Payload
+newPayload = {
+    params = Dict.empty,
+    url = Erl.new
+  }
+
 new: Config (UserPartialAction action) -> Router action
 new config =
   {
-    signal = hashChangeSignal config
+    signal = hashChangeSignal config,
+    payload = newPayload
   }
 
 {- 
@@ -50,8 +63,12 @@ userActionFromUrlString config urlString =
       routeDefintionForUrl config url
     params =
       paramsForRoute route url
+    payload = {
+        params = params,
+        url = url
+      } 
   in
-    userAction params
+    userAction payload
 
 {-
 Changes the hash

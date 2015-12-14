@@ -19,7 +19,7 @@ import Example.Models as Models
 
 type alias AppModel = {
   count: Int,
-  routeParams: Routee.Params,
+  routerPayload: Routee.Payload,
   selectedUser: Models.User,
   users: Models.UserList,
   view: String
@@ -37,7 +37,7 @@ zeroModel : AppModel
 zeroModel =
   {
     count = 1,
-    routeParams = Dict.empty,
+    routerPayload = router.payload,
     selectedUser = Models.User "" "",
     users = [user1, user2],
     view = ""
@@ -47,13 +47,13 @@ type Action
   = RouterAction Routee.Action
   | Increment
   | NavigateTo String
-  | SetQuery Routee.Params
+  | SetQuery Routee.Payload
   | UserEditAction UserEdit.Action
-  | ShowUsers Routee.Params
-  | ShowUser Routee.Params
-  | ShowUserEdit Routee.Params
-  | ShowSearch Routee.Params
-  | ShowNotFound Routee.Params
+  | ShowUsers Routee.Payload
+  | ShowUser Routee.Payload
+  | ShowUserEdit Routee.Payload
+  | ShowSearch Routee.Payload
+  | ShowNotFound Routee.Payload
   | NoOp
 
 init : (AppModel, Effects Action)
@@ -68,25 +68,25 @@ update action model =
     NavigateTo path ->
       (model, Effects.map RouterAction (Routee.navigateTo path))
     SetQuery query ->
-      (model, Effects.map RouterAction (Routee.setQuery query))
-      --(model, Effects.none)
+      --(model, Effects.map RouterAction (Routee.setQuery query))
+      (model, Effects.none)
     UserEditAction subAction ->
       let
         (user, fx) =
           UserEdit.update subAction model.selectedUser
       in
         ({model | selectedUser = user}, Effects.map UserEditAction fx)
-    ShowUsers params ->
-      ({model | view = "users", routeParams = params}, Effects.none)
-    ShowUser params ->
+    ShowUsers payload ->
+      ({model | view = "users", routerPayload = payload}, Effects.none)
+    ShowUser payload ->
       Debug.log "ShowUser"
-      ({model | view = "user", routeParams = params}, Effects.none)
-    ShowUserEdit params ->
-      ({model | view = "userEdit", routeParams = params}, Effects.none)
-    ShowSearch params ->
-      ({model | view = "search", routeParams = params}, Effects.none)
-    ShowNotFound params ->
-      ({model | view = "notFound", routeParams = params}, Effects.none)
+      ({model | view = "user", routerPayload = payload}, Effects.none)
+    ShowUserEdit payload ->
+      ({model | view = "userEdit", routerPayload = payload}, Effects.none)
+    ShowSearch payload ->
+      ({model | view = "search", routerPayload = payload}, Effects.none)
+    ShowNotFound payload ->
+      ({model | view = "notFound", routerPayload = payload}, Effects.none)
     _ ->
       (model, Effects.none)
 
@@ -120,8 +120,8 @@ menu address model =
       menuBtn address (NavigateTo "/users/1/edit") "User Edit 1",
       menuBtn address (NavigateTo "/users/2/edit") "User Edit 2",
       H.br [] [],
-      menuBtn address (NavigateTo "/search?keyword=Hello") "Search for Hello",
-      menuBtn address (SetQuery (Dict.singleton "color" "red")) "Add to query string"
+      menuBtn address (NavigateTo "/search?keyword=Hello") "Search for Hello"
+      --menuBtn address (SetQuery (Dict.singleton "color" "red")) "Add to query string"
     ],
 
     H.div [] [
@@ -176,7 +176,7 @@ maybeUseEditView address model =
     "userEdit" ->
       let
         userId =
-          model.routeParams
+          model.routerPayload.params
             |> Dict.get "id"
             |> Maybe.withDefault ""
         maybeSelectedUser =
@@ -210,7 +210,7 @@ userView : Signal.Address Action -> AppModel -> H.Html
 userView address model =
   let
     userId =
-      Dict.get "id" model.routeParams |> Maybe.withDefault ""
+      Dict.get "id" model.routerPayload.params |> Maybe.withDefault ""
   in
     H.div [] [
       H.text ("User " ++ userId)
@@ -230,7 +230,7 @@ searchView: Signal.Address Action -> AppModel -> H.Html
 searchView address model =
   let
     keyword =
-      Dict.get "keyword" model.routeParams |> Maybe.withDefault ""
+      Dict.get "keyword" model.routerPayload.params |> Maybe.withDefault ""
   in
     H.div [] [
       H.text ("Search " ++ keyword)
