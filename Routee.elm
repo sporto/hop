@@ -108,7 +108,7 @@ isRouteMatch: Erl.Url -> (RouteDefinition action) -> Bool
 isRouteMatch url routeDef =
   let
     currentFragmentList =
-      url.fragment
+      url.hash
     currentLen =
       List.length currentFragmentList
     definitionFragmentList =
@@ -123,17 +123,17 @@ isRouteMatch url routeDef =
     else
       False
 
-isRouteFragmentPlaceholder: String -> Bool
-isRouteFragmentPlaceholder fragment =
-  String.startsWith ":" fragment
+isRouteHashPlaceholder: String -> Bool
+isRouteHashPlaceholder hash =
+  String.startsWith ":" hash
 
 {-
-  Check if a route fragments matches 
+  Check if a route hash matches 
   eg. (":id", "1") == True
 -}
 isRouteFragmentMatch: (String, String) -> Bool
 isRouteFragmentMatch (actual, def) =
-  if isRouteFragmentPlaceholder def then
+  if isRouteHashPlaceholder def then
     True
   else
     (def == actual)
@@ -150,12 +150,12 @@ paramsForRoute route url =
     routeFragments =
       parseRouteFragment route
     maybeParam routeFragment urlFragment =
-      if isRouteFragmentPlaceholder routeFragment then
+      if isRouteHashPlaceholder routeFragment then
         (String.dropLeft 1 routeFragment, urlFragment)
       else
         ("", "")
     params =
-      List.map2 maybeParam routeFragments url.fragment
+      List.map2 maybeParam routeFragments url.hash
     relevantParams =
       List.filter (\(x, _) -> not (String.isEmpty x)) params
   in
