@@ -283,4 +283,6 @@ port tasks : Signal (Task.Task Never ())
 port tasks =
   app.tasks
 
-
+port routeRunTask : Task () ()
+port routeRunTask =
+  router.run

@@ -59,13 +59,16 @@ router =
 ```elm
 {
 	signal,
-	payload
+	payload,
+	run
 }
 ```
 
 `signal` is the signal that will carry changes when the browser location changes.
 
 `payload` is an initial payload when the router is created.
+
+`run` is a task to match the initial route, this needs to be send to a port, more details later.
 
 ### Add the router signal to StartApp inputs
 
@@ -124,6 +127,16 @@ userId =
 	model.routerPayload.params
 		|> Dict.get "userId"
 		|> Maybe.withDefault ""
+```
+
+### Run the router
+
+In order to match the initial route when the application is loaded you will need to create a port specifically for this.
+
+```elm
+port routeRunTask : Task () ()
+port routeRunTask =
+  router.run
 ```
 
 ## About `Routee.Payload`
@@ -221,12 +234,15 @@ Open in ip:8000
 
 # TODO:
 
-- Show initial view upon load
 - Change hash without changing query
 - Navigate without adding to history
 - Named routes maybe (Using the given action)
 - More tests
 - Docs
+
+## Improvements
+
+- Can router.run be sent to the startApp inputs? i.e. remove the specific port for this.
 
 # Changelog
 

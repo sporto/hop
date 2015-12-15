@@ -27,7 +27,8 @@ type alias Config partialAction = {
 
 type alias Router action = {
     signal: Signal action,
-    payload: Payload
+    payload: Payload,
+    run: Task () ()
   }
 
 type alias RouteDefinition action = (String, action)
@@ -42,7 +43,8 @@ new: Config (UserPartialAction action) -> Router action
 new config =
   {
     signal = hashChangeSignal config,
-    payload = newPayload
+    payload = newPayload,
+    run = History.setPath ""
   }
 
 {-
