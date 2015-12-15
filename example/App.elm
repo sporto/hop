@@ -250,7 +250,7 @@ notFoundView address model =
 
 -- ROUTING
 
---routes : List (String, Action)
+routes : List (String, Routee.UserPartialAction Action)
 routes =
   [
     ("/users", ShowUsers),
@@ -259,12 +259,14 @@ routes =
     ("/search", ShowSearch)
   ]
 
+router : Routee.Router Action
 router = 
   Routee.new {
     routes = routes,
     notFoundAction = ShowNotFound
   }
 
+app : StartApp.App AppModel
 app =
   StartApp.start {
     init = init,

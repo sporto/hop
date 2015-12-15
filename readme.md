@@ -23,7 +23,6 @@ type Action
 	= ShowUsers Routee.Payload
 	| ShowUser Routee.Payload
 	| ShowNotFound Routee.Payload
-
 ```
 
 `Routee.Payload` is the payload that your action will receive when called. See about Payload below.
@@ -74,12 +73,12 @@ Your start app configuration should include the router signal:
 
 ```elm
 app =
-  StartApp.start {
-    init = init,
-    update = update,
-    view = view,
-    inputs = [router.signal]
-  }
+	StartApp.start {
+		init = init,
+		update = update,
+		view = view,
+		inputs = [router.signal]
+	}
 ```
 
 This will allow the router to send signal to your application when the location changes.
