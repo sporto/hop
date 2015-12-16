@@ -177,18 +177,18 @@ You have two way to navigate:
 
 Note that you must add the `#` in this case.
 
-### 2. Using Hop effects
+### 2. Using effects
 
 __Add two actions__
 
 ```elm
 type Action
 	= ...
-	| RouterAction Hop.Action
+	| HopAction Hop.Action
 	| NavigateTo String
 ```
 
-RouterAction is necessary so effects from the router can be run.
+HopAction is necessary so effects from the router can be run.
 
 __Call the action from your view__
 
@@ -205,14 +205,42 @@ update action model =
 	case action of
 		...
 		NavigateTo path ->
-			(model, Effects.map RouterAction (Hop.navigateTo path))
+			(model, Effects.map HopAction (Hop.navigateTo path))
 ```
 
 `Hop.navigateTo` will respond with an effect that needs to be run by your application. When this effect is run the hash will change. After that your application will receive a location change signal as described before.
 
 ## Changing the query string
 
+__Add actions for changing the query string__
 
+```elm
+type Action
+	= ...
+	| SetQuery (Dict.Dict String String)
+  | ClearQuery
+```
+
+__Change update to respond to these actions__
+
+```elm
+update action model =
+	case action of
+		...
+		SetQuery query ->
+			(model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
+		ClearQuery ->
+			(model, Effects.map HopAction (Hop.clearQuery model.routerPayload.url))
+```
+
+`Hop.setQuery` Takes the current `url` as the first argument and a dictionary of key, values as second argument.
+`Hop.clearQuery` Takes the current `url`
+
+__Call these actions from your views__
+
+```elm
+button [ onClick address (SetQuery (Dict.singleton "color" "red")) ] [ text "Set query" ]
+```
 
 
 # Test

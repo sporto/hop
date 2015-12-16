@@ -43,7 +43,7 @@ zeroModel =
   }
 
 type Action
-  = RouterAction Hop.Action
+  = HopAction Hop.Action
   | Increment
   | NavigateTo String
   | SetQuery (Dict.Dict String String)
@@ -66,11 +66,11 @@ update action model =
     Increment ->
       ({model | count = model.count + 1 }, Effects.none)
     NavigateTo path ->
-      (model, Effects.map RouterAction (Hop.navigateTo path))
+      (model, Effects.map HopAction (Hop.navigateTo path))
     SetQuery query ->
-      (model, Effects.map RouterAction (Hop.setQuery model.routerPayload.url query))
+      (model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
     ClearQuery ->
-      (model, Effects.map RouterAction (Hop.clearQuery model.routerPayload.url))
+      (model, Effects.map HopAction (Hop.clearQuery model.routerPayload.url))
     UserEditAction subAction ->
       let
         (user, fx) =

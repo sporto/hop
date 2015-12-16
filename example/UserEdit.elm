@@ -9,7 +9,7 @@ import Example.Models as Models
 
 type Action
   = Save
-  | RouterAction Hop.Action
+  | HopAction Hop.Action
   | Show String
   | Cancel
 
@@ -17,7 +17,7 @@ update : Action -> Models.User -> (Models.User, Effects Action)
 update action user =
   case action of
     Show id ->
-      (user, Effects.map RouterAction (Hop.navigateTo ("/users/" ++ id)))
+      (user, Effects.map HopAction (Hop.navigateTo ("/users/" ++ id)))
     _ ->
       (user, Effects.none)
 
