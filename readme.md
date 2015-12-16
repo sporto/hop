@@ -1,4 +1,4 @@
-# Hop: A Router for Elm SPAs
+# Hop: A router for Elm SPAs
 
 ## How this works
 
@@ -88,15 +88,7 @@ This will allow the router to send signal to your application when the location 
 
 ### Add fields to your model
 
-Your model needs to store the routerPayload:
-
-```elm
-type alias Model {
-	routerPayload: Hop.Payload
-}
-```
-
-Also your model should store an attribute for the current view to display:
+Your model needs to store the __router payload__ and an attribute for the __current view__ to display:
 
 ```elm
 type alias Model {
@@ -104,6 +96,8 @@ type alias Model {
 	currentView: String
 }
 ```
+
+See more details about `Hop.Payload` below.
 
 ### Add update actions
 
@@ -116,9 +110,20 @@ update action model =
 			({model | currentView = "users", routerPayload = payload}, Effects.none)
 ```
 
+It is important that you update the router payload, this is used to store the current url and the current router parameters.
+
 ### Wire up your views
 
-Your views need to decide what to show. Use the attribute `model.currentView` for this. 
+Your views need to decide what to show. Use the attribute `model.currentView` for this. E.g.
+
+```elm
+subView address model =
+  case model.currentView of
+    "users" ->
+      usersView address model
+    "user" ->
+      userView address model
+```
 
 Get information about the current route from `routerPayload`. e.g.
 
