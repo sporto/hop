@@ -1,31 +1,31 @@
-# Routee: A Router for Elm SPAs
+# Hop: A Router for Elm SPAs
 
 ## How this works
 
 This router uses a list of tuples to configure routes e.g. `(route, action)`. When a route is matched the router will call the action specified with the appropiate parameters.
 
-To navigate to a different route you call `Routee.navigateTo`, this will return an effect that your application must run via ports.
+To navigate to a different route you call `Hop.navigateTo`, this will return an effect that your application must run via ports.
 
 This router is made to work with StartApp. At the moment only hash routes are supported i.e. `#/users/1`.
 
 ## Setup
 
-### Import Routee
+### Import Hop
 
 ```elm
-import Routee
+import Hop
 ```
 
 ### Define actions to be called when a route matches:
 
 ```elm
 type Action
-	= ShowUsers Routee.Payload
-	| ShowUser Routee.Payload
-	| ShowNotFound Routee.Payload
+	= ShowUsers Hop.Payload
+	| ShowUser Hop.Payload
+	| ShowNotFound Hop.Payload
 ```
 
-`Routee.Payload` is the payload that your action will receive when called. See about Payload below.
+`Hop.Payload` is the payload that your action will receive when called. See about Payload below.
 
 You need to define an action for when a route is not found e.g. `ShowNotFound`.
 
@@ -46,7 +46,7 @@ To define dynamic parameter use `:`, this parameters will be filled by the route
 
 ```elm
 router =
-	Routee.new {
+	Hop.new {
 		routes = routes,
 		notFoundAction = ShowNotFound
 	}
@@ -54,7 +54,7 @@ router =
 
 `routes` is your list of routes defined above. `notFoundAction` is the action to call when a route is not found.
 
-`Routee.new` will give you back a `Routee.Router` record:
+`Hop.new` will give you back a `Hop.Router` record:
 
 ```elm
 {
@@ -92,7 +92,7 @@ Your model needs to store the routerPayload:
 
 ```elm
 type alias Model {
-	routerPayload: Routee.Payload
+	routerPayload: Hop.Payload
 }
 ```
 
@@ -100,7 +100,7 @@ Also your model should store an attribute for the current view to display:
 
 ```elm
 type alias Model {
-	routerPayload: Routee.Payload,
+	routerPayload: Hop.Payload,
 	currentView: String
 }
 ```
@@ -139,7 +139,7 @@ port routeRunTask =
   router.run
 ```
 
-## About `Routee.Payload`
+## About `Hop.Payload`
 
 Your actions are called with a `Payload` record. This record has:
 
@@ -177,14 +177,14 @@ You have two way to navigate:
 
 Note that you must add the `#` in this case.
 
-### 2. Using Routee effects
+### 2. Using Hop effects
 
 __Add two actions__
 
 ```elm
 type Action
 	= ...
-	| RouterAction Routee.Action
+	| RouterAction Hop.Action
 	| NavigateTo String
 ```
 
@@ -205,10 +205,10 @@ update action model =
 	case action of
 		...
 		NavigateTo path ->
-			(model, Effects.map RouterAction (Routee.navigateTo path))
+			(model, Effects.map RouterAction (Hop.navigateTo path))
 ```
 
-`Routee.navigateTo` will respond with an effect that needs to be run by your application. When this effect is run the hash will change. After that your application will receive a location change signal as described before.
+`Hop.navigateTo` will respond with an effect that needs to be run by your application. When this effect is run the hash will change. After that your application will receive a location change signal as described before.
 
 ## Changing the query string
 

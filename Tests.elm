@@ -3,9 +3,9 @@ module Tests where
 import String
 import Dict
 import Erl
-import Routee
+import Hop
 import Html
-import Routee
+import Hop
 
 import ElmTest exposing (..)
 
@@ -17,7 +17,7 @@ parseRouteFragment =
       ]
     run (input, expected) =
       test "parseRouteFragment"
-        (assertEqual expected (Routee.parseRouteFragment input))
+        (assertEqual expected (Hop.parseRouteFragment input))
   in
     suite "parseRouteFragment"
       (List.map run inputs)
@@ -64,7 +64,7 @@ routeDefintionForUrl =
         url =
           toUrl input
         (_, actualAction) =
-          Routee.routeDefintionForUrl config url
+          Hop.routeDefintionForUrl config url
       in
         test "routeDefintionForUrl"
           (assertEqual expectedAction actualAction)
@@ -88,7 +88,7 @@ paramsForRoute =
     run (route, url, expectedParams) =
       let
         actualParams =
-          Routee.paramsForRoute route url
+          Hop.paramsForRoute route url
       in
         test "paramsForRoute"
           (assertEqual expectedParams actualParams)

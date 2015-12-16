@@ -10,7 +10,7 @@ import Effects exposing (Effects, Never)
 import Html.Attributes exposing (href)
 import Task exposing (Task)
 import Debug
-import Routee
+import Hop
 import Example.UserEdit as UserEdit
 import Example.Models as Models
 
@@ -18,7 +18,7 @@ import Example.Models as Models
 
 type alias AppModel = {
   count: Int,
-  routerPayload: Routee.Payload,
+  routerPayload: Hop.Payload,
   selectedUser: Models.User,
   users: Models.UserList,
   view: String
@@ -43,17 +43,17 @@ zeroModel =
   }
 
 type Action
-  = RouterAction Routee.Action
+  = RouterAction Hop.Action
   | Increment
   | NavigateTo String
   | SetQuery (Dict.Dict String String)
   | ClearQuery
   | UserEditAction UserEdit.Action
-  | ShowUsers Routee.Payload
-  | ShowUser Routee.Payload
-  | ShowUserEdit Routee.Payload
-  | ShowSearch Routee.Payload
-  | ShowNotFound Routee.Payload
+  | ShowUsers Hop.Payload
+  | ShowUser Hop.Payload
+  | ShowUserEdit Hop.Payload
+  | ShowSearch Hop.Payload
+  | ShowNotFound Hop.Payload
   | NoOp
 
 init : (AppModel, Effects Action)
@@ -66,11 +66,11 @@ update action model =
     Increment ->
       ({model | count = model.count + 1 }, Effects.none)
     NavigateTo path ->
-      (model, Effects.map RouterAction (Routee.navigateTo path))
+      (model, Effects.map RouterAction (Hop.navigateTo path))
     SetQuery query ->
-      (model, Effects.map RouterAction (Routee.setQuery model.routerPayload.url query))
+      (model, Effects.map RouterAction (Hop.setQuery model.routerPayload.url query))
     ClearQuery ->
-      (model, Effects.map RouterAction (Routee.clearQuery model.routerPayload.url))
+      (model, Effects.map RouterAction (Hop.clearQuery model.routerPayload.url))
     UserEditAction subAction ->
       let
         (user, fx) =
@@ -250,7 +250,7 @@ notFoundView address model =
 
 -- ROUTING
 
-routes : List (String, Routee.UserPartialAction Action)
+routes : List (String, Hop.UserPartialAction Action)
 routes =
   [
     ("/users", ShowUsers),
@@ -259,9 +259,9 @@ routes =
     ("/search", ShowSearch)
   ]
 
-router : Routee.Router Action
+router : Hop.Router Action
 router = 
-  Routee.new {
+  Hop.new {
     routes = routes,
     notFoundAction = ShowNotFound
   }

@@ -3,13 +3,13 @@ module Example.UserEdit where
 import Html as H
 import Html.Events
 import Effects exposing (Effects, Never)
-import Routee
+import Hop
 
 import Example.Models as Models
 
 type Action
   = Save
-  | RouterAction Routee.Action
+  | RouterAction Hop.Action
   | Show String
   | Cancel
 
@@ -17,7 +17,7 @@ update : Action -> Models.User -> (Models.User, Effects Action)
 update action user =
   case action of
     Show id ->
-      (user, Effects.map RouterAction (Routee.navigateTo ("/users/" ++ id)))
+      (user, Effects.map RouterAction (Hop.navigateTo ("/users/" ++ id)))
     _ ->
       (user, Effects.none)
 
