@@ -99,11 +99,7 @@ view address model =
     H.h2 [] [
       H.text "Rendered view:"
     ],
-    maybeUsersView address model,
-    maybeUserView address model,
-    maybeUseEditView address model,
-    maybeNotFoundView address model,
-    maybeSearchView address model
+    subView address model
   ]
 
 menu : Signal.Address Action -> AppModel -> H.Html
@@ -152,31 +148,13 @@ menuLink path label =
     H.text label
   ]
 
-maybeUsersView : Signal.Address Action -> AppModel -> H.Html
-maybeUsersView address model =
+subView : Signal.Address Action -> AppModel -> H.Html
+subView address model =
   case model.view of
     "users" ->
       usersView address model
-    _ ->
-      H.div [] []
-
-usersView : Signal.Address Action -> AppModel -> H.Html
-usersView address model =
-  H.div [] [
-    H.text "Users"
-  ]
-
-maybeUserView : Signal.Address Action -> AppModel -> H.Html
-maybeUserView address model =
-  case model.view of
     "user" ->
       userView address model
-    _ ->
-      H.div [] []
-
-maybeUseEditView : Signal.Address Action -> AppModel -> H.Html
-maybeUseEditView address model =
-  case model.view of
     "userEdit" ->
       let
         userId =
@@ -191,24 +169,19 @@ maybeUseEditView address model =
             UserEdit.view (Signal.forwardTo address UserEditAction) user
           _ ->
             emptyView
-    _ ->
-      emptyView
-
-maybeSearchView : Signal.Address Action -> AppModel -> H.Html
-maybeSearchView address model =
-  case model.view of
     "search" ->
       searchView address model
-    _ ->
-      H.div [] []
-
-maybeNotFoundView : Signal.Address Action -> AppModel -> H.Html
-maybeNotFoundView address model =
-  case model.view of
     "notFound" ->
       notFoundView address model
     _ ->
-      H.div [] []
+      emptyView
+
+
+usersView : Signal.Address Action -> AppModel -> H.Html
+usersView address model =
+  H.div [] [
+    H.text "Users"
+  ]
 
 userView : Signal.Address Action -> AppModel -> H.Html
 userView address model =
