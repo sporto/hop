@@ -6,6 +6,7 @@ import Erl
 import Hop
 import Html
 import Hop
+import Hop.Utils as Utils
 
 import ElmTest exposing (..)
 
@@ -17,7 +18,7 @@ parseRouteFragment =
       ]
     run (input, expected) =
       test "parseRouteFragment"
-        (assertEqual expected (Hop.parseRouteFragment input))
+        (assertEqual expected (Utils.parseRouteFragment input))
   in
     suite "parseRouteFragment"
       (List.map run inputs)
@@ -64,7 +65,7 @@ routeDefintionForUrl =
         url =
           toUrl input
         (_, actualAction) =
-          Hop.routeDefintionForUrl config url
+          Utils.routeDefintionForUrl config url
       in
         test "routeDefintionForUrl"
           (assertEqual expectedAction actualAction)
@@ -88,7 +89,7 @@ paramsForRoute =
     run (route, url, expectedParams) =
       let
         actualParams =
-          Hop.paramsForRoute route url
+          Utils.paramsForRoute route url
       in
         test "paramsForRoute"
           (assertEqual expectedParams actualParams)
