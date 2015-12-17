@@ -3,6 +3,7 @@ module Hop (
   Params,
   Config,
   Router,
+  RouteDefinition,
   new,
   navigateTo,
   setQuery,
@@ -12,7 +13,7 @@ module Hop (
 {-| A router for single page applications
 
 # Types
-@docs Config, Router, Payload, Params
+@docs Config, Router, Payload, Params, RouteDefinition
 
 # Setup
 @docs new
@@ -62,6 +63,8 @@ type alias Router action = {
     run: Task () ()
   }
 
+{-| A route defintion
+-}
 type alias RouteDefinition action = (String, action)
 
 newPayload : Payload
