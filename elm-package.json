@@ -1,12 +1,14 @@
 {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "summary": "A router for SPAs in Elm",
     "repository": "https://github.com/sporto/hop.git",
     "license": "MIT",
     "source-directories": [
         "."
     ],
-    "exposed-modules": ["Hop"],
+    "exposed-modules": [
+        "Hop"
+    ],
     "dependencies": {
         "deadfoxygrandpa/elm-test": "3.0.1 <= v < 4.0.0",
         "elm-community/elm-history": "1.0.1 <= v < 2.0.0",
