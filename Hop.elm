@@ -51,10 +51,9 @@ type alias Params = Types.Params
 {-| Configuration input for Hop.new
 -}
 type alias Config partialAction = Types.Config partialAction
-
 {-| Partial application action
 -}
-type alias UserAction action = Types.UserAction action
+type alias UserPartialAction action = Types.UserPartialAction action
 
 {-| Router record created by Hop.new
 -}
@@ -78,7 +77,7 @@ newPayload = {
         notFoundAction = ShowNotFound
       }
 -}
-new: Config (UserAction action) -> Router action
+new: Config (UserPartialAction action) -> Router action
 new config =
   {
     signal = hashChangeSignal config,
@@ -91,11 +90,11 @@ Each time the hash is changed get a signal
 We need to pass this signal to the main application
 -- ! And here as well, map to the correct user'action
 -}
-hashChangeSignal : Config (UserAction action) -> Signal action
+hashChangeSignal : Config (UserPartialAction action) -> Signal action
 hashChangeSignal config =
     Signal.map (userActionFromUrlString config) History.hash
 
-userActionFromUrlString : Config (UserAction action) -> String -> action
+userActionFromUrlString : Config (UserPartialAction action) -> String -> action
 userActionFromUrlString config urlString =
   let
     url

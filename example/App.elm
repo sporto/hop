@@ -39,8 +39,12 @@ user2 =
 languages : List Models.Language
 languages =
   [
-    {id = "1", name = "Elm"},
-    {id = "2", name = "JavaScript"}
+    {id = "1", name = "Elm"}
+  , {id = "2", name = "JavaScript"}
+  , {id = "3", name = "Go"}
+  , {id = "4", name = "Rust"}
+  , {id = "5", name = "Elixir"}
+  , {id = "6", name = "Ruby"}
   ]
 
 zeroModel : Model
@@ -109,8 +113,6 @@ containerStyle : H.Attribute
 containerStyle =
   style
     [ ("backgroundColor", "red")
-    , ("height", "90px")
-    , ("width", "100%")
     , ("margin-bottom", "5rem")
     ]      
 

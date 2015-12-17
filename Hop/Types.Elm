@@ -12,7 +12,7 @@ type alias Payload = {
     url: Erl.Url
   }
 
-type alias UserAction action = Payload -> action
+type alias UserPartialAction action = Payload -> action
 
 type alias Config partialAction = {
     notFoundAction: partialAction,
