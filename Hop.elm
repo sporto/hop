@@ -28,6 +28,7 @@ import History
 import Task exposing (Task)
 import Effects exposing (Effects, Never)
 import Dict
+import Lib.Utils exposing (..)
 
 -- TYPES
 
@@ -190,19 +191,7 @@ clearQuery currentUrl =
   in
     navigateToUrl urlWithoutQuery
 
-{-
-Take the route defintion and return a List
-"/users/:id" --> ["users", ":id"]
--}
-parseRouteFragment: String -> List String
-parseRouteFragment route =
-  let
-    notEmpty x=
-      not (String.isEmpty x)
-  in
-    route
-      |> String.split "/"
-      |> List.filter notEmpty
+
 
 routeDefintionForUrl : Config partialAction -> Erl.Url -> RouteDefinition partialAction
 routeDefintionForUrl config url =
