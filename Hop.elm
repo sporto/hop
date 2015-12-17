@@ -10,7 +10,7 @@ module Hop (
   clearQuery
   ) where
 
-{-| A router for single page applications
+{-| A router for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
 # Types
 @docs Config, Router, Payload, Params, RouteDefinition
