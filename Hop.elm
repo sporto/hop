@@ -1,4 +1,25 @@
-module Hop where
+module Hop (
+  Payload,
+  Params,
+  Config,
+  Router,
+  new,
+  navigateTo,
+  setQuery,
+  clearQuery
+  ) where
+
+{-| A router for single page applications
+
+# Types
+@docs Config, Router, Payload, Params
+
+# Setup
+@docs new
+
+# Navigation
+@docs navigateTo, setQuery, clearQuery
+-}
 
 import Erl
 import String
@@ -7,12 +28,18 @@ import Task exposing (Task)
 import Effects exposing (Effects, Never)
 import Dict
 
+-- TYPES
+
 type Action
   = NoOp
   | GoToRouteResult (Result () ()) -- We don't care about this one, remove
 
+{-| A Dict that holds parameters for the current route
+-}
 type alias Params = Dict.Dict String String
 
+{-| Payload returned by the router when calling routing actions
+-}
 type alias Payload = {
     params: Params,
     url: Erl.Url
@@ -20,11 +47,15 @@ type alias Payload = {
 
 type alias UserPartialAction action = Payload -> action
 
+{-| Configuration input for Hop.new
+-}
 type alias Config partialAction = {
     notFoundAction: partialAction,
     routes: List (RouteDefinition partialAction)
   }
 
+{-| Router record created by Hop.new
+-}
 type alias Router action = {
     signal: Signal action,
     payload: Payload,
@@ -39,6 +70,14 @@ newPayload = {
     url = Erl.new
   }
 
+{-| Create a Hop.Router
+
+    router =
+      Hop.new {
+        routes = routes,
+        notFoundAction = ShowNotFound
+      }
+-}
 new: Config (UserPartialAction action) -> Router action
 new config =
   {
@@ -72,10 +111,14 @@ userActionFromUrlString config urlString =
   in
     userAction payload
 
-{-
-  Changes the location (hash and query)
-  using a string
- -}
+{-| Changes the location (hash and query)
+
+    update action model =
+      case action of
+        ...
+        NavigateTo path ->
+          (model, Effects.map HopAction (Hop.navigateTo path))
+-}
 navigateTo : String -> (Effects Action)
 navigateTo route =
   let
@@ -109,6 +152,16 @@ navigateToUrl url =
   in
     navigateTo route
 
+{-| Set query string values
+
+    update action model =
+      case action of
+        ...
+        SetQuery query ->
+          (model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
+
+  To remove a value set the value to ""
+-}
 setQuery : Erl.Url -> Params -> (Effects Action)
 setQuery currentUrl query =
   let
@@ -118,6 +171,14 @@ setQuery currentUrl query =
   in
     navigateToUrl urlWithQuery
 
+{-| Clear all query string values
+
+    update action model =
+      case action of
+        ...
+        ClearQuery ->
+          (model, Effects.map HopAction (Hop.clearQuery model.routerPayload.url))
+-}
 clearQuery : Erl.Url -> (Effects Action)
 clearQuery currentUrl =
   let

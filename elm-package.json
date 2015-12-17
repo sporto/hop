@@ -6,7 +6,7 @@
     "source-directories": [
         "."
     ],
-    "exposed-modules": [],
+    "exposed-modules": ["Hop"],
     "dependencies": {
         "deadfoxygrandpa/elm-test": "3.0.1 <= v < 4.0.0",
         "elm-community/elm-history": "1.0.1 <= v < 2.0.0",
