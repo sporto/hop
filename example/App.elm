@@ -223,7 +223,7 @@ notFoundView address model =
 
 -- ROUTING
 
-routes : List (String, Hop.UserPartialAction Action)
+routes : List (String, Hop.Payload -> Action)
 routes =
   [
     ("/users", ShowUsers),

@@ -4,6 +4,7 @@ module Hop (
   Config,
   Router,
   RouteDefinition,
+  Action,
   new,
   navigateTo,
   setQuery,
@@ -13,7 +14,7 @@ module Hop (
 {-| A router for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
 # Types
-@docs Config, Router, Payload, Params, RouteDefinition
+@docs Config, Router, Payload, Params, RouteDefinition, Action
 
 # Setup
 @docs new
@@ -33,6 +34,8 @@ import Hop.Types as Types
 
 -- TYPES
 
+{-| Actions
+-}
 type Action
   = NoOp
   | GoToRouteResult (Result () ()) -- We don't care about this one, remove
@@ -48,7 +51,10 @@ type alias Params = Types.Params
 {-| Configuration input for Hop.new
 -}
 type alias Config partialAction = Types.Config partialAction
-type alias UserPartialAction action = Types.UserPartialAction action
+
+{-| Partial application action
+-}
+type alias UserAction action = Types.UserAction action
 
 {-| Router record created by Hop.new
 -}
@@ -72,7 +78,7 @@ newPayload = {
         notFoundAction = ShowNotFound
       }
 -}
-new: Config (UserPartialAction action) -> Router action
+new: Config (UserAction action) -> Router action
 new config =
   {
     signal = hashChangeSignal config,
@@ -85,11 +91,11 @@ Each time the hash is changed get a signal
 We need to pass this signal to the main application
 -- ! And here as well, map to the correct user'action
 -}
-hashChangeSignal : Config (UserPartialAction action) -> Signal action
+hashChangeSignal : Config (UserAction action) -> Signal action
 hashChangeSignal config =
     Signal.map (userActionFromUrlString config) History.hash
 
-userActionFromUrlString : Config (UserPartialAction action) -> String -> action
+userActionFromUrlString : Config (UserAction action) -> String -> action
 userActionFromUrlString config urlString =
   let
     url

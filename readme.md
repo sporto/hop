@@ -20,7 +20,8 @@ import Hop
 
 ```elm
 type Action
-	= ShowUsers Hop.Payload
+  = HopAction Hop.Action
+	| ShowUsers Hop.Payload
 	| ShowUser Hop.Payload
 	| ShowNotFound Hop.Payload
 ```
@@ -32,6 +33,7 @@ You need to define an action for when a route is not found e.g. `ShowNotFound`.
 ### Define your routes:
 
 ```elm
+routes : List (String, Hop.Payload -> Action)
 routes = [
 		("/users", ShowUsers),
 		("/users/:id", ShowUser)
@@ -45,6 +47,7 @@ To define dynamic parameter use `:`, this parameters will be filled by the route
 ### Create the router
 
 ```elm
+router : Hop.Router Action
 router =
 	Hop.new {
 		routes = routes,
