@@ -5,4 +5,9 @@ type alias User = {
   name: String
 }
 
+type alias Language = {
+    id: String,
+    name: String
+  }
+
 type alias UserList = List User

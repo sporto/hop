@@ -7,21 +7,25 @@ import Debug
 
 import StartApp
 import Effects exposing (Effects, Never)
-import Html.Attributes exposing (href)
+import Html.Attributes exposing (href, style)
 import Task exposing (Task)
 import Debug
 import Hop
 import Example.UserEdit as UserEdit
 import Example.Models as Models
+import Example.Languages.List as LanguageList
+import Example.Languages.Actions as LanguageActions
 
---type alias View = Signal.Address Action -> AppModel -> H.Html
+--type alias View = Signal.Address Action -> Model -> H.Html
 
-type alias AppModel = {
+type alias Model = {
   count: Int,
   routerPayload: Hop.Payload,
   selectedUser: Models.User,
   users: Models.UserList,
-  view: String
+  view: String,
+  languages: List Models.Language,
+  selectedLanguage: Maybe Models.Language
 }
 
 user1 : Models.User
@@ -32,18 +36,28 @@ user2 : Models.User
 user2 =
   Models.User "2" "Sally"
 
-zeroModel : AppModel
+languages : List Models.Language
+languages =
+  [
+    {id = "1", name = "Elm"},
+    {id = "2", name = "JavaScript"}
+  ]
+
+zeroModel : Model
 zeroModel =
   {
     count = 1,
     routerPayload = router.payload,
     selectedUser = Models.User "" "",
     users = [user1, user2],
-    view = ""
+    view = "",
+    languages = languages,
+    selectedLanguage = Maybe.Nothing
   }
 
 type Action
   = HopAction Hop.Action
+  | LanguageAction LanguageActions.Action
   | Increment
   | NavigateTo String
   | SetQuery (Dict.Dict String String)
@@ -56,11 +70,11 @@ type Action
   | ShowNotFound Hop.Payload
   | NoOp
 
-init : (AppModel, Effects Action)
+init : (Model, Effects Action)
 init =
   (zeroModel, Effects.none)
 
-update : Action -> AppModel -> (AppModel, Effects Action)
+update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
     Increment ->
@@ -91,10 +105,22 @@ update action model =
     _ ->
       (model, Effects.none)
 
-view : Signal.Address Action -> AppModel -> H.Html
+containerStyle : H.Attribute
+containerStyle =
+  style
+    [ ("backgroundColor", "red")
+    , ("height", "90px")
+    , ("width", "100%")
+    , ("margin-bottom", "5rem")
+    ]      
+
+view : Signal.Address Action -> Model -> H.Html
 view address model =
   H.div [] [
     H.text (toString model.count),
+    H.div [ containerStyle ] [
+      LanguageList.view (Signal.forwardTo address LanguageAction) model.languages
+    ],
     menu address model,
     H.h2 [] [
       H.text "Rendered view:"
@@ -102,7 +128,9 @@ view address model =
     subView address model
   ]
 
-menu : Signal.Address Action -> AppModel -> H.Html
+--languageListItem : Signal.Address Action ->  -> H.Html
+
+menu : Signal.Address Action -> Model -> H.Html
 menu address model =
   H.div [] [
     H.button [ Html.Events.onClick address (Increment) ] [
@@ -148,7 +176,7 @@ menuLink path label =
     H.text label
   ]
 
-subView : Signal.Address Action -> AppModel -> H.Html
+subView : Signal.Address Action -> Model -> H.Html
 subView address model =
   case model.view of
     "users" ->
@@ -177,13 +205,13 @@ subView address model =
       emptyView
 
 
-usersView : Signal.Address Action -> AppModel -> H.Html
+usersView : Signal.Address Action -> Model -> H.Html
 usersView address model =
   H.div [] [
     H.text "Users"
   ]
 
-userView : Signal.Address Action -> AppModel -> H.Html
+userView : Signal.Address Action -> Model -> H.Html
 userView address model =
   let
     userId =
@@ -205,7 +233,7 @@ getUser users id =
     |> List.filter (\user -> user.id == id)
     |> List.head
 
-searchView: Signal.Address Action -> AppModel -> H.Html
+searchView: Signal.Address Action -> Model -> H.Html
 searchView address model =
   let
     keyword =
@@ -215,7 +243,7 @@ searchView address model =
       H.text ("Search " ++ keyword)
     ]
 
-notFoundView: Signal.Address Action -> AppModel -> H.Html
+notFoundView: Signal.Address Action -> Model -> H.Html
 notFoundView address model =
   H.div [] [
     H.text "Not Found"
@@ -239,7 +267,7 @@ router =
     notFoundAction = ShowNotFound
   }
 
-app : StartApp.App AppModel
+app : StartApp.App Model
 app =
   StartApp.start {
     init = init,
