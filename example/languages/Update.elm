@@ -24,8 +24,21 @@ update action languages routerPayload =
           (languages, Effects.map Actions.HopAction navAction)
     Actions.Update id prop value ->
       -- need to update the language here
-      (languages, Effects.none)
+      let udpatedLanguages =
+        List.map (updateWithId id prop value) languages
+      in
+      (udpatedLanguages, Effects.none)
     Actions.SetQuery query ->
       (languages, Effects.map Actions.HopAction (Hop.setQuery routerPayload.url query))
     _ ->
       (languages, Effects.none)
+
+updateWithId id prop value language =
+  if id == language.id then
+    case prop of
+      "name" ->
+        {language | name = value}
+      _ ->
+          language
+  else
+    language
