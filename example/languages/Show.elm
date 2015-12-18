@@ -17,5 +17,17 @@ view : Signal.Address Actions.Action -> Models.Language -> H.Html
 view address language =
   H.div [ styles ] [
     H.h3 [] [ H.text language.name ],
-    H.img [ src ("images/" ++ language.image ++ ".png") ] []
+    H.img [ src ("images/" ++ language.image ++ ".png") ] [],
+    tags address language
+  ]
+
+tags : Signal.Address Actions.Action -> Models.Language -> H.Html
+tags address language =
+  H.div [] (List.map (tag address) language.tags)
+  
+
+tag : Signal.Address Actions.Action -> String -> H.Html
+tag address tagName =
+  H.span [] [
+    H.text (tagName ++ ", ")
   ]
