@@ -11,7 +11,6 @@ import Html.Attributes exposing (href, style)
 import Task exposing (Task)
 import Debug
 import Hop
-import Example.UserEdit as UserEdit
 import Example.Models as Models
 import Example.Languages.Actions as LanguageActions
 import Example.Languages.Update as LanguageUpdate
@@ -59,7 +58,6 @@ type Action
   | NavigateTo String
   | SetQuery (Dict.Dict String String)
   | ClearQuery
-  | UserEditAction UserEdit.Action
   | NoOp
 
 init : (Model, Effects Action)
@@ -81,12 +79,6 @@ update action model =
           LanguageUpdate.update subAction model.languages model.routerPayload
       in
         ({model | languages = languages}, Effects.map LanguageAction fx)
-    UserEditAction subAction ->
-      let
-        (user, fx) =
-          UserEdit.update subAction model.selectedUser
-      in
-        ({model | selectedUser = user}, Effects.map UserEditAction fx)
     ShowLanguage payload ->
       ({model | view = "language", routerPayload = payload}, Effects.none)
     ShowLanguages payload ->
@@ -172,20 +164,6 @@ subView address model =
       usersView address model
     "user" ->
       userView address model
-    "userEdit" ->
-      let
-        userId =
-          model.routerPayload.params
-            |> Dict.get "id"
-            |> Maybe.withDefault ""
-        maybeSelectedUser =
-          getUser model.users userId
-      in
-        case maybeSelectedUser of
-          Just user ->
-            UserEdit.view (Signal.forwardTo address UserEditAction) user
-          _ ->
-            emptyView
     "search" ->
       searchView address model
     "notFound" ->
