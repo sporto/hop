@@ -9,7 +9,7 @@ import Example.Languages.Actions as Actions
 
 update : Actions.Action -> List Models.Language -> Hop.Payload -> (List Models.Language, Effects Actions.Action)
 update action languages routerPayload =
-  case Debug.log "action" action of
+  case action of
     Actions.Show id ->
       let
         navAction =

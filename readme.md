@@ -270,6 +270,7 @@ Open in ip:8000
 
 # TODO:
 
+- ! SetQuery fails when the hash is empty
 - Change hash without changing query
 - Navigate without adding to history
 - Named routes maybe (Using the given action)

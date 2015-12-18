@@ -29,6 +29,7 @@ import History
 import Task exposing (Task)
 import Effects exposing (Effects, Never)
 import Dict
+import Debug
 import Hop.Utils exposing (..)
 import Hop.Types as Types
 
@@ -149,7 +150,7 @@ navigateToUrl url =
         |> List.head
         |> Maybe.withDefault ""
   in
-    navigateTo route
+    navigateTo (Debug.log "route" route)
 
 {-| Set query string values
 

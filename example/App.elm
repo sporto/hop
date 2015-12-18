@@ -18,7 +18,6 @@ import Example.Languages.Filter as LanguageFilter
 import Example.Languages.List as LanguageList
 import Example.Languages.Show as LanguageShow
 
---type alias View = Signal.Address Action -> Model -> H.Html
 
 type alias Model = {
   routerPayload: Hop.Payload,
@@ -56,8 +55,6 @@ type Action
   | ShowAbout Hop.Payload
   | ShowNotFound Hop.Payload
   | NavigateTo String
-  | SetQuery (Dict.Dict String String)
-  | ClearQuery
   | NoOp
 
 init : (Model, Effects Action)
@@ -69,10 +66,6 @@ update action model =
   case Debug.log "action" action of
     NavigateTo path ->
       (model, Effects.map HopAction (Hop.navigateTo path))
-    SetQuery query ->
-      (model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
-    ClearQuery ->
-      (model, Effects.map HopAction (Hop.clearQuery model.routerPayload.url))
     LanguageAction subAction ->
       let
         (languages, fx) =
