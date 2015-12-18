@@ -7,7 +7,8 @@ type alias User = {
 
 type alias Language = {
     id: String,
-    name: String
+    name: String,
+    image: String
   }
 
 type alias UserList = List User

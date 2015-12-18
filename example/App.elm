@@ -40,12 +40,18 @@ user2 =
 languages : List Models.Language
 languages =
   [
-    {id = "1", name = "Elm"}
-  , {id = "2", name = "JavaScript"}
-  , {id = "3", name = "Go"}
-  , {id = "4", name = "Rust"}
-  , {id = "5", name = "Elixir"}
-  , {id = "6", name = "Ruby"}
+    {id = "1", name = "Elm", image = "elm"},
+    {id = "2", name = "JavaScript", image = "js"},
+    {id = "3", name = "Go", image = "go"},
+    {id = "4", name = "Rust", image = "rust"},
+    {id = "5", name = "Elixir", image = "elixir"},
+    {id = "6", name = "Ruby", image = "ruby"},
+    {id = "7", name = "Python", image = "python"},
+    {id = "8", name = "Swift", image = "swift"},
+    {id = "9", name = "Haskell", image = "haskell"},
+    {id = "10", name = "Java", image = "java"},
+    {id = "11", name = "C#", image = "csharp"},
+    {id = "12", name = "PHP", image = "php"}
   ]
 
 zeroModel : Model
