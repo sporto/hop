@@ -10,7 +10,8 @@ import Example.Languages.Actions as Actions
 styles : H.Attribute
 styles =
   style [
-    ("float", "left")
+    ("float", "left"),
+    ("margin-right", "2rem")
   ]
 
 view : Signal.Address Actions.Action -> List Models.Language -> H.Html

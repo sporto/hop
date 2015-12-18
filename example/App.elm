@@ -15,6 +15,7 @@ import Example.UserEdit as UserEdit
 import Example.Models as Models
 import Example.Languages.Actions as LanguageActions
 import Example.Languages.Update as LanguageUpdate
+import Example.Languages.Filter as LanguageFilter
 import Example.Languages.List as LanguageList
 import Example.Languages.Show as LanguageShow
 
@@ -116,6 +117,7 @@ view : Signal.Address Action -> Model -> H.Html
 view address model =
   H.div [] [
     H.div [ containerStyle ] [
+      LanguageFilter.view (Signal.forwardTo address LanguageAction) model.languages,
       LanguageList.view (Signal.forwardTo address LanguageAction) model.languages,
       subView address model
     ],
