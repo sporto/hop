@@ -250,6 +250,13 @@ __Call these actions from your views__
 button [ onClick address (SetQuery (Dict.singleton "color" "red")) ] [ text "Set query" ]
 ```
 
+# Example
+
+See example app in `./example` folder. To run the example app:
+
+- Clone this repo
+- Run `elm reactor`
+- Open `http://localhost:8000/example/App.elm`
 
 # Test
 
