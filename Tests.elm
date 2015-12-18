@@ -97,12 +97,35 @@ paramsForRoute =
     suite "paramsForRoute"
       (List.map run inputs)
 
+routeFromUrl =
+  let
+    empty =
+      Erl.new
+    inputs =
+      [
+        (empty, ""),
+        ({empty | hash = ["a"] }, "#a"),
+        ({empty | query = Dict.singleton "k" "1" }, "?k=1"),
+        ({empty | hash = ["a"], query = Dict.singleton "k" "1" }, "#a?k=1")
+      ]
+    run (url, expected) =
+      let
+        actual =
+          Utils.routeFromUrl url
+      in
+        test "routeFromUrl"
+          (assertEqual expected actual)
+  in
+    suite "routeFromUrl"
+      (List.map run inputs)
+
 all: Test
 all = 
   suite "Tests"
     [ 
-      routeDefintionForUrl,
+      paramsForRoute,
       parseRouteFragment,
-      paramsForRoute
+      routeDefintionForUrl,
+      routeFromUrl
     ]
 

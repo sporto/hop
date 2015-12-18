@@ -5,11 +5,35 @@ import String
 import Dict
 import Hop.Types as Types
 
+routeFromUrl : Erl.Url -> String
+routeFromUrl url =
+  let
+    path =
+      Erl.toString url
+  in
+    if String.contains "#" path then
+      path
+        |> String.split "#"
+        |> List.drop 1
+        |> List.head
+        |> Maybe.withDefault ""
+        |> String.append "#"
+    else
+      if String.contains "?" path then
+        path
+          |> String.split "?"
+          |> List.drop 1
+          |> List.head
+          |> Maybe.withDefault ""
+          |> String.append "?"
+        else
+          ""
+
 {-
 Take the route defintion and return a List
 "/users/:id" --> ["users", ":id"]
 -}
-parseRouteFragment: String -> List String
+parseRouteFragment : String -> List String
 parseRouteFragment route =
   let
     notEmpty x=
@@ -28,7 +52,7 @@ routeDefintionForUrl config url =
   Given the routes and the current url
   Return the route tuple that matches
 -}
-matchedRoute: List (Types.RouteDefinition action) -> Erl.Url -> Maybe (Types.RouteDefinition action)
+matchedRoute : List (Types.RouteDefinition action) -> Erl.Url -> Maybe (Types.RouteDefinition action)
 matchedRoute routes url =
   routes
     |> List.filter (isRouteMatch url)
@@ -38,7 +62,7 @@ matchedRoute routes url =
   Given an url and a route definition
   Return Bool if it matches
 -}
-isRouteMatch: Erl.Url -> (Types.RouteDefinition action) -> Bool
+isRouteMatch : Erl.Url -> (Types.RouteDefinition action) -> Bool
 isRouteMatch url routeDef =
   let
     currentFragmentList =
@@ -61,14 +85,14 @@ isRouteMatch url routeDef =
   Check if a route hash matches 
   eg. (":id", "1") == True
 -}
-isRouteFragmentMatch: (String, String) -> Bool
+isRouteFragmentMatch : (String, String) -> Bool
 isRouteFragmentMatch (actual, def) =
   if isRouteHashPlaceholder def then
     True
   else
     (def == actual)
 
-isRouteHashPlaceholder: String -> Bool
+isRouteHashPlaceholder : String -> Bool
 isRouteHashPlaceholder hash =
   String.startsWith ":" hash
 
@@ -78,7 +102,7 @@ isRouteHashPlaceholder hash =
   Includes the query string
   e.g. "/users/:id" -> url -> dict
 -}
-paramsForRoute: String -> Erl.Url -> Dict.Dict String String
+paramsForRoute : String -> Erl.Url -> Dict.Dict String String
 paramsForRoute route url =
   let
     routeFragments =

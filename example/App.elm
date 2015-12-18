@@ -63,7 +63,7 @@ init =
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
-  case Debug.log "action" action of
+  case action of
     NavigateTo path ->
       (model, Effects.map HopAction (Hop.navigateTo path))
     LanguageAction subAction ->
@@ -138,7 +138,7 @@ pageView address model =
 
 subView : Signal.Address Action -> Model -> H.Html
 subView address model =
-  case Debug.log "model.view" model.view of
+  case model.view of
     "language" ->
       let
         languageId =

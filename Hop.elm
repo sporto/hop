@@ -142,15 +142,10 @@ navigateTo route =
 navigateToUrl : Erl.Url -> (Effects Action)
 navigateToUrl url =
   let
-    path =
-      Erl.toString url
     route =
-      String.split "#" path
-        |> List.drop 1
-        |> List.head
-        |> Maybe.withDefault ""
+      routeFromUrl url
   in
-    navigateTo (Debug.log "route" route)
+    navigateTo route
 
 {-| Set query string values
 
