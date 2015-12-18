@@ -52,16 +52,14 @@ zeroModel =
 type Action
   = HopAction Hop.Action
   | LanguageAction LanguageActions.Action
+  | ShowLanguages Hop.Payload
   | ShowLanguage Hop.Payload
+  | ShowAbout Hop.Payload
+  | ShowNotFound Hop.Payload
   | NavigateTo String
   | SetQuery (Dict.Dict String String)
   | ClearQuery
   | UserEditAction UserEdit.Action
-  | ShowUsers Hop.Payload
-  | ShowUser Hop.Payload
-  | ShowUserEdit Hop.Payload
-  | ShowSearch Hop.Payload
-  | ShowNotFound Hop.Payload
   | NoOp
 
 init : (Model, Effects Action)
@@ -91,15 +89,10 @@ update action model =
         ({model | selectedUser = user}, Effects.map UserEditAction fx)
     ShowLanguage payload ->
       ({model | view = "language", routerPayload = payload}, Effects.none)
-    ShowUsers payload ->
-      ({model | view = "users", routerPayload = payload}, Effects.none)
-    ShowUser payload ->
-      Debug.log "ShowUser"
-      ({model | view = "user", routerPayload = payload}, Effects.none)
-    ShowUserEdit payload ->
-      ({model | view = "userEdit", routerPayload = payload}, Effects.none)
-    ShowSearch payload ->
-      ({model | view = "search", routerPayload = payload}, Effects.none)
+    ShowLanguages payload ->
+      ({model | view = "languages", routerPayload = payload}, Effects.none)
+    ShowAbout payload ->
+      ({model | view = "about", routerPayload = payload}, Effects.none)
     ShowNotFound payload ->
       ({model | view = "notFound", routerPayload = payload}, Effects.none)
     _ ->
@@ -116,12 +109,8 @@ containerStyle =
 view : Signal.Address Action -> Model -> H.Html
 view address model =
   H.div [] [
-    H.div [ containerStyle ] [
-      LanguageFilter.view (Signal.forwardTo address LanguageAction) model.languages model.routerPayload,
-      LanguageList.view (Signal.forwardTo address LanguageAction) model.languages model.routerPayload,
-      subView address model
-    ],
-    menu address model
+    menu address model,
+    pageView address model
   ]
 
 --languageListItem : Signal.Address Action ->  -> H.Html
@@ -130,30 +119,9 @@ menu : Signal.Address Action -> Model -> H.Html
 menu address model =
   H.div [] [
     H.div [] [
-      H.div [] [ H.text "Using actions: " ],
-      -- Here we should change the route in a nicer way
-      menuBtn address (NavigateTo "/users") "Users",
-      menuBtn address (NavigateTo "/users/1") "User 1",
-      menuBtn address (NavigateTo "/users/2") "User 2",
-      menuBtn address (NavigateTo "/users/1/edit") "User Edit 1",
-      menuBtn address (NavigateTo "/users/2/edit") "User Edit 2",
-      H.br [] [],
-      menuBtn address (NavigateTo "/search?keyword=elm") "Go to search with query",
-      menuBtn address (SetQuery (Dict.singleton "color" "red")) "Add to query `color=red`",
-      menuBtn address (SetQuery (Dict.singleton "size" "big")) "Add to query `size=big`",
-      menuBtn address (SetQuery (Dict.singleton "color" "")) "Clear query `color`",
-      menuBtn address (ClearQuery) "Clear all query"
-    ],
-
-    H.div [] [
-      H.div [] [ H.text "Plain a tags: " ],
-      menuLink "#/users" "Users",
+      menuLink "#/" "Languages",
       H.text "|",
-      menuLink "#/users/1" "User 1",
-      H.text "|",
-      menuLink "#/users/2" "User 2",
-      H.text "|",
-      menuLink "#/users/2/edit" "User 1 edit"
+      menuLink "#/about" "About"
     ]
   ]
 
@@ -168,6 +136,20 @@ menuLink path label =
  H.a [ href path ] [
     H.text label
   ]
+
+pageView : Signal.Address Action -> Model -> H.Html
+pageView address model =
+  case model.view of
+    "about" ->
+      H.div [] [
+        H.h2 [] [ H.text "About" ]
+      ]
+    _ ->
+      H.div [ containerStyle ] [
+        LanguageFilter.view (Signal.forwardTo address LanguageAction) model.languages model.routerPayload,
+        LanguageList.view (Signal.forwardTo address LanguageAction) model.languages model.routerPayload,
+        subView address model
+      ]
 
 subView : Signal.Address Action -> Model -> H.Html
 subView address model =
@@ -267,11 +249,9 @@ notFoundView address model =
 routes : List (String, Hop.Payload -> Action)
 routes =
   [
+    ("/", ShowLanguages),
     ("/languages/:id", ShowLanguage),
-    ("/users", ShowUsers),
-    ("/users/:id", ShowUser),
-    ("/users/:id/edit", ShowUserEdit),
-    ("/search", ShowSearch)
+    ("/about", ShowAbout)
   ]
 
 router : Hop.Router Action
