@@ -80,7 +80,7 @@ update action model =
     LanguageAction subAction ->
       let
         (languages, fx) =
-          LanguageUpdate.update subAction model.languages
+          LanguageUpdate.update subAction model.languages model.routerPayload
       in
         ({model | languages = languages}, Effects.map LanguageAction fx)
     UserEditAction subAction ->

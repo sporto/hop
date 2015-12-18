@@ -16,7 +16,7 @@ styles =
 view : Signal.Address Actions.Action -> Models.Language -> H.Html
 view address language =
   H.div [ styles ] [
-    H.h3 [] [ H.text language.name ],
+    H.h2 [] [ H.text language.name ],
     H.img [ src ("images/" ++ language.image ++ ".png") ] [],
     tags address language
   ]

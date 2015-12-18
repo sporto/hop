@@ -17,7 +17,7 @@ styles =
 view : Signal.Address Actions.Action -> List Models.Language -> H.Html
 view address languages =
   H.div [ styles ] [
-    H.h3 [] [ H.text "Languages" ],
+    H.h2 [] [ H.text "Languages" ],
     H.table [] [
       H.tbody [] (tableRow address languages)
     ]
