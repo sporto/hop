@@ -17,7 +17,7 @@ import Example.Languages.Update as LanguageUpdate
 import Example.Languages.Filter as LanguageFilter
 import Example.Languages.List as LanguageList
 import Example.Languages.Show as LanguageShow
-
+import Example.Languages.Edit as LanguageEdit
 
 type alias Model = {
   routerPayload: Hop.Payload,
@@ -52,6 +52,7 @@ type Action
   | LanguageAction LanguageActions.Action
   | ShowLanguages Hop.Payload
   | ShowLanguage Hop.Payload
+  | EditLanguage Hop.Payload
   | ShowAbout Hop.Payload
   | ShowNotFound Hop.Payload
   | NavigateTo String
@@ -74,6 +75,8 @@ update action model =
         ({model | languages = languages}, Effects.map LanguageAction fx)
     ShowLanguage payload ->
       ({model | view = "language", routerPayload = payload}, Effects.none)
+    EditLanguage payload ->
+      ({model | view = "languageEdit", routerPayload = payload}, Effects.none)
     ShowLanguages payload ->
       ({model | view = "languages", routerPayload = payload}, Effects.none)
     ShowAbout payload ->
@@ -153,35 +156,24 @@ subView address model =
             LanguageShow.view (Signal.forwardTo address LanguageAction) language
           _ ->
             emptyView
-    "users" ->
-      usersView address model
-    "user" ->
-      userView address model
-    "search" ->
-      searchView address model
+    "languageEdit" ->
+      let
+        languageId =
+          model.routerPayload.params
+            |> Dict.get "id"
+            |> Maybe.withDefault ""
+        maybeLanguage =
+          getLanguage model.languages languageId
+      in
+        case maybeLanguage of
+          Just language ->
+            LanguageEdit.view (Signal.forwardTo address LanguageAction) language
+          _ ->
+            emptyView
     "notFound" ->
       notFoundView address model
     _ ->
       emptyView
-
-
-usersView : Signal.Address Action -> Model -> H.Html
-usersView address model =
-  H.div [] [
-    H.text "Users"
-  ]
-
-userView : Signal.Address Action -> Model -> H.Html
-userView address model =
-  let
-    userId =
-      Dict.get "id" model.routerPayload.params |> Maybe.withDefault ""
-    color =
-      Dict.get "color" model.routerPayload.params |> Maybe.withDefault ""
-  in
-    H.div [] [
-      H.text ("User " ++ userId ++ " " ++ color)
-    ]
 
 emptyView : H.Html
 emptyView =
@@ -199,16 +191,6 @@ getLanguage languages id =
     |> List.filter (\lang -> lang.id == id)
     |> List.head
 
-searchView: Signal.Address Action -> Model -> H.Html
-searchView address model =
-  let
-    keyword =
-      Dict.get "keyword" model.routerPayload.params |> Maybe.withDefault ""
-  in
-    H.div [] [
-      H.text ("Search " ++ keyword)
-    ]
-
 notFoundView: Signal.Address Action -> Model -> H.Html
 notFoundView address model =
   H.div [] [
@@ -222,6 +204,7 @@ routes =
   [
     ("/", ShowLanguages),
     ("/languages/:id", ShowLanguage),
+    ("/languages/:id/edit", EditLanguage),
     ("/about", ShowAbout)
   ]
 

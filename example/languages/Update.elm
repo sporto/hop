@@ -9,13 +9,22 @@ import Example.Languages.Actions as Actions
 
 update : Actions.Action -> List Models.Language -> Hop.Payload -> (List Models.Language, Effects Actions.Action)
 update action languages routerPayload =
-  case action of
+  case Debug.log "action" action of
     Actions.Show id ->
       let
         navAction =
           Hop.navigateTo ("/languages/" ++ id)
       in
         (languages, Effects.map Actions.HopAction navAction)
+    Actions.Edit id ->
+      let
+        navAction =
+          Hop.navigateTo ("/languages/" ++ id ++ "/edit")
+        in
+          (languages, Effects.map Actions.HopAction navAction)
+    Actions.Update id prop value ->
+      -- need to update the language here
+      (languages, Effects.none)
     Actions.SetQuery query ->
       (languages, Effects.map Actions.HopAction (Hop.setQuery routerPayload.url query))
     _ ->

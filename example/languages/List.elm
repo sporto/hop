@@ -55,10 +55,15 @@ rowView address language =
       H.text language.name
     ],
     H.td [] [
-      H.button [
-        Html.Events.onClick address (Actions.Show language.id)
-      ] [
-        H.text "View"
-      ]
+      actionBtn address (Actions.Show language.id) "Show",
+      actionBtn address (Actions.Edit language.id) "Edit"
     ]
   ]
+
+actionBtn address action label =
+  H.button [
+    Html.Events.onClick address action
+  ] [
+    H.text label
+  ]
+
