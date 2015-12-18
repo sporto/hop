@@ -4,6 +4,7 @@ import Html as H
 import Html.Events
 import Html.Attributes exposing (href, style)
 import Dict
+import Hop
 
 import Example.Models as Models
 import Example.Languages.Actions as Actions
@@ -16,8 +17,8 @@ styles =
     ("margin-right", "2rem")
   ]
 
-view : Signal.Address Actions.Action -> List Models.Language -> H.Html
-view address languages =
+view : Signal.Address Actions.Action -> List Models.Language -> Hop.Payload -> H.Html
+view address languages payload =
   H.div [ styles ] [
     H.h2 [] [ H.text "Filter" ],
     H.div [] [

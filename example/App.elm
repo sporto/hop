@@ -70,7 +70,7 @@ init =
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
-  case action of
+  case Debug.log "action" action of
     NavigateTo path ->
       (model, Effects.map HopAction (Hop.navigateTo path))
     SetQuery query ->
@@ -117,8 +117,8 @@ view : Signal.Address Action -> Model -> H.Html
 view address model =
   H.div [] [
     H.div [ containerStyle ] [
-      LanguageFilter.view (Signal.forwardTo address LanguageAction) model.languages,
-      LanguageList.view (Signal.forwardTo address LanguageAction) model.languages,
+      LanguageFilter.view (Signal.forwardTo address LanguageAction) model.languages model.routerPayload,
+      LanguageList.view (Signal.forwardTo address LanguageAction) model.languages model.routerPayload,
       subView address model
     ],
     menu address model
