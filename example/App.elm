@@ -124,7 +124,8 @@ containerStyle : H.Attribute
 containerStyle =
   style
     [
-      ("margin-bottom", "5rem")
+      ("margin-bottom", "5rem"),
+      ("overflow", "auto")
     ]      
 
 view : Signal.Address Action -> Model -> H.Html
