@@ -283,4 +283,5 @@ Open in ip:8000
 
 # Changelog
 
+`1.1.1` Fixed issue where query string won't be set when no hash wash present
 
