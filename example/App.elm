@@ -13,9 +13,10 @@ import Debug
 import Hop
 import Example.UserEdit as UserEdit
 import Example.Models as Models
-import Example.Languages.List as LanguageList
 import Example.Languages.Actions as LanguageActions
 import Example.Languages.Update as LanguageUpdate
+import Example.Languages.List as LanguageList
+import Example.Languages.Show as LanguageShow
 
 --type alias View = Signal.Address Action -> Model -> H.Html
 
@@ -63,6 +64,7 @@ zeroModel =
 type Action
   = HopAction Hop.Action
   | LanguageAction LanguageActions.Action
+  | ShowLanguage Hop.Payload
   | Increment
   | NavigateTo String
   | SetQuery (Dict.Dict String String)
@@ -102,6 +104,8 @@ update action model =
           UserEdit.update subAction model.selectedUser
       in
         ({model | selectedUser = user}, Effects.map UserEditAction fx)
+    ShowLanguage payload ->
+      ({model | view = "language", routerPayload = payload}, Effects.none)
     ShowUsers payload ->
       ({model | view = "users", routerPayload = payload}, Effects.none)
     ShowUser payload ->
@@ -119,8 +123,8 @@ update action model =
 containerStyle : H.Attribute
 containerStyle =
   style
-    [ ("backgroundColor", "red")
-    , ("margin-bottom", "5rem")
+    [
+      ("margin-bottom", "5rem")
     ]      
 
 view : Signal.Address Action -> Model -> H.Html
@@ -128,13 +132,10 @@ view address model =
   H.div [] [
     H.text (toString model.count),
     H.div [ containerStyle ] [
-      LanguageList.view (Signal.forwardTo address LanguageAction) model.languages
+      LanguageList.view (Signal.forwardTo address LanguageAction) model.languages,
+      subView address model
     ],
-    menu address model,
-    H.h2 [] [
-      H.text "Rendered view:"
-    ],
-    subView address model
+    menu address model
   ]
 
 --languageListItem : Signal.Address Action ->  -> H.Html
@@ -187,7 +188,21 @@ menuLink path label =
 
 subView : Signal.Address Action -> Model -> H.Html
 subView address model =
-  case model.view of
+  case Debug.log "model.view" model.view of
+    "language" ->
+      let
+        languageId =
+          model.routerPayload.params
+            |> Dict.get "id"
+            |> Maybe.withDefault ""
+        maybeLanguage =
+          getLanguage model.languages languageId
+      in
+        case maybeLanguage of
+          Just language ->
+            LanguageShow.view (Signal.forwardTo address LanguageAction) language
+          _ ->
+            emptyView
     "users" ->
       usersView address model
     "user" ->
@@ -242,6 +257,12 @@ getUser users id =
     |> List.filter (\user -> user.id == id)
     |> List.head
 
+getLanguage: List Models.Language -> String -> Maybe Models.Language
+getLanguage languages id =
+  languages
+    |> List.filter (\lang -> lang.id == id)
+    |> List.head
+
 searchView: Signal.Address Action -> Model -> H.Html
 searchView address model =
   let
@@ -263,6 +284,7 @@ notFoundView address model =
 routes : List (String, Hop.Payload -> Action)
 routes =
   [
+    ("/languages/:id", ShowLanguage),
     ("/users", ShowUsers),
     ("/users/:id", ShowUser),
     ("/users/:id/edit", ShowUserEdit),
