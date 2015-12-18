@@ -21,7 +21,6 @@ import Example.Languages.Show as LanguageShow
 --type alias View = Signal.Address Action -> Model -> H.Html
 
 type alias Model = {
-  count: Int,
   routerPayload: Hop.Payload,
   selectedUser: Models.User,
   users: Models.UserList,
@@ -52,7 +51,6 @@ languages =
 zeroModel : Model
 zeroModel =
   {
-    count = 1,
     routerPayload = router.payload,
     selectedUser = Models.User "" "",
     users = [user1, user2],
@@ -65,7 +63,6 @@ type Action
   = HopAction Hop.Action
   | LanguageAction LanguageActions.Action
   | ShowLanguage Hop.Payload
-  | Increment
   | NavigateTo String
   | SetQuery (Dict.Dict String String)
   | ClearQuery
@@ -84,8 +81,6 @@ init =
 update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
-    Increment ->
-      ({model | count = model.count + 1 }, Effects.none)
     NavigateTo path ->
       (model, Effects.map HopAction (Hop.navigateTo path))
     SetQuery query ->
@@ -131,7 +126,6 @@ containerStyle =
 view : Signal.Address Action -> Model -> H.Html
 view address model =
   H.div [] [
-    H.text (toString model.count),
     H.div [ containerStyle ] [
       LanguageList.view (Signal.forwardTo address LanguageAction) model.languages,
       subView address model
@@ -144,9 +138,6 @@ view address model =
 menu : Signal.Address Action -> Model -> H.Html
 menu address model =
   H.div [] [
-    H.button [ Html.Events.onClick address (Increment) ] [
-      H.text "Count"
-    ],
     H.div [] [
       H.div [] [ H.text "Using actions: " ],
       -- Here we should change the route in a nicer way
