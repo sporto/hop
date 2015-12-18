@@ -1,5 +1,7 @@
 # Hop: A router for Elm SPAs
 
+![alt Hope](./assets/logo.png)
+
 ## How this works
 
 This router uses a list of tuples to configure routes e.g. `(route, action)`. When a route is matched the router will call the action specified with the appropiate parameters.
