@@ -1,6 +1,7 @@
 module Example.Languages.List where
 
 import Html as H
+import Html.Events
 import Example.Models as Models
 import Example.Languages.Actions as Actions
 
@@ -21,8 +22,14 @@ rowView: Signal.Address Actions.Action -> Models.Language -> H.Html
 rowView address language =
   H.tr [] [
     H.td [] [ H.text language.id ],
-    H.td [] [ H.text language.name ],
+    H.td [] [ 
+      H.text language.name
+    ],
     H.td [] [
-
+      H.button [
+        Html.Events.onClick address (Actions.Show language.id)
+      ] [
+        H.text "View"
+      ]
     ]
   ]

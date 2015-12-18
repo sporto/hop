@@ -15,6 +15,7 @@ import Example.UserEdit as UserEdit
 import Example.Models as Models
 import Example.Languages.List as LanguageList
 import Example.Languages.Actions as LanguageActions
+import Example.Languages.Update as LanguageUpdate
 
 --type alias View = Signal.Address Action -> Model -> H.Html
 
@@ -89,6 +90,12 @@ update action model =
       (model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
     ClearQuery ->
       (model, Effects.map HopAction (Hop.clearQuery model.routerPayload.url))
+    LanguageAction subAction ->
+      let
+        (languages, fx) =
+          LanguageUpdate.update subAction model.languages
+      in
+        ({model | languages = languages}, Effects.map LanguageAction fx)
     UserEditAction subAction ->
       let
         (user, fx) =
