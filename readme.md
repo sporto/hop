@@ -1,6 +1,6 @@
 # Hop: A router for Elm SPAs
 
-![alt Hope](./assets/logo.png)
+![alt Hope](https://raw.githubusercontent.com/sporto/hop/master/assets/logo.png)
 
 ## How this works
 
