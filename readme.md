@@ -262,13 +262,14 @@ Adds the given Dict to the existing query.
 Takes the current `url` as the first argument and a dictionary of key, values as second argument.
 Replaces the existing query with the given Dict.
 
-### `Hop.removeQuery` 
+### `Hop.removeQuery`
 
 Takes the current `url` as the first argument and a key as second argument.
 Removes that key / value from the query string.
 
-### `Hop.clearQuery` Takes the current `url`
+### `Hop.clearQuery`
 
+Takes the current `url`
 Removes the whole query string.
 
 # Example
