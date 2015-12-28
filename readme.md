@@ -269,7 +269,7 @@ Removes that key / value from the query string.
 
 ### `Hop.clearQuery`
 
-Takes the current `url`
+Takes the current `url`.
 Removes the whole query string.
 
 # Example
