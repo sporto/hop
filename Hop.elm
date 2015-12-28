@@ -7,7 +7,9 @@ module Hop (
   Action,
   new,
   navigateTo,
+  addQuery,
   setQuery,
+  removeQuery,
   clearQuery
   ) where
 
@@ -20,7 +22,7 @@ module Hop (
 @docs new
 
 # Navigation
-@docs navigateTo, setQuery, clearQuery
+@docs navigateTo, addQuery, removeQuery, setQuery, clearQuery
 -}
 
 import Erl
@@ -147,15 +149,32 @@ navigateToUrl url =
   in
     navigateTo route
 
-{-| Set query string values
+{-| Add query string values (patches any existing values)
+
+    update action model =
+      case action of
+        ...
+        AddQuery query ->
+          (model, Effects.map HopAction (Hop.addQuery model.routerPayload.url query))
+
+  To remove a value set the value to ""
+-}
+addQuery : Erl.Url -> Params -> (Effects Action)
+addQuery currentUrl query =
+  let
+    urlWithQuery =
+      Dict.toList query
+        |> List.foldl (\(key, val) -> Erl.addQuery key val ) currentUrl
+  in
+    navigateToUrl urlWithQuery
+
+{-| Set query string values (replaces any existing values)
 
     update action model =
       case action of
         ...
         SetQuery query ->
           (model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
-
-  To remove a value set the value to ""
 -}
 setQuery : Erl.Url -> Params -> (Effects Action)
 setQuery currentUrl query =
@@ -163,6 +182,22 @@ setQuery currentUrl query =
     urlWithQuery =
       Dict.toList query
         |> List.foldl (\(key, val) -> Erl.setQuery key val ) currentUrl
+  in
+    navigateToUrl urlWithQuery
+
+{-| Remove one query string value
+
+    update action model =
+      case action of
+        ...
+        RemoveQuery query ->
+          (model, Effects.map HopAction (Hop.removeQuery model.routerPayload.url key))
+-}
+removeQuery : Erl.Url -> String -> (Effects Action)
+removeQuery currentUrl key =
+  let
+    urlWithQuery =
+      Erl.removeQuery key currentUrl
   in
     navigateToUrl urlWithQuery
 

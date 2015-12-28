@@ -13,4 +13,5 @@ type Action
   | Edit String
   | Update Id Prop Value
   | HopAction Hop.Action
+  | AddQuery (Dict.Dict String String)
   | SetQuery (Dict.Dict String String)

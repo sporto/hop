@@ -227,6 +227,7 @@ __Add actions for changing the query string__
 ```elm
 type Action
 	= ...
+	| AddQuery (Dict.Dict String String)
 	| SetQuery (Dict.Dict String String)
   | ClearQuery
 ```
@@ -237,20 +238,38 @@ __Change update to respond to these actions__
 update action model =
 	case action of
 		...
+		AddQuery query ->
+			(model, Effects.map HopAction (Hop.addQuery model.routerPayload.url query))
 		SetQuery query ->
 			(model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
 		ClearQuery ->
 			(model, Effects.map HopAction (Hop.clearQuery model.routerPayload.url))
 ```
 
-`Hop.setQuery` Takes the current `url` as the first argument and a dictionary of key, values as second argument.
-`Hop.clearQuery` Takes the current `url`
-
 __Call these actions from your views__
 
 ```elm
 button [ onClick address (SetQuery (Dict.singleton "color" "red")) ] [ text "Set query" ]
 ```
+
+### `Hop.addQuery` 
+
+Takes the current `url` as the first argument and a dictionary of key, values as second argument.
+Adds the given Dict to the existing query.
+
+### `Hop.setQuery` 
+
+Takes the current `url` as the first argument and a dictionary of key, values as second argument.
+Replaces the existing query with the given Dict.
+
+### `Hop.removeQuery` 
+
+Takes the current `url` as the first argument and a key as second argument.
+Removes that key / value from the query string.
+
+### `Hop.clearQuery` Takes the current `url`
+
+Removes the whole query string.
 
 # Example
 

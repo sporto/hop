@@ -28,6 +28,8 @@ update action languages routerPayload =
         List.map (updateWithId id prop value) languages
       in
       (udpatedLanguages, Effects.none)
+    Actions.AddQuery query ->
+      (languages, Effects.map Actions.HopAction (Hop.addQuery routerPayload.url query))
     Actions.SetQuery query ->
       (languages, Effects.map Actions.HopAction (Hop.setQuery routerPayload.url query))
     _ ->
