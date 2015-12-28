@@ -1,6 +1,6 @@
 # Hop: A router for Elm SPAs
 
-![alt Hope](https://raw.githubusercontent.com/sporto/hop/master/assets/logo.png)
+![alt Hop](https://raw.githubusercontent.com/sporto/hop/master/assets/logo.png)
 
 ## How this works
 
@@ -8,7 +8,9 @@ This router uses a list of tuples to configure routes e.g. `(route, action)`. Wh
 
 To navigate to a different route you call `Hop.navigateTo`, this will return an effect that your application must run via ports.
 
-This router is made to work with StartApp. At the moment only hash routes are supported i.e. `#/users/1`.
+This router is made to work with StartApp. __At the moment only hash routes are supported i.e. `#/users/1`.__
+
+This library uses [Erl](http://package.elm-lang.org/packages/sporto/erl) for manipulating urls.
 
 ## Setup
 
@@ -252,24 +254,20 @@ __Call these actions from your views__
 button [ onClick address (SetQuery (Dict.singleton "color" "red")) ] [ text "Set query" ]
 ```
 
-### `Hop.addQuery` 
+### [`Hop.addQuery`](http://package.elm-lang.org/packages/sporto/hop/latest/Hop#addQuery)
 
-Takes the current `url` as the first argument and a dictionary of key, values as second argument.
 Adds the given Dict to the existing query.
 
-### `Hop.setQuery` 
+### [`Hop.setQuery`](http://package.elm-lang.org/packages/sporto/hop/latest/Hop#setQuery)
 
-Takes the current `url` as the first argument and a dictionary of key, values as second argument.
 Replaces the existing query with the given Dict.
 
-### `Hop.removeQuery`
+### [`Hop.removeQuery`](http://package.elm-lang.org/packages/sporto/hop/latest/Hop#removeQuery)
 
-Takes the current `url` as the first argument and a key as second argument.
 Removes that key / value from the query string.
 
-### `Hop.clearQuery`
+### [`Hop.clearQuery`](http://package.elm-lang.org/packages/sporto/hop/latest/Hop#clearQuery)
 
-Takes the current `url`.
 Removes the whole query string.
 
 # Example
@@ -299,12 +297,11 @@ Open in ip:8000
 
 # TODO:
 
-- ! SetQuery fails when the hash is empty
 - Change hash without changing query
 - Navigate without adding to history
+- Support routes without hashes
 - Named routes maybe (Using the given action)
 - More tests
-- Docs
 
 ## Improvements
 
