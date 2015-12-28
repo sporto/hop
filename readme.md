@@ -305,7 +305,9 @@ Open in ip:8000
 
 ## Improvements
 
-- Can router.run be sent to the startApp inputs? i.e. remove the specific port for this.
+- In order to match the initial route we need to manually send tasks to a port. Done via `route.run`. This is one more thing for the user to do. Is this really necessary, can this be removed? e.g. Try to channel the initial match through the existing `router.signal`.
+
+- Remove the need to pass the current url to query methods. At the moment we need to send `setQuery url dict` because Hop cannot figure out the current query by itself. [This project](https://github.com/rgrempel/elm-web-api#webapilocation) could be the solution.
 
 # Changelog
 
