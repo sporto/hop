@@ -231,7 +231,7 @@ type Action
 	= ...
 	| AddQuery (Dict.Dict String String)
 	| SetQuery (Dict.Dict String String)
-  | ClearQuery
+	| ClearQuery
 ```
 
 __Change update to respond to these actions__
