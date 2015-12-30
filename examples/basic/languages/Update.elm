@@ -1,11 +1,11 @@
-module Example.Languages.Update where
+module Examples.Basic.Languages.Update where
 
 import Effects exposing (Effects, Never)
 import Debug
 import Hop
 
-import Example.Models as Models
-import Example.Languages.Actions as Actions
+import Examples.Basic.Models as Models
+import Examples.Basic.Languages.Actions as Actions
 
 update : Actions.Action -> List Models.Language -> Hop.Payload -> (List Models.Language, Effects Actions.Action)
 update action languages routerPayload =

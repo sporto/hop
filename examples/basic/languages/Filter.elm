@@ -1,4 +1,4 @@
-module Example.Languages.Filter where
+module Examples.Basic.Languages.Filter where
 
 import Html as H
 import Html.Events
@@ -6,8 +6,8 @@ import Html.Attributes exposing (href, style)
 import Dict
 import Hop
 
-import Example.Models as Models
-import Example.Languages.Actions as Actions
+import Examples.Basic.Models as Models
+import Examples.Basic.Languages.Actions as Actions
 
 styles : H.Attribute
 styles =

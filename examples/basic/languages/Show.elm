@@ -1,11 +1,11 @@
-module Example.Languages.Show where
+module Examples.Basic.Languages.Show where
 
 import Html as H
 import Html.Events
 import Html.Attributes exposing (href, style, src)
 
-import Example.Models as Models
-import Example.Languages.Actions as Actions
+import Examples.Basic.Models as Models
+import Examples.Basic.Languages.Actions as Actions
 
 styles : H.Attribute
 styles =

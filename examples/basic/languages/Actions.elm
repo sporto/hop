@@ -1,4 +1,4 @@
-module Example.Languages.Actions where
+module Examples.Basic.Languages.Actions where
 
 import Hop
 import Dict

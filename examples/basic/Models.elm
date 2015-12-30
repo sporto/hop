@@ -1,4 +1,4 @@
-module Example.Models where
+module Examples.Basic.Models where
 
 type alias User = {
   id: String,

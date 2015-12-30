@@ -1,4 +1,4 @@
-module Example.App where
+module Examples.Basic.App where
 
 import Html as H
 import Html.Events
@@ -11,13 +11,13 @@ import Html.Attributes exposing (href, style)
 import Task exposing (Task)
 import Debug
 import Hop
-import Example.Models as Models
-import Example.Languages.Actions as LanguageActions
-import Example.Languages.Update as LanguageUpdate
-import Example.Languages.Filter as LanguageFilter
-import Example.Languages.List as LanguageList
-import Example.Languages.Show as LanguageShow
-import Example.Languages.Edit as LanguageEdit
+import Examples.Basic.Models as Models
+import Examples.Basic.Languages.Actions as LanguageActions
+import Examples.Basic.Languages.Update as LanguageUpdate
+import Examples.Basic.Languages.Filter as LanguageFilter
+import Examples.Basic.Languages.List as LanguageList
+import Examples.Basic.Languages.Show as LanguageShow
+import Examples.Basic.Languages.Edit as LanguageEdit
 
 type alias Model = {
   routerPayload: Hop.Payload,
