@@ -4,12 +4,10 @@ import Html as H
 import Html.Events
 import Dict
 import Debug
-
 import StartApp
 import Effects exposing (Effects, Never)
 import Html.Attributes exposing (href, style)
 import Task exposing (Task)
-import Debug
 import Hop
 import Examples.Basic.Models as Models
 import Examples.Basic.Languages.Actions as LanguageActions
