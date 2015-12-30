@@ -272,11 +272,11 @@ Removes the whole query string.
 
 # Example
 
-See example app in `./example` folder. To run the example app:
+See example app in `./examples/basic` folder. To run the example app:
 
 - Clone this repo
 - Run `elm reactor`
-- Open `http://localhost:8000/example/App.elm`
+- Open `http://localhost:8000/examples/basic/App.elm`
 
 # Test
 
