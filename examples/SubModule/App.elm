@@ -3,9 +3,11 @@ module Examples.SubModule.App where
 import Html as H
 import StartApp
 import Effects exposing (Effects, Never)
+import Html.Events exposing (onClick)
 import Html.Attributes exposing (href, style)
 import Task exposing (Task)
 import Debug
+import Dict
 
 import Examples.SubModule.Routing as Routing exposing(router)
 
@@ -50,7 +52,10 @@ menu address model =
   H.div [] [
     H.a [ href "#/main" ] [ H.text "Main" ],
     H.a [ href "#/about" ] [ H.text "About" ],
-    H.a [ href "#/contact" ] [ H.text "Contact" ]
+    H.a [ href "#/contact" ] [ H.text "Contact" ],
+    H.button [ 
+      onClick (Signal.forwardTo address RoutingAction) (Routing.SetQuery (Dict.singleton "color" "red")) 
+    ] [ H.text "Set query" ]
   ]
 
 page : Signal.Address Action -> Model -> H.Html

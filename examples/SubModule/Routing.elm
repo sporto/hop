@@ -1,6 +1,7 @@
 module Examples.SubModule.Routing where
 
 import Effects exposing (Effects, Never)
+import Dict
 import Hop
 
 type Action
@@ -9,6 +10,7 @@ type Action
   | ShowMain Hop.Payload
   | ShowContact Hop.Payload
   | ShowNotFound Hop.Payload
+  | SetQuery (Dict.Dict String String)
 
 type alias Model = {
     routerPayload: Hop.Payload,
@@ -31,6 +33,8 @@ update action model =
       ({model | view = "about", routerPayload = payload}, Effects.none)
     ShowContact payload ->
       ({model | view = "contact", routerPayload = payload}, Effects.none)
+    SetQuery query ->
+      (model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
     _ ->
       (model, Effects.none)
 
