@@ -3,6 +3,7 @@ module Hop.Utils where
 import Erl
 import String
 import Dict
+import Debug
 import Hop.Types as Types
 
 routeFromUrl : Erl.Url -> String
@@ -119,3 +120,24 @@ paramsForRoute route url =
   in
     Dict.fromList relevantParams
       |> Dict.union url.query
+
+{-
+  Cleans up url
+-}
+normalizedUrl : String -> String
+normalizedUrl route =
+  let
+    afterHash =
+      if String.contains "#" route then
+        route
+          |> String.split "#"
+          |> List.reverse
+          |> List.head
+          |> Maybe.withDefault ""
+      else
+        route
+  in
+    if String.startsWith "/" afterHash then
+      "#" ++ afterHash
+    else
+      "#/" ++ afterHash

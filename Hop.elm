@@ -115,6 +115,8 @@ userActionFromUrlString config urlString =
 
 {-| Changes the location (hash and query)
 
+  NavigateTo will append "#/" if necessary
+
     update action model =
       case action of
         ...
@@ -123,19 +125,12 @@ userActionFromUrlString config urlString =
 -}
 navigateTo : String -> (Effects Action)
 navigateTo route =
-  let
-    withSlash =
-      if String.startsWith "/" route then
-        route
-      else
-        "/" ++ route
-    withHash =
-      "#" ++ withSlash
-  in
-    History.setPath withHash
-      |> Task.toResult
-      |> Task.map GoToRouteResult
-      |> Effects.task
+  route
+    |> normalizedUrl
+    |> History.setPath
+    |> Task.toResult
+    |> Task.map GoToRouteResult
+    |> Effects.task
 
 {-
   Change the location
@@ -145,7 +140,8 @@ navigateToUrl : Erl.Url -> (Effects Action)
 navigateToUrl url =
   let
     route =
-      routeFromUrl url
+      url
+        |> routeFromUrl
   in
     navigateTo route
 
