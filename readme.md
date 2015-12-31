@@ -270,13 +270,21 @@ Removes that key / value from the query string.
 
 Removes the whole query string.
 
-# Example
+# Examples
 
-See example app in `./examples/basic` folder. To run the example app:
+See example apps in `./examples`. To run the example apps:
 
 - Clone this repo
 - Run `elm reactor`
-- Open `http://localhost:8000/examples/basic/App.elm`
+- Open `http://localhost:8000/examples`
+
+__basic/App.elm__
+
+An app with sub components
+
+__SubModule/App.elm__
+
+An app where the routing lives in a sub module called `Routing`
 
 # Test
 
