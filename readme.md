@@ -278,7 +278,7 @@ See example apps in `./examples`. To run the example apps:
 - Run `elm reactor`
 - Open `http://localhost:8000/examples`
 
-__basic/App.elm__
+__Basic/App.elm__
 
 An app with sub components
 
