@@ -1,35 +1,26 @@
-module Examples.Basic.App where
+module Examples.SubModule.App where
 
 import Html as H
-import Html.Events
-import Dict
-import Debug
 import StartApp
 import Effects exposing (Effects, Never)
 import Html.Attributes exposing (href, style)
 import Task exposing (Task)
 import Debug
-import Hop
+
+import Examples.SubModule.Routing as Routing exposing(router)
 
 type alias Model = {
-    routerPayload: Hop.Payload,
-    view: String
+    routing: Routing.Model
   }
 
-
 zeroModel : Model
-zeroModel =
-  {
-    routerPayload = router.payload,
-    view = "Main"
+zeroModel = {
+    routing = Routing.zeroModel
   }
 
 type Action
-  = HopAction Hop.Action
-  | ShowAbout Hop.Payload
-  | ShowMain Hop.Payload
-  | ShowContact Hop.Payload
-  | ShowNotFound Hop.Payload
+  = NoOp
+  | RoutingAction Routing.Action
 
 init: (Model, Effects Action)
 init =
@@ -38,12 +29,12 @@ init =
 update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
-    ShowMain payload ->
-      ({model | view = "main", routerPayload = payload}, Effects.none)
-    ShowAbout payload ->
-      ({model | view = "about", routerPayload = payload}, Effects.none)
-    ShowContact payload ->
-      ({model | view = "contact", routerPayload = payload}, Effects.none)
+    RoutingAction subAction ->
+      let
+        (updatedRouting, fx) =
+          Routing.update subAction model.routing
+      in
+        ({model | routing = updatedRouting }, Effects.map RoutingAction fx)
     _ ->
       (model, Effects.none)
 
@@ -64,7 +55,7 @@ menu address model =
 
 page : Signal.Address Action -> Model -> H.Html
 page address model =
-  case model.view of
+  case model.routing.view of
     "main" ->
       H.div [] [
         H.text "Main"
@@ -88,21 +79,8 @@ notFoundView address model =
     H.text "Not Found"
   ]
 
-routes : List (String, Hop.Payload -> Action)
-routes =
-  [
-    ("/", ShowMain),
-    ("/main", ShowMain),
-    ("/about", ShowAbout),
-    ("/contact", ShowContact)
-  ]
-
-router : Hop.Router Action
-router = 
-  Hop.new {
-    routes = routes,
-    notFoundAction = ShowNotFound
-  }
+routerSignal =
+  Signal.map RoutingAction router.signal
 
 app : StartApp.App Model
 app =
@@ -110,7 +88,7 @@ app =
     init = init,
     update = update,
     view = view,
-    inputs = [router.signal]
+    inputs = [routerSignal]
   }
 
 main: Signal H.Html
