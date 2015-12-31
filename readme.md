@@ -311,6 +311,7 @@ Open in ip:8000
 
 # Changelog
 
+`1.2.1` Url is normalized before navigation i.e append `#/` if necessary
 `1.2.0` Added `addQuery`, changed behaviour of `setQuery`.
 `1.1.1` Fixed issue where query string won't be set when no hash wash present
 
