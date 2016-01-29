@@ -50,7 +50,9 @@ normalizedUrl =
         ("/monkeys/1", "#/monkeys/1"),
         ("#/monkeys/1", "#/monkeys/1"),
         ("#monkeys/1", "#/monkeys/1"),
-        ("#/#monkeys/1", "#/monkeys/1")
+        ("#/#monkeys/1", "#/monkeys/1"),
+        ("?a=1#monkeys/1", "?a=1#/monkeys/1"),
+        ("?a=1#/monkeys/1", "?a=1#/monkeys/1")
       ]
     run (input, expected) =
       let
