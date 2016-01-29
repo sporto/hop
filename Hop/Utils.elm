@@ -2,6 +2,7 @@ module Hop.Utils where
 
 import Erl
 import String
+import Regex
 import Dict
 import Debug
 import Hop.Types as Types
@@ -121,23 +122,43 @@ paramsForRoute route url =
     Dict.fromList relevantParams
       |> Dict.union url.query
 
+queryComponent : String -> String
+queryComponent route =
+  if String.contains "?" route then
+    route
+      |> String.split "?"
+      |> List.drop 1
+      |> List.head
+      |> Maybe.withDefault ""
+      |> String.split "#"
+      |> List.head
+      |> Maybe.withDefault ""
+      |> String.append "?"
+    else
+      ""
+
 {-
   Cleans up url
 -}
 normalizedUrl : String -> String
 normalizedUrl route =
   let
-    afterHash =
+    query =
+      queryComponent route
+    withoutQuery =
+      Regex.replace Regex.All (Regex.regex query) (\_ -> "") route
+    hashComponent =
       if String.contains "#" route then
         route
           |> String.split "#"
           |> List.reverse
           |> List.head
           |> Maybe.withDefault ""
+          |> String.append "#/"
       else
-        route
+        ""
   in
-    if String.startsWith "/" afterHash then
-      "#" ++ afterHash
+    if String.startsWith "/" withoutQuery then
+      query ++ "#" ++ hashComponent
     else
-      "#/" ++ afterHash
+      query ++ "#/" ++ hashComponent
