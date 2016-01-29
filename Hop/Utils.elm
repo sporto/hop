@@ -12,21 +12,21 @@ routeFromUrl url =
     path =
       Erl.toString url
   in
-    if String.contains "#" path then
+    if String.contains "?" path then
       path
-        |> String.split "#"
+        |> String.split "?"
         |> List.drop 1
         |> List.head
         |> Maybe.withDefault ""
-        |> String.append "#"
-    else
-      if String.contains "?" path then
+        |> String.append "?"
+    else 
+      if String.contains "#" path then
         path
-          |> String.split "?"
+          |> String.split "#"
           |> List.drop 1
           |> List.head
           |> Maybe.withDefault ""
-          |> String.append "?"
+          |> String.append "#"
         else
           ""
 
