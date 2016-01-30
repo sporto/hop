@@ -3,3 +3,4 @@ elm-stuff
 node_modules
 elm.js
 documentation.json
+.vscode/tasks.json
