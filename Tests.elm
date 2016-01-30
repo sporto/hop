@@ -129,7 +129,7 @@ routeFromUrl =
         (empty, ""),
         ({empty | hash = ["a"] }, "#a"),
         ({empty | query = Dict.singleton "k" "1" }, "?k=1"),
-        ({empty | hash = ["a"], query = Dict.singleton "k" "1" }, "?k=1#a")
+        ({empty | query = Dict.singleton "k" "1", hash = ["a"]  }, "?k=1#a")
       ]
     run (url, expected) =
       let

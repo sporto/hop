@@ -1,15 +1,20 @@
 module Hop.Types where
 
 import Dict
-import Erl
 import Task exposing (Task)
 
-
 type alias Params = Dict.Dict String String
+type alias Path = List String
+type alias Query = Dict.Dict String String
+
+type alias Url = {
+    path: Path,
+    query: Query
+  }
 
 type alias Payload = {
     params: Params,
-    url: Erl.Url
+    url: Url
   }
 
 type alias UserPartialAction action = Payload -> action

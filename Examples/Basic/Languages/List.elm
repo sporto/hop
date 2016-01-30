@@ -43,11 +43,11 @@ view address languages payload =
     ]
   ]
 
-tableRows: Signal.Address Actions.Action -> List Models.Language -> (List H.Html)
+tableRows : Signal.Address Actions.Action -> List Models.Language -> (List H.Html)
 tableRows address collection =
   List.map (rowView address) collection
 
-rowView: Signal.Address Actions.Action -> Models.Language -> H.Html
+rowView : Signal.Address Actions.Action -> Models.Language -> H.Html
 rowView address language =
   H.tr [] [
     H.td [] [ H.text language.id ],

@@ -25,15 +25,16 @@ module Hop (
 @docs navigateTo, addQuery, removeQuery, setQuery, clearQuery
 -}
 
-import Erl
 import String
 import History
 import Task exposing (Task)
 import Effects exposing (Effects, Never)
 import Dict
 import Debug
-import Hop.Utils exposing (..)
+import Hop.Normalizer as Normalizer
 import Hop.Types as Types
+import Hop.Url as Url
+import Hop.Resolver as Resolver
 
 -- TYPES
 
@@ -69,7 +70,7 @@ type alias RouteDefinition action = Types.RouteDefinition action
 newPayload : Payload
 newPayload = {
     params = Dict.empty,
-    url = Erl.new
+    url = Url.new
   }
 
 {-| Create a Hop.Router
@@ -83,7 +84,7 @@ newPayload = {
 new: Config (UserPartialAction action) -> Router action
 new config =
   {
-    signal = hashChangeSignal config,
+    signal = locationChangeSignal config,
     payload = newPayload,
     run = History.setPath ""
   }
@@ -91,27 +92,10 @@ new config =
 {-
 Each time the hash is changed get a signal
 We need to pass this signal to the main application
--- ! And here as well, map to the correct user'action
 -}
-hashChangeSignal : Config (UserPartialAction action) -> Signal action
-hashChangeSignal config =
-    Signal.map (userActionFromUrlString config) History.hash
-
-userActionFromUrlString : Config (UserPartialAction action) -> String -> action
-userActionFromUrlString config urlString =
-  let
-    url
-      = Erl.parse urlString
-    (route, userAction) =
-      routeDefintionForUrl config url
-    params =
-      paramsForRoute route url
-    payload = {
-        params = params,
-        url = url
-      } 
-  in
-    userAction payload
+locationChangeSignal : Config (UserPartialAction action) -> Signal action
+locationChangeSignal config =
+    Signal.map (Resolver.userActionFromUrlString config) History.hash
 
 {-| Changes the location (hash and query)
 
@@ -126,7 +110,7 @@ userActionFromUrlString config urlString =
 navigateTo : String -> (Effects Action)
 navigateTo route =
   route
-    |> normalizedUrl
+    |> Normalizer.prepareRoute
     |> History.setPath
     |> Task.toResult
     |> Task.map GoToRouteResult
@@ -134,16 +118,13 @@ navigateTo route =
 
 {-
   Change the location
-  using a Erl.Url record
+  using a Url record
 -}
-navigateToUrl : Erl.Url -> (Effects Action)
+navigateToUrl : Types.Url -> (Effects Action)
 navigateToUrl url =
-  let
-    route =
-      url
-        |> routeFromUrl
-  in
-    navigateTo route
+  url
+    |> Url.routeFromUrl
+    |> navigateTo
 
 {-| Add query string values (patches any existing values)
 
@@ -155,16 +136,13 @@ navigateToUrl url =
 
   To remove a value set the value to ""
 -}
-addQuery : Erl.Url -> Params -> (Effects Action)
+addQuery : Types.Url -> Types.Query -> (Effects Action)
 addQuery currentUrl query =
-  let
-    urlWithQuery =
-      Dict.toList query
-        |> List.foldl (\(key, val) -> Erl.addQuery key val ) currentUrl
-  in
-    navigateToUrl urlWithQuery
+  currentUrl
+    |> Url.addQuery query
+    |> navigateToUrl
 
-{-| Set query string values (replaces any existing values)
+{-| Set query string values (removes existing values)
 
     update action model =
       case action of
@@ -172,14 +150,11 @@ addQuery currentUrl query =
         SetQuery query ->
           (model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
 -}
-setQuery : Erl.Url -> Params -> (Effects Action)
+setQuery : Types.Url -> Types.Query -> (Effects Action)
 setQuery currentUrl query =
-  let
-    urlWithQuery =
-      Dict.toList query
-        |> List.foldl (\(key, val) -> Erl.setQuery key val ) currentUrl
-  in
-    navigateToUrl urlWithQuery
+  currentUrl
+    |> Url.setQuery query
+    |> navigateToUrl
 
 {-| Remove one query string value
 
@@ -189,13 +164,11 @@ setQuery currentUrl query =
         RemoveQuery query ->
           (model, Effects.map HopAction (Hop.removeQuery model.routerPayload.url key))
 -}
-removeQuery : Erl.Url -> String -> (Effects Action)
+removeQuery : Types.Url -> String -> (Effects Action)
 removeQuery currentUrl key =
-  let
-    urlWithQuery =
-      Erl.removeQuery key currentUrl
-  in
-    navigateToUrl urlWithQuery
+  currentUrl
+    |> Url.removeQuery key
+    |> navigateToUrl
 
 {-| Clear all query string values
 
@@ -205,10 +178,8 @@ removeQuery currentUrl key =
         ClearQuery ->
           (model, Effects.map HopAction (Hop.clearQuery model.routerPayload.url))
 -}
-clearQuery : Erl.Url -> (Effects Action)
+clearQuery : Types.Url -> (Effects Action)
 clearQuery currentUrl =
-  let
-    urlWithoutQuery =
-      Erl.clearQuery currentUrl
-  in
-    navigateToUrl urlWithoutQuery
+  currentUrl
+    |> Url.clearQuery
+    |> navigateToUrl
