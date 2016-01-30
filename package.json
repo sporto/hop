@@ -1,5 +1,5 @@
 {
-  "name": "routee",
+  "name": "Hop",
   "version": "1.0.0",
   "description": "## TODO:",
   "main": "elm.js",
@@ -12,12 +12,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sporto/routee.git"
+    "url": "git+https://github.com/sporto/hop.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sporto/routee/issues"
+    "url": "https://github.com/sporto/hop/issues"
   },
-  "homepage": "https://github.com/sporto/routee#readme"
+  "homepage": "https://github.com/sporto/hop#readme"
 }
