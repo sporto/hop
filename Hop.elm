@@ -30,7 +30,7 @@ import History
 import Task exposing (Task)
 import Effects exposing (Effects, Never)
 import Dict
-import Debug
+
 import Hop.Normalizer as Normalizer
 import Hop.Types as Types
 import Hop.Url as Url
@@ -67,12 +67,6 @@ type alias Router action = Types.Router action
 -}
 type alias RouteDefinition action = Types.RouteDefinition action
 
-newPayload : Payload
-newPayload = {
-    params = Dict.empty,
-    url = Url.new
-  }
-
 {-| Create a Hop.Router
 
     router =
@@ -85,7 +79,7 @@ new: Config (UserPartialAction action) -> Router action
 new config =
   {
     signal = locationChangeSignal config,
-    payload = newPayload,
+    payload = Types.newPayload,
     run = History.setPath ""
   }
 
@@ -95,7 +89,7 @@ We need to pass this signal to the main application
 -}
 locationChangeSignal : Config (UserPartialAction action) -> Signal action
 locationChangeSignal config =
-    Signal.map (Resolver.userActionFromUrlString config) History.hash
+  Signal.map (Resolver.userActionFromUrlString config) History.hash
 
 {-| Changes the location (hash and query)
 

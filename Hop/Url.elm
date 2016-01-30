@@ -11,13 +11,6 @@ Url
 - manipulation of Url record
 -}
 
-new : Types.Url
-new =
-  {
-    query = Dict.empty,
-    path = []
-  }
-
 -- Get route from Url
 
 routeFromUrl : Types.Url -> String
@@ -68,6 +61,7 @@ parsePath route =
   route
     |> extractPath
     |> String.split "/"
+    |> List.filter (not << String.isEmpty)
 
 extractQuery : String -> String
 extractQuery route =

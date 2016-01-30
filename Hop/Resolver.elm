@@ -2,6 +2,7 @@ module Hop.Resolver where
 
 import String
 import Dict
+
 import Hop.Types as Types
 import Hop.Url as Url
 

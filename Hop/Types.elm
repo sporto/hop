@@ -31,3 +31,16 @@ type alias Router action = {
   }
 
 type alias RouteDefinition action = (String, action)
+
+newUrl : Url
+newUrl =
+  {
+    query = Dict.empty,
+    path = []
+  }
+  
+newPayload : Payload
+newPayload = {
+    params = Dict.empty,
+    url = newUrl
+  }
