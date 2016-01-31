@@ -29,9 +29,9 @@ update action languages routerPayload =
       in
       (udpatedLanguages, Effects.none)
     Actions.AddQuery query ->
-      (languages, Effects.map Actions.HopAction (Hop.addQuery routerPayload.url query))
+      (languages, Effects.map Actions.HopAction (Hop.addQuery query routerPayload.url))
     Actions.SetQuery query ->
-      (languages, Effects.map Actions.HopAction (Hop.setQuery routerPayload.url query))
+      (languages, Effects.map Actions.HopAction (Hop.setQuery query routerPayload.url))
     _ ->
       (languages, Effects.none)
 

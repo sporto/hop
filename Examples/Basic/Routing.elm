@@ -43,7 +43,7 @@ update action model =
     ShowNotFound payload ->
       ({model | view = "notFound", routerPayload = payload}, Effects.none)
     SetQuery query ->
-      (model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
+      (model, Effects.map HopAction (Hop.setQuery query model.routerPayload.url))
     _ ->
       (model, Effects.none)
 

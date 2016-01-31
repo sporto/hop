@@ -125,12 +125,12 @@ navigateToUrl url =
       case action of
         ...
         AddQuery query ->
-          (model, Effects.map HopAction (Hop.addQuery model.routerPayload.url query))
+          (model, Effects.map HopAction (Hop.addQuery query model.routerPayload.url))
 
   To remove a value set the value to ""
 -}
-addQuery : Types.Url -> Types.Query -> (Effects Action)
-addQuery currentUrl query =
+addQuery : Types.Query -> Types.Url -> (Effects Action)
+addQuery query currentUrl =
   currentUrl
     |> Url.addQuery query
     |> navigateToUrl
@@ -141,10 +141,10 @@ addQuery currentUrl query =
       case action of
         ...
         SetQuery query ->
-          (model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
+          (model, Effects.map HopAction (Hop.setQuery query model.routerPayload.url))
 -}
-setQuery : Types.Url -> Types.Query -> (Effects Action)
-setQuery currentUrl query =
+setQuery :  Types.Query -> Types.Url -> (Effects Action)
+setQuery query currentUrl =
   currentUrl
     |> Url.setQuery query
     |> navigateToUrl
@@ -155,10 +155,10 @@ setQuery currentUrl query =
       case action of
         ...
         RemoveQuery query ->
-          (model, Effects.map HopAction (Hop.removeQuery model.routerPayload.url key))
+          (model, Effects.map HopAction (Hop.removeQuery key model.routerPayload.url))
 -}
-removeQuery : Types.Url -> String -> (Effects Action)
-removeQuery currentUrl key =
+removeQuery : String -> Types.Url -> (Effects Action)
+removeQuery key currentUrl =
   currentUrl
     |> Url.removeQuery key
     |> navigateToUrl
