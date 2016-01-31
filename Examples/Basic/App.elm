@@ -9,6 +9,8 @@ import Effects exposing (Effects, Never)
 import Html.Attributes exposing (href, style)
 import Task exposing (Task)
 import Hop
+
+import Examples.Basic.Routing as Routing exposing(router)
 import Examples.Basic.Models as Models
 import Examples.Basic.Languages.Actions as LanguageActions
 import Examples.Basic.Languages.Update as LanguageUpdate
@@ -18,13 +20,12 @@ import Examples.Basic.Languages.Show as LanguageShow
 import Examples.Basic.Languages.Edit as LanguageEdit
 
 type alias Model = {
-  routerPayload: Hop.Payload,
-  selectedUser: Models.User,
-  users: Models.UserList,
-  view: String,
-  languages: List Models.Language,
-  selectedLanguage: Maybe Models.Language
-}
+    routing: Routing.Model,
+    selectedUser: Models.User,
+    users: Models.UserList,
+    languages: List Models.Language,
+    selectedLanguage: Maybe Models.Language
+  }
 
 user1 : Models.User
 user1 =
@@ -35,26 +36,18 @@ user2 =
   Models.User "2" "Sally"
 
 zeroModel : Model
-zeroModel =
-  {
-    routerPayload = router.payload,
+zeroModel = {
+    routing = Routing.newModel,
     selectedUser = Models.User "" "",
     users = [user1, user2],
-    view = "",
     languages = Models.languages,
     selectedLanguage = Maybe.Nothing
   }
 
 type Action
-  = HopAction Hop.Action
+  = NoOp
+  | RoutingAction Routing.Action
   | LanguageAction LanguageActions.Action
-  | ShowLanguages Hop.Payload
-  | ShowLanguage Hop.Payload
-  | EditLanguage Hop.Payload
-  | ShowAbout Hop.Payload
-  | ShowNotFound Hop.Payload
-  | NavigateTo String
-  | NoOp
 
 init : (Model, Effects Action)
 init =
@@ -63,24 +56,20 @@ init =
 update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
-    NavigateTo path ->
-      (model, Effects.map HopAction (Hop.navigateTo path))
+    RoutingAction subAction ->
+      let
+        (updatedRouting, fx) =
+          Routing.update subAction model.routing
+        updatedModel =
+          { model | routing = updatedRouting }
+      in
+        (updatedModel, Effects.map RoutingAction fx)
     LanguageAction subAction ->
       let
         (languages, fx) =
-          LanguageUpdate.update subAction model.languages model.routerPayload
+          LanguageUpdate.update subAction model.languages model.routing.routerPayload
       in
         ({model | languages = languages}, Effects.map LanguageAction fx)
-    ShowLanguage payload ->
-      ({model | view = "language", routerPayload = payload}, Effects.none)
-    EditLanguage payload ->
-      ({model | view = "languageEdit", routerPayload = payload}, Effects.none)
-    ShowLanguages payload ->
-      ({model | view = "languages", routerPayload = payload}, Effects.none)
-    ShowAbout payload ->
-      ({model | view = "about", routerPayload = payload}, Effects.none)
-    ShowNotFound payload ->
-      ({model | view = "notFound", routerPayload = payload}, Effects.none)
     _ ->
       (model, Effects.none)
 
@@ -98,8 +87,6 @@ view address model =
     menu address model,
     pageView address model
   ]
-
---languageListItem : Signal.Address Action ->  -> H.Html
 
 menu : Signal.Address Action -> Model -> H.Html
 menu address model =
@@ -125,25 +112,25 @@ menuLink path label =
 
 pageView : Signal.Address Action -> Model -> H.Html
 pageView address model =
-  case model.view of
+  case model.routing.view of
     "about" ->
       H.div [] [
         H.h2 [] [ H.text "About" ]
       ]
     _ ->
       H.div [ containerStyle ] [
-        LanguageFilter.view (Signal.forwardTo address LanguageAction) model.languages model.routerPayload,
-        LanguageList.view (Signal.forwardTo address LanguageAction) model.languages model.routerPayload,
+        LanguageFilter.view (Signal.forwardTo address LanguageAction) model.languages model.routing.routerPayload,
+        LanguageList.view (Signal.forwardTo address LanguageAction) model.languages model.routing.routerPayload,
         subView address model
       ]
 
 subView : Signal.Address Action -> Model -> H.Html
 subView address model =
-  case model.view of
+  case model.routing.view of
     "language" ->
       let
         languageId =
-          model.routerPayload.params
+          model.routing.routerPayload.params
             |> Dict.get "id"
             |> Maybe.withDefault ""
         maybeLanguage =
@@ -157,7 +144,7 @@ subView address model =
     "languageEdit" ->
       let
         languageId =
-          model.routerPayload.params
+          model.routing.routerPayload.params
             |> Dict.get "id"
             |> Maybe.withDefault ""
         maybeLanguage =
@@ -197,21 +184,8 @@ notFoundView address model =
 
 -- ROUTING
 
-routes : List (String, Hop.Payload -> Action)
-routes =
-  [
-    ("/", ShowLanguages),
-    ("/languages/:id", ShowLanguage),
-    ("/languages/:id/edit", EditLanguage),
-    ("/about", ShowAbout)
-  ]
-
-router : Hop.Router Action
-router = 
-  Hop.new {
-    routes = routes,
-    notFoundAction = ShowNotFound
-  }
+routerSignal =
+  Signal.map RoutingAction router.signal
 
 app : StartApp.App Model
 app =
@@ -219,7 +193,7 @@ app =
     init = init,
     update = update,
     view = view,
-    inputs = [router.signal]
+    inputs = [routerSignal]
   }
 
 main: Signal H.Html

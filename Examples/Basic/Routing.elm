@@ -1,4 +1,4 @@
-module Examples.SubModule.Routing where
+module Examples.Basic.Routing where
 
 import Effects exposing (Effects, Never)
 import Dict
@@ -6,19 +6,22 @@ import Hop
 
 type Action
   = HopAction Hop.Action
+  | ShowLanguages Hop.Payload
+  | ShowLanguage Hop.Payload
+  | EditLanguage Hop.Payload
   | ShowAbout Hop.Payload
-  | ShowMain Hop.Payload
-  | ShowContact Hop.Payload
   | ShowNotFound Hop.Payload
+  | NavigateTo String
   | SetQuery (Dict.Dict String String)
+  | NoOp
 
 type alias Model = {
     routerPayload: Hop.Payload,
     view: String
   }
 
-zeroModel : Model
-zeroModel =
+newModel : Model
+newModel = 
   {
     routerPayload = router.payload,
     view = "Main"
@@ -27,12 +30,18 @@ zeroModel =
 update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
-    ShowMain payload ->
-      ({model | view = "main", routerPayload = payload}, Effects.none)
+    NavigateTo path ->
+      (model, Effects.map HopAction (Hop.navigateTo path))
+    ShowLanguage payload ->
+      ({model | view = "language", routerPayload = payload}, Effects.none)
+    EditLanguage payload ->
+      ({model | view = "languageEdit", routerPayload = payload}, Effects.none)
+    ShowLanguages payload ->
+      ({model | view = "languages", routerPayload = payload}, Effects.none)
     ShowAbout payload ->
       ({model | view = "about", routerPayload = payload}, Effects.none)
-    ShowContact payload ->
-      ({model | view = "contact", routerPayload = payload}, Effects.none)
+    ShowNotFound payload ->
+      ({model | view = "notFound", routerPayload = payload}, Effects.none)
     SetQuery query ->
       (model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
     _ ->
@@ -41,17 +50,15 @@ update action model =
 routes : List (String, Hop.Payload -> Action)
 routes =
   [
-    ("/", ShowMain),
-    ("/main", ShowMain),
-    ("/about", ShowAbout),
-    ("/contact", ShowContact)
+    ("/", ShowLanguages),
+    ("/languages/:id", ShowLanguage),
+    ("/languages/:id/edit", EditLanguage),
+    ("/about", ShowAbout)
   ]
 
-
 router : Hop.Router Action
-router =
+router = 
   Hop.new {
     routes = routes,
     notFoundAction = ShowNotFound
   }
-
