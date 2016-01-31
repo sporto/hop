@@ -276,13 +276,14 @@ Removes that key / value from the query string.
 
 Removes the whole query string.
 
-# Example
+# Examples
 
-See example app in `./Examples/Basic`. To run the example apps:
+See examples app in `./Examples/`. To run the example apps:
 
 - Clone this repo
 - Run `elm reactor`
 - Open `http://localhost:8000/Examples/Basic/App.elm`
+- Open `http://localhost:8000/Examples/Advanced/App.elm`
 
 # Test
 

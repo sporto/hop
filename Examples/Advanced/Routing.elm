@@ -1,4 +1,4 @@
-module Examples.Basic.Routing where
+module Examples.Advanced.Routing where
 
 import Effects exposing (Effects, Never)
 import Dict
