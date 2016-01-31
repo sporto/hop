@@ -164,7 +164,7 @@ Your actions are called with a `Payload` record. This record has:
 ```elm
 {
 	params: Dict.Dict String String,
-	url: Erl.Url
+	url: Hop.Url
 }
 ```
 
