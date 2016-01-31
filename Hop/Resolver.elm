@@ -36,6 +36,7 @@ userActionFromUrlString config urlString =
 paramsForRoute : String -> Types.Url -> Types.Params
 paramsForRoute routeDefinition url =
   let
+    -- "/users/:id" => ["users", ":id"]
     routeFragments =
       parseRouteFragment routeDefinition
     maybeParam routeFragment urlFragment =
@@ -48,7 +49,8 @@ paramsForRoute routeDefinition url =
     relevantParams =
       List.filter (\(x, _) -> not (String.isEmpty x)) params
   in
-    Dict.fromList relevantParams
+    relevantParams
+      |> Dict.fromList
       |> Dict.union url.query
 
 {-

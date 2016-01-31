@@ -15,8 +15,9 @@ Url
 
 routeFromUrl : Types.Url -> String
 routeFromUrl url =
-  "#" ++ (pathFromUrl url) ++ (queryFromUrl url)
+  "#/" ++ (pathFromUrl url) ++ (queryFromUrl url)
   
+-- query just the query including ?
 queryFromUrl : Types.Url -> String
 queryFromUrl url =
   if Dict.isEmpty url.query then
@@ -76,6 +77,7 @@ parseQuery route =
   route
     |> extractQuery
     |> String.split "&"
+    |> List.filter (not << String.isEmpty)
     |> List.map queryKVtoTuple
     |> Dict.fromList
 
