@@ -8,9 +8,12 @@ This router uses a list of tuples to configure routes e.g. `(route, action)`. Wh
 
 To navigate to a different route you call `Hop.navigateTo`, this will return an effect that your application must run via ports.
 
-This router is made to work with StartApp. __At the moment only hash routes are supported i.e. `#/users/1`.__
+This router is made to work with StartApp. 
 
-This library uses [Erl](http://package.elm-lang.org/packages/sporto/erl) for manipulating urls.
+### Hash routing
+
+__At the moment only hash routes are supported i.e. `#/users/1`.__
+
 
 ## Setup
 
@@ -241,9 +244,9 @@ update action model =
 	case action of
 		...
 		AddQuery query ->
-			(model, Effects.map HopAction (Hop.addQuery model.routerPayload.url query))
+			(model, Effects.map HopAction (Hop.addQuery query model.routerPayload.url))
 		SetQuery query ->
-			(model, Effects.map HopAction (Hop.setQuery model.routerPayload.url query))
+			(model, Effects.map HopAction (Hop.setQuery query model.routerPayload.url))
 		ClearQuery ->
 			(model, Effects.map HopAction (Hop.clearQuery model.routerPayload.url))
 ```
@@ -270,21 +273,13 @@ Removes that key / value from the query string.
 
 Removes the whole query string.
 
-# Examples
+# Example
 
-See example apps in `./examples`. To run the example apps:
+See example app in `./Examples/Basic`. To run the example apps:
 
 - Clone this repo
 - Run `elm reactor`
-- Open `http://localhost:8000/examples`
-
-__Basic/App.elm__
-
-An app with sub components
-
-__SubModule/App.elm__
-
-An app where the routing lives in a sub module called `Routing`
+- Open `http://localhost:8000/Examples/Basic/App.elm`
 
 # Test
 
@@ -293,15 +288,6 @@ elm reactor
 ```
 
 Open `/localhost:8000/TestRunner.elm`
-
-## Running in Docker
-
-docker-machine ip name-of-machine
-
-docker-compose build
-docker-compose up
-
-Open in ip:8000
 
 # TODO:
 
@@ -319,7 +305,8 @@ Open in ip:8000
 
 # Changelog
 
-`1.2.1` Url is normalized before navigation i.e append `#/` if necessary
-`1.2.0` Added `addQuery`, changed behaviour of `setQuery`.
-`1.1.1` Fixed issue where query string won't be set when no hash wash present
+- `2.0.0` Remove dependency on `Erl`. Change order of arguments on `addQuery`, `clearQuery`, `removeQuery` and `setQuery`
+- `1.2.1` Url is normalized before navigation i.e append `#/` if necessary
+- `1.2.0` Added `addQuery`, changed behaviour of `setQuery`.
+- `1.1.1` Fixed issue where query string won't be set when no hash wash present
 
