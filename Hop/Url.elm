@@ -11,8 +11,9 @@ Url
 - manipulation of Url record
 -}
 
--- Get route from Url
+-- URL TO ROUTE STRING
 
+-- Get route from Url
 routeFromUrl : Types.Url -> String
 routeFromUrl url =
   "#/" ++ (pathFromUrl url) ++ (queryFromUrl url)
@@ -36,6 +37,8 @@ pathFromUrl url =
   else
     url.path
       |> String.join "/"
+
+-- PARSE
 
 -- Parse a route into a Url
 
@@ -103,7 +106,20 @@ queryKVtoTuple kv =
   in
     (firstDecoded, secondDecoded)
 
--- Mutate query
+-- PARSE ROUTE GIVEN BY USER
+
+urlFromUser : String -> Types.Url
+urlFromUser route =
+  let
+    normalized =
+      if String.startsWith "#" route then
+        route
+      else
+        "#" ++ route
+  in
+    parse normalized
+
+-- MUTATE QUERY
 
 addQuery : Types.Query -> Types.Url -> Types.Url
 addQuery query url =

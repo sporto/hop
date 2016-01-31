@@ -31,7 +31,6 @@ import Task exposing (Task)
 import Effects exposing (Effects, Never)
 import Dict
 
-import Hop.Normalizer as Normalizer
 import Hop.Types as Types
 import Hop.Url as Url
 import Hop.Resolver as Resolver
@@ -104,11 +103,8 @@ locationChangeSignal config =
 navigateTo : String -> (Effects Action)
 navigateTo route =
   route
-    |> Normalizer.prepareRoute
-    |> History.setPath
-    |> Task.toResult
-    |> Task.map GoToRouteResult
-    |> Effects.task
+    |> Url.urlFromUser
+    |> navigateToUrl
 
 {-
   Change the location
@@ -118,7 +114,10 @@ navigateToUrl : Types.Url -> (Effects Action)
 navigateToUrl url =
   url
     |> Url.routeFromUrl
-    |> navigateTo
+    |> History.setPath
+    |> Task.toResult
+    |> Task.map GoToRouteResult
+    |> Effects.task
 
 {-| Add query string values (patches any existing values)
 
