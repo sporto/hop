@@ -1,7 +1,9 @@
 module Hop (
   Payload,
   Params,
+  Query,
   Config,
+  Url,
   Router,
   RouteDefinition,
   Action,
@@ -16,7 +18,7 @@ module Hop (
 {-| A router for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
 # Types
-@docs Config, Router, Payload, Params, RouteDefinition, Action
+@docs Config, Router, Payload, Params, Query, Url, RouteDefinition, Action
 
 # Setup
 @docs new
@@ -47,9 +49,27 @@ type Action
 -}
 type alias Payload = Types.Payload
 
+
 {-| A Dict that holds parameters for the current route
+
+    Dict.Dict String String
 -}
 type alias Params = Types.Params
+
+{-| A Dict that holds query parameters
+
+    Dict.Dict String String
+-}
+type alias Query = Types.Query
+
+{-| A Record that includes a `path` and `query`
+
+    {
+      path: List String,
+      query: Query
+    }
+-}
+type alias Url = Types.Url
 
 {-| Configuration input for Hop.new
 -}

@@ -308,6 +308,7 @@ Open `/localhost:8000/TestRunner.elm`
 
 # Changelog
 
+- `2.1.0` Expose `Query` and `Url` types
 - `2.0.0` Remove dependency on `Erl`. Change order of arguments on `addQuery`, `clearQuery`, `removeQuery` and `setQuery`
 - `1.2.1` Url is normalized before navigation i.e append `#/` if necessary
 - `1.2.0` Added `addQuery`, changed behaviour of `setQuery`.
