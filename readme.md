@@ -14,7 +14,7 @@ This router is made to work with StartApp.
 
 __At the moment only hash routes are supported i.e. `#/users/1`.__
 
-Although a proper url should have the query before the hash e.g. "?keyword=Ja#/users/1",
+Although a proper url should have the query before the hash e.g. `?keyword=Ja#/users/1`,
 in Hop query parameters are appended after the hash path e.g. `#/users/1?keyword=Ja`. 
 This is done for aesthetics and so the router is fully controlled by the hash fragment.
 
