@@ -1,46 +1,50 @@
-module Hop.Types where
+module Hop.Types (..) where
 
 import Dict
 import Task exposing (Task)
 
-type alias Params = Dict.Dict String String
-type alias Path = List String
-type alias Query = Dict.Dict String String
 
-type alias Url = {
-    path: Path,
-    query: Query
-  }
+type alias Params =
+  Dict.Dict String String
 
-type alias Payload = {
-    params: Params,
-    url: Url
-  }
 
-type alias UserPartialAction action = Payload -> action
 
-type alias Config partialAction = {
-    notFoundAction: partialAction,
-    routes: List (RouteDefinition partialAction)
-  }
+--type alias Path = List String
 
-type alias Router action = {
-    signal: Signal action,
-    payload: Payload,
-    run: Task () ()
-  }
 
-type alias RouteDefinition action = (String, action)
+type alias Query =
+  Dict.Dict String String
 
-newUrl : Url
-newUrl =
-  {
-    query = Dict.empty,
-    path = []
-  }
-  
-newPayload : Payload
-newPayload = {
-    params = Dict.empty,
-    url = newUrl
-  }
+
+
+--type alias Url = {
+--    path: Path,
+--    query: Query
+--  }
+--type alias Payload = {
+--    params: Params,
+--    url: Url
+--  }
+--type alias UserPartialAction action =
+--  Payload -> action
+--type alias Config partialAction =
+--  { notFoundAction : partialAction
+--  , routes : List (RouteDefinition partialAction)
+--  }
+--type alias Router action =
+--  { signal : Signal action
+--  , payload : Payload
+--  , run : Task () ()
+--  }
+--type alias RouteDefinition action =
+--  ( String, action )
+--newUrl : Url
+--newUrl =
+--  { query = Dict.empty
+--  , path = []
+--  }
+--newPayload : Payload
+--newPayload =
+--  { params = Dict.empty
+--  , url = newUrl
+--  }

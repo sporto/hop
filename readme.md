@@ -287,6 +287,8 @@ See examples app in `./Examples/`. To run the example apps:
 
 # Test
 
+Inside `test` folder:
+
 ```
 elm reactor
 ```

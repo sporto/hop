@@ -1,11 +1,11 @@
-module Main where
+module Main (..) where
 
 import String
 import Graphics.Element exposing (Element)
-
 import ElmTest exposing (..)
-import Tests
+import Test.Tests as Tests
+
 
 main : Element
-main = 
-    elementRunner Tests.all
+main =
+  elementRunner Tests.all

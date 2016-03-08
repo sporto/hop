@@ -1,10 +1,19 @@
-module Hop.ResolverTest where
+module Hop.ResolverTest (..) where
 
 import Dict
 import ElmTest exposing (..)
 import Hop.Resolver as Resolver
 import Hop.Url as Url
 
+
+{-
+  Given a route tuple like
+
+  ("/comments, Comments, [])
+
+  Then /comments should match
+-}
+{-
 parseRouteFragment =
   let
     inputs =
@@ -27,7 +36,7 @@ type Action
   | Tigers
   | Tiger
 
-routes = 
+routes =
   [
     ("/monkeys", Monkeys),
     ("/monkeys/:id", Monkey),
@@ -68,7 +77,7 @@ routeDefintionForUrl =
     suite "matchedRoute"
       (List.map run inputs)
 
-paramsForRoute = 
+paramsForRoute =
   let
     inputs =
       [
@@ -109,12 +118,11 @@ paramsForRoute =
     suite "paramsForRoute"
       (List.map run inputs)
 
+-}
+
+
 all : Test
 all =
-  suite "ResolverTest"
-    [
-      parseRouteFragment,
-      routeDefintionForUrl,
-      paramsForRoute
-    ]
-
+  suite
+    "ResolverTest"
+    []
