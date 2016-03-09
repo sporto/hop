@@ -7,37 +7,37 @@ import Combine.Infix exposing ((<$>), (<$), (<*), (*>), (<*>), (<|>))
 
 
 -- LIB
---type alias RouteComponent a =
---  { parser : Parser a
---  }
---type Route a
---  = Route (RouteComponent a)
 
 
-type alias Route inputs res =
-  { parser : Parser inputs
-  , constructor : inputs -> res
-  }
-
-
-route : (inputs -> res) -> Parser inputs -> Route inputs res
+route : (inputs -> res) -> Parser inputs -> Parser res
 route constructor parser =
   let
     parserWithBeginningAndEnd =
       (Combine.string "/" *> parser <* Combine.end)
   in
-    Route parserWithBeginningAndEnd constructor
+    map constructor parserWithBeginningAndEnd
 
 
+matchPath path routeParsers =
+  case routeParsers of
+    [] ->
+      (Err NotFound)
 
---prefix : String -> RouteComponent res -> RouteComponent res
---prefix s r =
---  { parser = Combine.string (s ++ "/") *> r.parser
---  }
+    [ routeParser ] ->
+      case parse routeParser path of
+        ( Ok res, context ) ->
+          (Ok res)
 
+        ( Err _, context ) ->
+          (Err NotFound)
 
-matchRoute route path =
-  parse (map route.constructor route.parser) path
+    routeParser :: rest ->
+      case parse routeParser path of
+        ( Ok res, context ) ->
+          (Ok res)
+
+        ( Err _, context ) ->
+          matchPath path rest
 
 
 
@@ -57,12 +57,16 @@ parserRoute1 =
 
 
 parserPost =
-  string "post/"
+  string "posts/"
     *> int
 
 
 path1 =
   "/posts/11/comments/22"
+
+
+path2 =
+  "/posts/11"
 
 
 route1 =
@@ -73,13 +77,12 @@ route2 =
   route Post parserPost
 
 
-
---routes =
---  [ route1, route2 ]
+routes =
+  [ route1, route2 ]
 
 
 result =
-  matchRoute route1 path1
+  matchPath path2 routes
 
 
 main =
