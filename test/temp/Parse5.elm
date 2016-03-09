@@ -56,9 +56,10 @@ type CommentRoutes
 
 type UserRoute
   = Route1 ( Int, Int )
+  | Posts ()
   | Post (Int)
   | PostComments ( Int, CommentRoutes )
-  | NotFound ()
+  | NotFound
 
 
 parserRoute1 =
@@ -69,6 +70,15 @@ parserRoute1 =
 
 routeRoute1 =
   route Route1 parserRoute1
+
+
+parserPosts =
+  string "posts"
+    |> map (\r -> ())
+
+
+routePosts =
+  route Posts parserPosts
 
 
 parserPost =
@@ -90,6 +100,11 @@ routePostComments =
   route PostComments parserPostComments
 
 
+parserComments =
+  string "comments"
+    |> map (\r -> ())
+
+
 routeComments =
   route Comments parserComments
 
@@ -103,17 +118,20 @@ routeComment =
   route Comment parseComment
 
 
-parserComments =
-  string "/comments"
-    |> map (\r -> ())
-
-
 commentRoutes =
   [ routeComments, routeComment ]
 
 
 routes =
-  [ routePost, routePostComments ]
+  [ routePosts, routePost, routePostComments ]
+
+
+paths =
+  [ "/posts"
+  , "/posts/11"
+  , "/posts/11/comments"
+  , "/posts/11/comments/22"
+  ]
 
 
 path1 =
@@ -124,9 +142,20 @@ path2 =
   "/posts/11"
 
 
-result =
-  matchPath path1 routes
+results =
+  paths
+    |> List.map (\path -> ( path, matchPath path routes ))
+
+
+resultsHtml =
+  results
+    |> List.map (\tuple -> Html.div [] [ text (toString tuple) ])
+
+
+
+--result =
+--  matchPath path2 routes
 
 
 main =
-  text (toString result)
+  Html.div [] resultsHtml
