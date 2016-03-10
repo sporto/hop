@@ -98,6 +98,12 @@ matchPath path routeParsers =
           matchPath path rest
 
 
+
+-- loop through every route
+-- get the constructor
+-- pattern match on the given action
+
+
 reverse action routeParser =
   "hello"
 
