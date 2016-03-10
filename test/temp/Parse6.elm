@@ -23,22 +23,33 @@ route constructor parser =
     map constructor parserWithBeginningAndEnd
 
 
-route1 : (() -> a) -> String -> Parser a
+route1 : (() -> action) -> String -> Parser action
 route1 constructor segment =
   let
     parser =
       string segment
-        |> map (\r -> ())
+        |> skip
   in
     route constructor parser
 
 
-route2 : (inputs -> a) -> String -> Parser inputs -> Parser a
+route2 : (inputs -> action) -> String -> Parser inputs -> Parser action
 route2 constructor segment parser1 =
   let
     parser =
       string segment
         *> parser1
+  in
+    route constructor parser
+
+
+route4 : (( input1, input2 ) -> action) -> String -> Parser input1 -> String -> Parser input2 -> Parser action
+route4 constructor segment1 parser1 segment2 parser2 =
+  let
+    parser =
+      string segment1
+        *> parser1
+        `andThen` (\r -> map (\x -> ( r, x )) (string segment2 *> parser2))
   in
     route constructor parser
 
@@ -97,79 +108,24 @@ type UserRoute
   | NotFound
 
 
-parserPostUser =
-  string "posts/"
-    *> int
-    `andThen` (\r -> map (\x -> ( r, x )) (string "/users/" *> int))
-
-
 routePostUser =
-  route PostUser parserPostUser
-
-
-
---parserPosts =
---  string "posts"
---    |> map (\r -> ())
-{- TODO combine route and parserPost in one thing
-
-  route1 Posts "posts"
-
-Or maybe two:
-
-  route Posts (path1 "posts")
--}
---routePosts =
---  route Posts parserPosts
+  route4 PostUser "posts/" int "/users/" int
 
 
 routePosts =
   route1 Posts "posts"
 
 
-
---parserPost =
---  string "posts/"
---    *> int
---routePost =
---  route Post parserPost
-
-
 routePost =
   route2 Post "posts/" int
-
-
-
---parserPostComments =
---  string "posts/"
---    *> int
---    `andThen` (\r -> map (\x -> ( r, x )) (choice commentRoutes))
---routePostComments =
---  route PostComments parserPostComments
 
 
 routePostComments =
   nestedRoutes1 PostComments "posts/" int commentRoutes
 
 
-
---parserComments =
---  string "comments"
---    |> map (\r -> ())
---routeComments =
---  route Comments parserComments
-
-
 routeComments =
   route1 Comments "comments"
-
-
-
---parseComment =
---  string "comments/"
---    *> int
---routeComment =
---  route Comment parseComment
 
 
 routeComment =
@@ -220,11 +176,6 @@ parseResultsHtml =
 reverserResultsHtml =
   reverseResults
     |> List.map (\tuple -> Html.div [] [ text (toString tuple) ])
-
-
-
---result =
---  matchPath path2 routes
 
 
 main =
