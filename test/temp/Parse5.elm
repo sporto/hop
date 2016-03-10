@@ -55,21 +55,21 @@ type CommentRoutes
 
 
 type UserRoute
-  = Route1 ( Int, Int )
-  | Posts ()
+  = Posts ()
   | Post (Int)
+  | PostUser ( Int, Int )
   | PostComments ( Int, CommentRoutes )
   | NotFound
 
 
-parserRoute1 =
+parserPostUser =
   string "posts/"
     *> int
-    `andThen` (\r -> map (\x -> ( r, x )) (string "/comments/" *> int))
+    `andThen` (\r -> map (\x -> ( r, x )) (string "/users/" *> int))
 
 
-routeRoute1 =
-  route Route1 parserRoute1
+routePostUser =
+  route PostUser parserPostUser
 
 
 parserPosts =
@@ -93,7 +93,7 @@ routePost =
 parserPostComments =
   string "posts/"
     *> int
-    `andThen` (\r -> map (\x -> ( r, x )) routeComment)
+    `andThen` (\r -> map (\x -> ( r, x )) (choice commentRoutes))
 
 
 routePostComments =
@@ -123,23 +123,16 @@ commentRoutes =
 
 
 routes =
-  [ routePosts, routePost, routePostComments ]
+  [ routePosts, routePost, routePostUser, routePostComments ]
 
 
 paths =
   [ "/posts"
   , "/posts/11"
+  , "/posts/11/users/1"
   , "/posts/11/comments"
   , "/posts/11/comments/22"
   ]
-
-
-path1 =
-  "/posts/11/comments/22"
-
-
-path2 =
-  "/posts/11"
 
 
 results =
