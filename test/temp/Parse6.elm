@@ -7,43 +7,51 @@ import Combine.Infix exposing ((<$>), (<$), (<*), (*>), (<*>), (<|>))
 
 
 -- TODO
--- SubRoutes
 -- Reverse routing
 -- Query
+-- Maybe not tuples for actions
 --
 -- LIB
 
 
-route : (inputs -> res) -> Parser inputs -> Parser res
-route constructor parser =
+type alias Route action =
+  { parser : Parser action
+  , segments : List String
+  }
+
+
+route : (inputs -> res) -> Parser inputs -> List String -> Route res
+route constructor parser segments =
   let
     parserWithBeginningAndEnd =
       (Combine.string "/" *> parser <* Combine.end)
   in
-    map constructor parserWithBeginningAndEnd
+    { parser = Combine.map constructor parserWithBeginningAndEnd
+    , segments = segments
+    }
 
 
-route1 : (() -> action) -> String -> Parser action
-route1 constructor segment =
+route1 : (() -> action) -> String -> Route action
+route1 constructor segment1 =
   let
     parser =
-      string segment
+      string segment1
         |> skip
   in
-    route constructor parser
+    route constructor parser [ segment1 ]
 
 
-route2 : (inputs -> action) -> String -> Parser inputs -> Parser action
-route2 constructor segment parser1 =
+route2 : (inputs -> action) -> String -> Parser inputs -> Route action
+route2 constructor segment1 parser1 =
   let
     parser =
-      string segment
+      string segment1
         *> parser1
   in
-    route constructor parser
+    route constructor parser [ segment1 ]
 
 
-route4 : (( input1, input2 ) -> action) -> String -> Parser input1 -> String -> Parser input2 -> Parser action
+route4 : (( input1, input2 ) -> action) -> String -> Parser input1 -> String -> Parser input2 -> Route action
 route4 constructor segment1 parser1 segment2 parser2 =
   let
     parser =
@@ -51,18 +59,21 @@ route4 constructor segment1 parser1 segment2 parser2 =
         *> parser1
         `andThen` (\r -> map (\x -> ( r, x )) (string segment2 *> parser2))
   in
-    route constructor parser
+    route constructor parser [ segment1, segment2 ]
 
 
-nestedRoutes1 : (( inputs, subInputs ) -> action) -> String -> Parser inputs -> List (Parser subInputs) -> Parser action
+nestedRoutes1 : (( inputs, subInputs ) -> action) -> String -> Parser inputs -> List (Route subInputs) -> Route action
 nestedRoutes1 constructor segment parser1 children =
   let
+    childrenParsers =
+      List.map .parser children
+
     parser =
       string segment
         *> parser1
-        `andThen` (\r -> map (\x -> ( r, x )) (choice children))
+        `andThen` (\r -> map (\x -> ( r, x )) (choice childrenParsers))
   in
-    route constructor parser
+    route constructor parser [ segment ]
 
 
 matchPath path routeParsers =
@@ -71,7 +82,7 @@ matchPath path routeParsers =
       (Err NotFound)
 
     [ routeParser ] ->
-      case parse routeParser path of
+      case parse routeParser.parser path of
         ( Ok res, context ) ->
           (Ok res)
 
@@ -79,7 +90,7 @@ matchPath path routeParsers =
           (Err NotFound)
 
     routeParser :: rest ->
-      case parse routeParser path of
+      case parse routeParser.parser path of
         ( Ok res, context ) ->
           (Ok res)
 
