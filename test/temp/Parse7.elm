@@ -107,10 +107,17 @@ matchPath path routeParsers =
 -- loop through every route
 -- get the constructor
 -- pattern match on the given action
+-- action = PostComments ( 1, Comments () )
+-- "/posts/1/comments"
 
 
-reverse action routeParser =
-  "hello"
+reverse action routeParsers =
+  let
+    try route =
+      --if route.
+      "Hello"
+  in
+    List.map try routeParsers
 
 
 
