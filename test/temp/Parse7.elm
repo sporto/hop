@@ -1,4 +1,4 @@
-module Parse6 (..) where
+module Parse7 (..) where
 
 import Html exposing (text)
 import Combine exposing (..)
@@ -20,65 +20,98 @@ type alias Route action =
   }
 
 
-route : (inputs -> res) -> Parser inputs -> List String -> Route res
-route constructor parser segments =
-  let
-    parserWithBeginningAndEnd =
-      (Combine.string "/" *> parser <* Combine.end)
-  in
-    { parser = Combine.map constructor parserWithBeginningAndEnd
-    , segments = segments
-    }
+
+--route : (inputs -> res) -> Parser inputs -> List String -> Route res
+--route constructor parser segments =
+--  let
+--    parserWithBeginningAndEnd =
+--      (Combine.string "/" *> parser <* Combine.end)
+--  in
+--    { parser = Combine.map constructor parserWithBeginningAndEnd
+--    , segments = segments
+--    }
 
 
-route1 : (() -> action) -> String -> Route action
+parserWithBeginningAndEnd parser =
+  (Combine.string "/" *> parser <* Combine.end)
+
+
+route1 : action -> String -> Route action
 route1 constructor segment1 =
   let
     parser =
       string segment1
         |> skip
+        |> parserWithBeginningAndEnd
+        |> Combine.map constructor'
+
+    constructor' =
+      (\() -> constructor)
   in
-    route constructor parser [ segment1 ]
+    { parser = parser
+    , segments = [ segment1 ]
+    }
 
 
-route2 : (inputs -> action) -> String -> Parser inputs -> Route action
+route2 : (input1 -> action) -> String -> Parser input1 -> Route action
 route2 constructor segment1 parser1 =
   let
+    constructor' input1 =
+      constructor input1
+
     parser =
       string segment1
         *> parser1
+        |> parserWithBeginningAndEnd
+        |> Combine.map constructor'
   in
-    route constructor parser [ segment1 ]
+    { parser = parser
+    , segments = [ segment1 ]
+    }
 
 
-route4 : (( input1, input2 ) -> action) -> String -> Parser input1 -> String -> Parser input2 -> Route action
+route4 : (input1 -> input2 -> action) -> String -> Parser input1 -> String -> Parser input2 -> Route action
 route4 constructor segment1 parser1 segment2 parser2 =
   let
+    constructor' ( a, b ) =
+      constructor a b
+
     parser =
       string segment1
         *> parser1
         `andThen` (\r -> map (\x -> ( r, x )) (string segment2 *> parser2))
+        |> parserWithBeginningAndEnd
+        |> Combine.map constructor'
   in
-    route constructor parser [ segment1, segment2 ]
+    { parser = parser
+    , segments = [ segment1, segment2 ]
+    }
 
 
 
 -- PostComments ( Int, Comment (1) )
 -- PostComments 1 (Comment 1)
+--nestedRoutes1 : (( inputs, subInputs ) -> action) -> String -> Parser inputs -> List (Route subInputs) -> Route action
 
 
-nestedRoutes1 : (( inputs, subInputs ) -> action) -> String -> Parser inputs -> List (Route subInputs) -> Route action
-nestedRoutes1 constructor segment parser1 children =
+nestedRoutes1 constructor segment1 parser1 children =
   let
     childrenParsers =
       List.map .parser children
 
+    constructor' ( a, b ) =
+      constructor a b
+
     parser =
-      string segment
+      string segment1
         *> parser1
         `andThen` (\r -> map (\x -> ( r, x )) (choice childrenParsers))
+        |> parserWithBeginningAndEnd
+        |> Combine.map constructor'
   in
-    route constructor parser [ segment ]
+    { parser = parser
+    , segments = [ segment1 ]
+    }
 
 
 matchPath path routeParsers =
@@ -104,36 +137,19 @@ matchPath path routeParsers =
 
 
 
--- loop through every route
--- get the constructor
--- pattern match on the given action
--- action = PostComments ( 1, Comments () )
--- "/posts/1/comments"
-
-
-reverse action routeParsers =
-  let
-    try route =
-      --if route.
-      "Hello"
-  in
-    List.map try routeParsers
-
-
-
 -- USER
 
 
 type CommentRoutes
-  = Comments ()
-  | Comment (Int)
+  = Comments
+  | Comment Int
 
 
 type UserRoute
-  = Posts ()
-  | Post (Int)
-  | PostUser ( Int, Int )
-  | PostComments ( Int, CommentRoutes )
+  = Posts
+  | Post Int
+  | PostUser Int Int
+  | PostComments Int CommentRoutes
   | NotFound
 
 
@@ -178,23 +194,9 @@ paths =
   ]
 
 
-actions =
-  [ Posts ()
-  , Post (1)
-  , PostUser ( 1, 2 )
-  , PostComments ( 1, Comments () )
-  , PostComments ( 1, Comment (1) )
-  ]
-
-
 parseResults =
   paths
     |> List.map (\path -> ( path, matchPath path routes ))
-
-
-reverseResults =
-  actions
-    |> List.map (\action -> ( action, reverse action routes ))
 
 
 parseResultsHtml =
@@ -202,14 +204,8 @@ parseResultsHtml =
     |> List.map (\tuple -> Html.div [] [ text (toString tuple) ])
 
 
-reverserResultsHtml =
-  reverseResults
-    |> List.map (\tuple -> Html.div [] [ text (toString tuple) ])
-
-
 main =
   Html.div
     []
     [ Html.div [] parseResultsHtml
-    , Html.div [] reverserResultsHtml
     ]
