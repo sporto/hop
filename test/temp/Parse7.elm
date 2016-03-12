@@ -117,20 +117,20 @@ nestedRoutes1 constructor segment1 parser1 children =
 matchPath path routeParsers =
   case routeParsers of
     [] ->
-      (Err NotFound)
+      NotFound
 
     [ routeParser ] ->
       case parse routeParser.parser path of
         ( Ok res, context ) ->
-          (Ok res)
+          res
 
         ( Err _, context ) ->
-          (Err NotFound)
+          NotFound
 
     routeParser :: rest ->
       case parse routeParser.parser path of
         ( Ok res, context ) ->
-          (Ok res)
+          res
 
         ( Err _, context ) ->
           matchPath path rest
