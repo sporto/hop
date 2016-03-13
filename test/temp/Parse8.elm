@@ -83,6 +83,10 @@ route4 constructor segment1 parser1 segment2 parser2 =
 --nestedRoutes1 : (( inputs, subInputs ) -> action) -> String -> Parser inputs -> List (Route subInputs) -> Route action
 
 
+toS =
+  toString
+
+
 nestedRoutes1 constructor segment1 parser1 children =
   let
     childrenParsers =
@@ -138,10 +142,11 @@ matchPath path routeParsers =
 --      |> String.join ""
 
 
+routeToPath : Route a -> List String -> String
 routeToPath route inputs =
   let
     makeSegment segment input =
-      segment ++ (toString input)
+      segment ++ input
   in
     List.map2 makeSegment route.segments inputs
       |> String.join ""
@@ -235,14 +240,6 @@ paths =
   ]
 
 
-
---reverseResults =
---  [ reverse routePost [ 8 ]
---  , reverse routePostUser [ 3, 4 ]
---  , reverseNested routePostComments [ 3 ] routeComment [ 2 ]
---  ]
-
-
 actions =
   [ Posts
   , Post 1
@@ -257,34 +254,34 @@ actions =
 reverse action =
   case action of
     Posts ->
-      routeToPath routePosts ()
+      routeToPath routePosts []
 
-    Post x ->
-      routeToPath routePost (x)
+    Post id ->
+      routeToPath routePost [ toS id ]
 
     PostUser x y ->
-      routeToPath routePostUser ( x, y )
+      routeToPath routePostUser [ toS x, toS y ]
 
     PostToken id token ->
-      routeToPath routePostToken ( id, token )
+      routeToPath routePostToken [ toS id, token ]
 
     PostComments id subAction ->
       let
         parent =
-          routeToPath routePostComments (id)
+          routeToPath routePostComments [ toS id ]
 
         nested =
           case subAction of
             Comments ->
-              routeToPath routeComments ()
+              routeToPath routeComments []
 
             Comment commentId ->
-              routeToPath routeComment (commentId)
+              routeToPath routeComment [ toS commentId ]
       in
         parent ++ nested
 
     Token token ->
-      routeToPath routeToken (token)
+      routeToPath routeToken [ token ]
 
     NotFound ->
       ""
