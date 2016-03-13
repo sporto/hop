@@ -1,8 +1,9 @@
-module Parse7 (..) where
+module Parse8 (..) where
 
 import Html exposing (text)
 import Combine exposing (..)
 import Combine.Num exposing (..)
+import String
 import Combine.Infix exposing ((<$>), (<$), (<*), (*>), (<*>), (<|>))
 
 
@@ -20,27 +21,15 @@ type alias Route action =
   }
 
 
-
---route : (inputs -> res) -> Parser inputs -> List String -> Route res
---route constructor parser segments =
---  let
---    parserWithBeginningAndEnd =
---      (Combine.string "/" *> parser <* Combine.end)
---  in
---    { parser = Combine.map constructor parserWithBeginningAndEnd
---    , segments = segments
---    }
-
-
 parserWithBeginningAndEnd parser =
-  (Combine.string "/" *> parser <* Combine.end)
+  parser <* Combine.end
 
 
 route1 : action -> String -> Route action
 route1 constructor segment1 =
   let
     parser =
-      string segment1
+      Combine.string segment1
         |> skip
         |> parserWithBeginningAndEnd
         |> Combine.map constructor'
@@ -60,7 +49,7 @@ route2 constructor segment1 parser1 =
       constructor input1
 
     parser =
-      string segment1
+      Combine.string segment1
         *> parser1
         |> parserWithBeginningAndEnd
         |> Combine.map constructor'
@@ -77,9 +66,9 @@ route4 constructor segment1 parser1 segment2 parser2 =
       constructor a b
 
     parser =
-      string segment1
+      Combine.string segment1
         *> parser1
-        `andThen` (\r -> map (\x -> ( r, x )) (string segment2 *> parser2))
+        `andThen` (\r -> map (\x -> ( r, x )) (Combine.string segment2 *> parser2))
         |> parserWithBeginningAndEnd
         |> Combine.map constructor'
   in
@@ -103,7 +92,7 @@ nestedRoutes1 constructor segment1 parser1 children =
       constructor a b
 
     parser =
-      string segment1
+      Combine.string segment1
         *> parser1
         `andThen` (\r -> map (\x -> ( r, x )) (choice childrenParsers))
         |> parserWithBeginningAndEnd
@@ -137,6 +126,45 @@ matchPath path routeParsers =
 
 
 
+-- loop through every route
+-- get the constructor
+-- pattern match on the given action
+--routeToPath route inputs =
+--  let
+--    makeSegment segment input =
+--      segment ++ (toString input)
+--  in
+--    List.map2 makeSegment route.segments inputs
+--      |> String.join ""
+
+
+routeToPath route inputs =
+  let
+    makeSegment segment input =
+      segment ++ (toString input)
+  in
+    List.map2 makeSegment route.segments inputs
+      |> String.join ""
+
+
+str =
+  Combine.regex "[^/]+"
+
+
+
+--reverseNested route inputs1 nestedRoute inputs2 =
+--  let
+--    makeSegment segment input =
+--      segment ++ (toString input)
+--    path =
+--      List.map2 makeSegment route.segments inputs1
+--        |> String.join ""
+--    nestedPath =
+--      List.map2 makeSegment nestedRoute.segments inputs2
+--        |> String.join ""
+--  in
+--    path ++ "/" ++ nestedPath
+------------------------------------------------------------
 -- USER
 
 
@@ -149,32 +177,42 @@ type UserRoute
   = Posts
   | Post Int
   | PostUser Int Int
+  | PostToken Int String
   | PostComments Int CommentRoutes
+  | Token String
   | NotFound
 
 
 routePostUser =
-  route4 PostUser "posts/" int "/users/" int
+  route4 PostUser "/posts/" int "/users/" int
 
 
 routePosts =
-  route1 Posts "posts"
+  route1 Posts "/posts"
 
 
 routePost =
-  route2 Post "posts/" int
+  route2 Post "/posts/" int
+
+
+routePostToken =
+  route4 PostToken "/posts/" int "/tokens/" str
 
 
 routePostComments =
-  nestedRoutes1 PostComments "posts/" int commentRoutes
+  nestedRoutes1 PostComments "/posts/" int commentRoutes
+
+
+routeToken =
+  route2 Token "/tokens/" str
 
 
 routeComments =
-  route1 Comments "comments"
+  route1 Comments "/comments"
 
 
 routeComment =
-  route2 Comment "comments/" int
+  route2 Comment "/comments/" int
 
 
 commentRoutes =
@@ -182,17 +220,78 @@ commentRoutes =
 
 
 routes =
-  [ routePosts, routePost, routePostUser, routePostComments ]
+  [ routePosts, routePost, routePostUser, routePostToken, routePostComments, routeToken ]
 
 
 paths =
   [ "/posts"
   , "/posts/11"
   , "/posts/11/users/1"
+  , "/posts/23/tokens/xyz"
   , "/posts/11/comments"
   , "/posts/11/comments/22"
   , "/posts/22/monkeys"
+  , "/tokens/abc"
   ]
+
+
+
+--reverseResults =
+--  [ reverse routePost [ 8 ]
+--  , reverse routePostUser [ 3, 4 ]
+--  , reverseNested routePostComments [ 3 ] routeComment [ 2 ]
+--  ]
+
+
+actions =
+  [ Posts
+  , Post 1
+  , PostUser 1 2
+  , PostToken 7 "abc"
+  , PostComments 1 Comments
+  , PostComments 1 (Comment 1)
+  , Token "xyz"
+  ]
+
+
+reverse action =
+  case action of
+    Posts ->
+      routeToPath routePosts ()
+
+    Post x ->
+      routeToPath routePost (x)
+
+    PostUser x y ->
+      routeToPath routePostUser ( x, y )
+
+    PostToken id token ->
+      routeToPath routePostToken ( id, token )
+
+    PostComments id subAction ->
+      let
+        parent =
+          routeToPath routePostComments (id)
+
+        nested =
+          case subAction of
+            Comments ->
+              routeToPath routeComments ()
+
+            Comment commentId ->
+              routeToPath routeComment (commentId)
+      in
+        parent ++ nested
+
+    Token token ->
+      routeToPath routeToken (token)
+
+    NotFound ->
+      ""
+
+
+
+--"/post/" ++ (toString x)
 
 
 parseResults =
@@ -205,8 +304,19 @@ parseResultsHtml =
     |> List.map (\tuple -> Html.div [] [ text (toString tuple) ])
 
 
+reverseResults =
+  actions
+    |> List.map (\action -> ( action, reverse action ))
+
+
+reverserResultsHtml =
+  reverseResults
+    |> List.map (\tuple -> Html.div [] [ text (toString tuple) ])
+
+
 main =
   Html.div
     []
     [ Html.div [] parseResultsHtml
+    , Html.div [] reverserResultsHtml
     ]
