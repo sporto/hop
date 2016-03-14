@@ -52,10 +52,10 @@ type alias Route action =
 
 {-| Configuration input for Hop.new
 -}
-type alias Config wrapper action =
-  { wrapperAction : ( action, Query ) -> wrapper
-  , notFoundAction : action
-  , routes : List (Route action)
+type alias Config actionTag routeTag =
+  { action : ( routeTag, Query ) -> actionTag
+  , notFound : routeTag
+  , routes : List (Route routeTag)
   }
 
 

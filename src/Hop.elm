@@ -17,12 +17,13 @@ import Hop.Matcher as Matcher
     router =
       Hop.new {
         routes = routes,
-        notFoundAction = ShowNotFound
+        action = Show,
+        notFound = NotFound
       }
 -}
-new : Config wrapper action -> Router wrapper
+new : Config actionTag routeTag -> Router actionTag
 new config =
-  { signal = wrapperActionSignal config
+  { signal = actionTagSignal config
   , run = History.setPath ""
   }
 
@@ -35,15 +36,15 @@ We pass this signal to the main application
 -}
 
 
-wrapperActionSignal : Config wrapper action -> Signal wrapper
-wrapperActionSignal config =
-  Signal.map config.wrapperAction (actionAndQuerySignal config)
+actionTagSignal : Config actionTag routeTag -> Signal actionTag
+actionTagSignal config =
+  Signal.map config.action (routeTagAndQuerySignal config)
 
 
-actionAndQuerySignal : Config wrapper action -> Signal ( action, Query )
-actionAndQuerySignal config =
+routeTagAndQuerySignal : Config actionTag routeTag -> Signal ( routeTag, Query )
+routeTagAndQuerySignal config =
   let
     resolve location =
-      Matcher.matchLocation config.routes config.notFoundAction location
+      Matcher.matchLocation config.routes config.notFound location
   in
     Signal.map resolve History.hash
