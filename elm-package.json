@@ -4,7 +4,7 @@
     "repository": "https://github.com/sporto/hop.git",
     "license": "MIT",
     "source-directories": [
-        "."
+        "src"
     ],
     "exposed-modules": [
         "Hop"

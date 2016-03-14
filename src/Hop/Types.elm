@@ -1,33 +1,21 @@
 module Hop.Types (..) where
 
-import Dict
-import Task exposing (Task)
+--import Dict
+--import Task exposing (Task)
+
+import Combine exposing (Parser)
 
 
 --type alias Params =
 --  Dict.Dict String String
 -- Move this to Url
-
-
-type alias Path =
-  List String
-
-
-
+-- Move this to Url
 -- Move this to Url
 
 
-type alias Query =
-  Dict.Dict String String
-
-
-
--- Move this to Url
-
-
-type alias Url =
-  { path : Path
-  , query : Query
+type alias Route action =
+  { parser : Parser action
+  , segments : List String
   }
 
 
