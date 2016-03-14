@@ -2,10 +2,11 @@ module Hop.Matcher (..) where
 
 import String
 import Hop.Types exposing (..)
-import Hop.Url
+import Hop.Url exposing (Query)
 import Combine exposing (Parser, parse)
 
 
+matchPath : List (Route action) -> action -> String -> action
 matchPath routeParsers notFoundAction path =
   case routeParsers of
     [] ->
@@ -28,15 +29,25 @@ matchPath routeParsers notFoundAction path =
           matchPath rest notFoundAction path
 
 
-matchPathWithQuery routingAction notFoundAction fullPath routeParsers =
+
+{-
+matchLocation
+Matchers a complete location (path + query)
+Returns a tagged tuple e.g. Show (action, query)
+location includes path and query e.g. "users/1/post?a=1"
+-}
+
+
+matchLocation : List (Route action) -> (( action, Query ) -> wrapperAction) -> action -> String -> wrapperAction
+matchLocation routeParsers routingAction notFoundAction location =
   let
     url =
-      Hop.Url.parse fullPath
+      Hop.Url.parse location
 
-    path =
-      "/" ++ url.path
+    matchedAction =
+      matchPath routeParsers notFoundAction url.path
   in
-    routingAction ( matchPath notFoundAction path routeParsers, url.query )
+    routingAction ( matchedAction, url.query )
 
 
 routeToPath : Route a -> List String -> String
