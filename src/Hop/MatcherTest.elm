@@ -9,7 +9,8 @@ type TopLevelRoutes
   = Users
   | User Int
   | UserStatus Int
-  | UserToken String
+  | UsersToken String
+  | UserToken Int String
   | UserPosts Int (PostNestedRoutes)
   | NotFound
 
@@ -43,8 +44,12 @@ userStatusRoute =
   route3 UserStatus "/users/" int "/status"
 
 
+usersTokenRoute =
+  route2 UsersToken "/users/" str
+
+
 userTokenRoute =
-  route2 UserToken "/users/" str
+  route4 UserToken "/users/" int "/" str
 
 
 userPostRoute =
@@ -52,7 +57,7 @@ userPostRoute =
 
 
 topLevelRoutes =
-  [ usersRoute, userRoute, userStatusRoute, userTokenRoute ]
+  [ usersRoute, userRoute, userStatusRoute, usersTokenRoute, userPostRoute, userTokenRoute ]
 
 
 matchPathTest : Test
@@ -60,7 +65,13 @@ matchPathTest =
   let
     inputs =
       [ ( "Matches users", "/users", Users )
-      , ( "Matches users", "/users/1", User 1 )
+      , ( "Matches one user", "/users/1", User 1 )
+      , ( "Matches user status", "/users/2/status", UserStatus 2 )
+      , ( "Matches users token", "/users/abc", UsersToken "abc" )
+      , ( "Matches one user token", "/users/3/abc", UserToken 3 "abc" )
+      , ( "Matches user posts", "/users/4/posts", UserPosts 4 (Posts) )
+      , ( "Matches one user post", "/users/4/posts/2", UserPosts 4 (Post 2) )
+      , ( "Matches not found", "/posts", NotFound )
       ]
 
     run ( testCase, input, expected ) =
