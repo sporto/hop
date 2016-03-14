@@ -1,11 +1,26 @@
-module Hop.Matcher (..) where
+module Hop.Matcher (matchPath, matchLocation) where
+
+{-| Functions for matching routes
+
+@docs matchPath, matchLocation
+-}
 
 import String
 import Hop.Types exposing (..)
-import Hop.Url exposing (Query)
+import Hop.Url
 import Combine exposing (Parser, parse)
 
 
+{-| matchPath
+Matches a path e.g. "/users/1/comments/2"
+Returns the matching action
+
+  matchPath routes NotFound "/users/1/comments/2"
+
+  ==
+
+  User 1 (Comment 2)
+-}
 matchPath : List (Route action) -> action -> String -> action
 matchPath routeParsers notFoundAction path =
   case routeParsers of
@@ -29,17 +44,18 @@ matchPath routeParsers notFoundAction path =
           matchPath rest notFoundAction path
 
 
+{-| matchLocation
+Matches a complete location including path and query e.g. "/users/1/post?a=1"
+Returns a tuple e.g. (action, query)
 
-{-
-matchLocation
-Matchers a complete location (path + query)
-Returns a tagged tuple e.g. Show (action, query)
-location includes path and query e.g. "users/1/post?a=1"
+  matchLocation routes NotFound "/users/1?a=1"
+
+  ==
+
+  (User 1, Dict.singleton "a" "1")
 -}
-
-
-matchLocation : List (Route action) -> (( action, Query ) -> wrapperAction) -> action -> String -> wrapperAction
-matchLocation routeParsers routingAction notFoundAction location =
+matchLocation : List (Route action) -> action -> String -> ( action, Query )
+matchLocation routeParsers notFoundAction location =
   let
     url =
       Hop.Url.parse location
@@ -47,7 +63,7 @@ matchLocation routeParsers routingAction notFoundAction location =
     matchedAction =
       matchPath routeParsers notFoundAction url.path
   in
-    routingAction ( matchedAction, url.query )
+    ( matchedAction, url.query )
 
 
 routeToPath : Route a -> List String -> String

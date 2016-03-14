@@ -1,23 +1,9 @@
 module Hop.Url (..) where
 
-import Hop.Types as Types
 import Dict
 import String
 import Http
-
-
-type alias Path =
-  String
-
-
-type alias Query =
-  Dict.Dict String String
-
-
-type alias Url =
-  { path : Path
-  , query : Query
-  }
+import Hop.Types exposing (..)
 
 
 newQuery : Query
@@ -33,16 +19,34 @@ newUrl =
 
 
 
+-------------------------------------------------------------------------------
 {-
 urlToLocation
 Given a Url.
 Generate a location path.
+e.g. url -> "/users/1?a=1"
 -}
 
 
 urlToLocation : Url -> String
 urlToLocation url =
   "#/" ++ url.path ++ (queryFromUrl url)
+
+
+
+-- Normalize a location from user
+
+
+urlFromUser : String -> Url
+urlFromUser route =
+  let
+    normalized =
+      if String.startsWith "#" route then
+        route
+      else
+        "#" ++ route
+  in
+    parse normalized
 
 
 
@@ -90,7 +94,7 @@ extractPath route =
     |> Maybe.withDefault ""
 
 
-parsePath : String -> Path
+parsePath : String -> String
 parsePath route =
   route
     |> extractPath
@@ -143,17 +147,6 @@ queryKVtoTuple kv =
 
 
 
--- NORMALIZE PATH GIVEN BY USER
---urlFromUser : String -> Url
---urlFromUser route =
---  let
---    normalized =
---      if String.startsWith "#" route then
---        route
---      else
---        "#" ++ route
---  in
---    parse normalized
 -------------------------------------------------------------------------------
 -- QUERY MUTATION
 

@@ -7,10 +7,6 @@ import Hop.Url exposing (Query, newQuery)
 import ElmTest exposing (..)
 
 
-type Action
-  = Show ( TopLevelRoutes, Query )
-
-
 type TopLevelRoutes
   = Users
   | User Int
@@ -99,54 +95,54 @@ matchLocationTest =
     inputs =
       [ ( "Matches users"
         , "/users"
-        , Show ( Users, newQuery )
+        , ( Users, newQuery )
         )
       , ( "Matches users with query"
         , "/users?a=1"
-        , Show ( Users, Dict.singleton "a" "1" )
+        , ( Users, Dict.singleton "a" "1" )
         )
       , ( "Matches one user"
         , "/users/1"
-        , Show ( User 1, newQuery )
+        , ( User 1, newQuery )
         )
       , ( "Matches one user with query"
         , "/users/1?a=1"
-        , Show ( User 1, Dict.singleton "a" "1" )
+        , ( User 1, Dict.singleton "a" "1" )
         )
       , ( "Matches user status"
         , "/users/2/status"
-        , Show ( UserStatus 2, newQuery )
+        , ( UserStatus 2, newQuery )
         )
       , ( "Matches users token"
         , "/users/abc"
-        , Show ( UsersToken "abc", newQuery )
+        , ( UsersToken "abc", newQuery )
         )
       , ( "Matches one user token"
         , "/users/3/abc"
-        , Show ( UserToken 3 "abc", newQuery )
+        , ( UserToken 3 "abc", newQuery )
         )
       , ( "Matches user posts"
         , "/users/4/posts"
-        , Show ( UserPosts 4 (Posts), newQuery )
+        , ( UserPosts 4 (Posts), newQuery )
         )
       , ( "Matches one user post"
         , "/users/4/posts/2"
-        , Show ( UserPosts 4 (Post 2), newQuery )
+        , ( UserPosts 4 (Post 2), newQuery )
         )
       , ( "Matches one user post with query"
         , "/users/4/posts/2?a=1"
-        , Show ( UserPosts 4 (Post 2), Dict.singleton "a" "1" )
+        , ( UserPosts 4 (Post 2), Dict.singleton "a" "1" )
         )
       , ( "Matches not found"
         , "/posts"
-        , Show ( NotFound, newQuery )
+        , ( NotFound, newQuery )
         )
       ]
 
     run ( testCase, input, expected ) =
       let
         actual =
-          matchLocation topLevelRoutes Show NotFound input
+          matchLocation topLevelRoutes NotFound input
 
         result =
           assertEqual expected actual

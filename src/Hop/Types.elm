@@ -1,49 +1,67 @@
-module Hop.Types (..) where
+module Hop.Types (Config, Router, Route, Query, Url) where
 
---import Dict
---import Task exposing (Task)
+{-| Hop.Types
 
+@docs Config, Router, Route, Query, Url
+-}
+
+import Dict
+import Task exposing (Task)
 import Combine exposing (Parser)
 
 
---type alias Params =
---  Dict.Dict String String
--- Move this to Url
--- Move this to Url
--- Move this to Url
+{-| Actions
+-}
 
 
+
+--type Action
+--  = GoToRouteResult (Result () ())
+
+
+{-| Query
+A Dict that holds query parameters
+
+    Dict.Dict String String
+-}
+type alias Query =
+  Dict.Dict String String
+
+
+{-| Url
+A Record that includes a `path` and a `query`
+
+    {
+      path: String,
+      query: Query
+    }
+-}
+type alias Url =
+  { path : String
+  , query : Query
+  }
+
+
+{-| A route defintion
+-}
 type alias Route action =
   { parser : Parser action
   , segments : List String
   }
 
 
+{-| Configuration input for Hop.new
+-}
+type alias Config wrapper action =
+  { wrapperAction : ( action, Query ) -> wrapper
+  , notFoundAction : action
+  , routes : List (Route action)
+  }
 
---type alias Payload = {
---    params: Params,
---    url: Url
---  }
---type alias UserPartialAction action =
---  Payload -> action
---type alias Config partialAction =
---  { notFoundAction : partialAction
---  , routes : List (RouteDefinition partialAction)
---  }
---type alias Router action =
---  { signal : Signal action
---  , payload : Payload
---  , run : Task () ()
---  }
---type alias RouteDefinition action =
---  ( String, action )
---newUrl : Url
---newUrl =
---  { query = Dict.empty
---  , path = []
---  }
---newPayload : Payload
---newPayload =
---  { params = Dict.empty
---  , url = newUrl
---  }
+
+{-| Router record created by Hop.new
+-}
+type alias Router action =
+  { signal : Signal action
+  , run : Task () ()
+  }
