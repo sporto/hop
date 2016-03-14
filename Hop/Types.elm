@@ -4,12 +4,17 @@ import Dict
 import Task exposing (Task)
 
 
-type alias Params =
-  Dict.Dict String String
+--type alias Params =
+--  Dict.Dict String String
+-- Move this to Url
+
+
+type alias Path =
+  List String
 
 
 
---type alias Path = List String
+-- Move this to Url
 
 
 type alias Query =
@@ -17,10 +22,16 @@ type alias Query =
 
 
 
---type alias Url = {
---    path: Path,
---    query: Query
---  }
+-- Move this to Url
+
+
+type alias Url =
+  { path : Path
+  , query : Query
+  }
+
+
+
 --type alias Payload = {
 --    params: Params,
 --    url: Url

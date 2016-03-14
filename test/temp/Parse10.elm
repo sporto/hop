@@ -1,4 +1,4 @@
-module Parse9 (..) where
+module Parse10 (..) where
 
 import Html exposing (text)
 import Combine exposing (..)
@@ -6,23 +6,20 @@ import Combine.Num exposing (..)
 import String
 import Dict
 import Combine.Infix exposing ((<$>), (<$), (<*), (*>), (<*>), (<|>))
+import Hop.Url
 
 
--- TODO
--- Parse query
--- Reverse query
--------------------------------------
 -- LIB
+
+
+type alias Query =
+  Dict.Dict String String
 
 
 type alias Route action =
   { parser : Parser action
   , segments : List String
   }
-
-
-type alias Query =
-  Dict.Dict String String
 
 
 newQuery : Query
@@ -34,28 +31,28 @@ parserWithBeginningAndEnd parser =
   parser <* Combine.end
 
 
-route1 : (Query -> action) -> String -> Route action
+route1 : action -> String -> Route action
 route1 constructor segment1 =
   let
-    constructor' =
-      (\() -> constructor newQuery)
-
     parser =
       Combine.string segment1
         |> skip
         |> parserWithBeginningAndEnd
         |> Combine.map constructor'
+
+    constructor' =
+      (\() -> constructor)
   in
     { parser = parser
     , segments = [ segment1 ]
     }
 
 
-route2 : (input1 -> Query -> action) -> String -> Parser input1 -> Route action
+route2 : (input1 -> action) -> String -> Parser input1 -> Route action
 route2 constructor segment1 parser1 =
   let
     constructor' input1 =
-      constructor input1 newQuery
+      constructor input1
 
     parser =
       Combine.string segment1
@@ -68,11 +65,11 @@ route2 constructor segment1 parser1 =
     }
 
 
-route4 : (input1 -> input2 -> Query -> action) -> String -> Parser input1 -> String -> Parser input2 -> Route action
+route4 : (input1 -> input2 -> action) -> String -> Parser input1 -> String -> Parser input2 -> Route action
 route4 constructor segment1 parser1 segment2 parser2 =
   let
     constructor' ( a, b ) =
-      constructor a b newQuery
+      constructor a b
 
     parser =
       Combine.string segment1
@@ -86,6 +83,12 @@ route4 constructor segment1 parser1 segment2 parser2 =
     }
 
 
+
+-- PostComments ( Int, Comment (1) )
+-- PostComments 1 (Comment 1)
+--nestedRoutes1 : (( inputs, subInputs ) -> action) -> String -> Parser inputs -> List (Route subInputs) -> Route action
+
+
 toS =
   toString
 
@@ -96,7 +99,7 @@ nestedRoutes1 constructor segment1 parser1 children =
       List.map .parser children
 
     constructor' ( a, b ) =
-      constructor a b newQuery
+      constructor a b
 
     parser =
       Combine.string segment1
@@ -110,11 +113,10 @@ nestedRoutes1 constructor segment1 parser1 children =
     }
 
 
-matchPath : (Query -> action) -> String -> List (Route action) -> action
 matchPath notFoundAction path routeParsers =
   case routeParsers of
     [] ->
-      notFoundAction newQuery
+      notFoundAction
 
     [ routeParser ] ->
       case parse routeParser.parser path of
@@ -122,7 +124,7 @@ matchPath notFoundAction path routeParsers =
           res
 
         ( Err _, context ) ->
-          notFoundAction newQuery
+          notFoundAction
 
     routeParser :: rest ->
       case parse routeParser.parser path of
@@ -131,6 +133,30 @@ matchPath notFoundAction path routeParsers =
 
         ( Err _, context ) ->
           matchPath notFoundAction path rest
+
+
+matchPathWithQuery routingAction notFoundAction fullPath routeParsers =
+  let
+    url =
+      Hop.Url.parse fullPath
+
+    path =
+      "/" ++ (String.join "/" url.path)
+  in
+    routingAction ( matchPath notFoundAction path routeParsers, url.query )
+
+
+
+-- loop through every route
+-- get the constructor
+-- pattern match on the given action
+--routeToPath route inputs =
+--  let
+--    makeSegment segment input =
+--      segment ++ (toString input)
+--  in
+--    List.map2 makeSegment route.segments inputs
+--      |> String.join ""
 
 
 routeToPath : Route a -> List String -> String
@@ -148,23 +174,40 @@ str =
 
 
 
+--reverseNested route inputs1 nestedRoute inputs2 =
+--  let
+--    makeSegment segment input =
+--      segment ++ (toString input)
+--    path =
+--      List.map2 makeSegment route.segments inputs1
+--        |> String.join ""
+--    nestedPath =
+--      List.map2 makeSegment nestedRoute.segments inputs2
+--        |> String.join ""
+--  in
+--    path ++ "/" ++ nestedPath
 ------------------------------------------------------------
 -- USER
 
 
 type CommentRoutes
-  = Comments Query
-  | Comment Int Query
+  = Comments
+  | Comment Int
 
 
 type UserRoute
-  = Posts Query
-  | Post Int Query
-  | PostUser Int Int Query
-  | PostToken Int String Query
-  | PostComments Int CommentRoutes Query
-  | Token String Query
-  | NotFound Query
+  = Posts
+  | Post Int
+  | PostUser Int Int
+  | PostToken Int String
+  | PostComments Int CommentRoutes
+  | Token String
+  | NotFound
+
+
+type Action
+  = ShowView ( UserRoute, Query )
+  | NoOp
 
 
 routePostUser =
@@ -204,78 +247,98 @@ commentRoutes =
 
 
 routes =
-  [ routePosts, routePost, routePostUser, routePostToken, routeToken, routePostComments ]
+  [ routePosts, routePost, routePostUser, routePostToken, routePostComments, routeToken ]
 
 
-pathsToMatch =
+paths =
   [ "/posts"
   , "/posts?a=1"
   , "/posts/11"
-  , "/posts/11?a=1"
   , "/posts/11/users/1"
   , "/posts/23/tokens/xyz"
   , "/posts/11/comments"
-  , "/posts/11/comments?a=1"
   , "/posts/11/comments/22"
+  , "/posts/11/comments/22?a=1"
   , "/posts/22/monkeys"
   , "/tokens/abc"
   ]
 
 
 actions =
-  [ Posts newQuery
-  , Post 1 newQuery
-  , PostUser 1 2 newQuery
-  , PostToken 7 "abc" newQuery
-  , PostComments 1 (Comments newQuery) newQuery
-  , PostComments 1 (Comment 1 newQuery) newQuery
-  , Token "xyz" newQuery
+  [ Posts
+  , Post 1
+  , PostUser 1 2
+  , PostToken 7 "abc"
+  , PostComments 1 Comments
+  , PostComments 1 (Comment 1)
+  , Token "xyz"
   ]
 
 
 reverse action =
   case action of
-    Posts query ->
+    Posts ->
       routeToPath routePosts []
 
-    Post id query ->
+    Post id ->
       routeToPath routePost [ toS id ]
 
-    PostUser x y query ->
+    PostUser x y ->
       routeToPath routePostUser [ toS x, toS y ]
 
-    PostToken id token query ->
+    PostToken id token ->
       routeToPath routePostToken [ toS id, token ]
 
-    PostComments id subAction query ->
+    PostComments id subAction ->
       let
         parent =
           routeToPath routePostComments [ toS id ]
 
         nested =
           case subAction of
-            Comments query ->
+            Comments ->
               routeToPath routeComments []
 
-            Comment commentId query ->
+            Comment commentId ->
               routeToPath routeComment [ toS commentId ]
       in
         parent ++ nested
 
-    Token token query ->
+    Token token ->
       routeToPath routeToken [ token ]
 
-    NotFound query ->
+    NotFound ->
       ""
 
 
+
+--"/post/" ++ (toString x)
+
+
 parseResults =
-  pathsToMatch
-    |> List.map (\path -> ( path, matchPath NotFound path routes ))
+  let
+    removeQuery path =
+      path
+        |> String.split "?"
+        |> List.head
+        |> Maybe.withDefault ""
+  in
+    paths
+      |> List.map (\path -> ( path, matchPath NotFound (removeQuery path) routes ))
 
 
 parseResultsHtml =
   parseResults
+    |> List.map (\tuple -> Html.div [] [ text (toString tuple) ])
+
+
+parseResultsWithQuery =
+  paths
+    |> List.map (\path -> ( path, matchPathWithQuery ShowView NotFound path routes ))
+
+
+parseResultsWithQueryHtml =
+  parseResultsWithQuery
     |> List.map (\tuple -> Html.div [] [ text (toString tuple) ])
 
 
@@ -293,6 +356,8 @@ main =
   Html.div
     []
     [ Html.div [] parseResultsHtml
+    , Html.div [] [ Html.text "----------------" ]
+    , Html.div [] parseResultsWithQueryHtml
     , Html.div [] [ Html.text "----------------" ]
     , Html.div [] reverserResultsHtml
     ]
