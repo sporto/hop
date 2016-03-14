@@ -86,8 +86,8 @@ route4 constructor segment1 parser1 segment2 parser2 =
     }
 
 
-nestedRoutes1 : (input1 -> subAction -> action) -> String -> Parser input1 -> List (Route subAction) -> Route action
-nestedRoutes1 constructor segment1 parser1 children =
+nested1 : (input1 -> subAction -> action) -> String -> Parser input1 -> List (Route subAction) -> Route action
+nested1 constructor segment1 parser1 children =
   let
     childrenParsers =
       List.map .parser children
