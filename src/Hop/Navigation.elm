@@ -1,4 +1,4 @@
-module Hop.Location (navigateTo, addQuery, setQuery, removeQuery, clearQuery) where
+module Hop.Navigation (navigateTo, addQuery, setQuery, removeQuery, clearQuery) where
 
 {-| Functions for changing the browser location
 
@@ -6,7 +6,6 @@ module Hop.Location (navigateTo, addQuery, setQuery, removeQuery, clearQuery) wh
 -}
 
 import Effects exposing (Effects, Never)
-import Task exposing (Task)
 import History
 import Hop.Url as Url
 import Hop.Types exposing (..)
@@ -22,7 +21,7 @@ import Hop.Types exposing (..)
         NavigateTo path ->
           (model, Effects.map HopAction (Hop.navigateTo path))
 -}
-navigateTo : String -> Effects (Result a ())
+navigateTo : String -> Effects ()
 navigateTo route =
   route
     |> Url.urlFromUser
@@ -37,12 +36,11 @@ Change the location using a Url record
 -}
 
 
-navigateToUrl : Url -> Effects (Result a ())
+navigateToUrl : Url -> Effects ()
 navigateToUrl url =
   url
     |> Url.urlToLocation
     |> History.setPath
-    |> Task.toResult
     |> Effects.task
 
 
@@ -62,7 +60,7 @@ navigateToUrl url =
 
   To remove a value set the value to ""
 -}
-addQuery : Query -> Url -> Effects (Result a ())
+addQuery : Query -> Url -> Effects ()
 addQuery query currentUrl =
   currentUrl
     |> Url.addQuery query
@@ -77,7 +75,7 @@ addQuery query currentUrl =
         SetQuery query ->
           (model, Effects.map HopAction (Hop.setQuery query model.routerPayload.url))
 -}
-setQuery : Query -> Url -> Effects (Result a ())
+setQuery : Query -> Url -> Effects ()
 setQuery query currentUrl =
   currentUrl
     |> Url.setQuery query
@@ -92,7 +90,7 @@ setQuery query currentUrl =
         RemoveQuery query ->
           (model, Effects.map HopAction (Hop.removeQuery key model.routerPayload.url))
 -}
-removeQuery : String -> Url -> Effects (Result a ())
+removeQuery : String -> Url -> Effects ()
 removeQuery key currentUrl =
   currentUrl
     |> Url.removeQuery key
@@ -107,7 +105,7 @@ removeQuery key currentUrl =
         ClearQuery ->
           (model, Effects.map HopAction (Hop.clearQuery model.routerPayload.url))
 -}
-clearQuery : Url -> Effects (Result a ())
+clearQuery : Url -> Effects ()
 clearQuery currentUrl =
   currentUrl
     |> Url.clearQuery
