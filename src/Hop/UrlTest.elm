@@ -6,7 +6,31 @@ import Hop.Url as Url
 import ElmTest exposing (..)
 
 
-urlToLocation =
+-- add test for parse
+
+
+parseTest =
+  let
+    inputs =
+      [ ( "it parses", "/users/1?a=1", { path = [ "users", "1" ], query = Dict.singleton "a" "1" } )
+      ]
+
+    run ( testCase, location, expected ) =
+      let
+        actual =
+          Url.parse location
+
+        result =
+          assertEqual expected actual
+      in
+        test testCase result
+  in
+    suite
+      "parse"
+      (List.map run inputs)
+
+
+urlToLocationTest =
   let
     empty =
       Url.newUrl
@@ -17,7 +41,7 @@ urlToLocation =
         , "#/"
         )
       , ( "it adds the path"
-        , { empty | path = "a" }
+        , { empty | path = [ "a" ] }
         , "#/a"
         )
       , ( "it adds the query as pseudo query"
@@ -25,7 +49,7 @@ urlToLocation =
         , "#/?k=1"
         )
       , ( "it adds the path and query"
-        , { empty | query = Dict.singleton "k" "1", path = "a" }
+        , { empty | query = Dict.singleton "k" "1", path = [ "a" ] }
         , "#/a?k=1"
         )
       ]
@@ -48,6 +72,7 @@ urlToLocation =
 all : Test
 all =
   suite
-    "UrlTest"
-    [ urlToLocation
+    "Url"
+    [ parseTest
+    , urlToLocationTest
     ]

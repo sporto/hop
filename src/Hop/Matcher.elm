@@ -60,8 +60,11 @@ matchLocation routeParsers notFoundAction location =
     url =
       Hop.Url.parse location
 
+    path =
+      "/" ++ (String.join "/" url.path)
+
     matchedAction =
-      matchPath routeParsers notFoundAction url.path
+      matchPath routeParsers notFoundAction path
   in
     ( matchedAction, url )
 

@@ -14,7 +14,7 @@ type alias Query =
 
 
 type alias Url =
-  { path : String
+  { path : List String
   , query : Query
   }
 

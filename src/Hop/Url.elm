@@ -14,7 +14,7 @@ newQuery =
 newUrl : Url
 newUrl =
   { query = newQuery
-  , path = ""
+  , path = []
   }
 
 
@@ -30,7 +30,11 @@ e.g. url -> "#/users/1?a=1"
 
 urlToLocation : Url -> String
 urlToLocation url =
-  "#/" ++ url.path ++ (queryFromUrl url)
+  let
+    path' =
+      String.join "/" url.path
+  in
+    "#/" ++ path' ++ (queryFromUrl url)
 
 
 
@@ -94,10 +98,12 @@ extractPath route =
     |> Maybe.withDefault ""
 
 
-parsePath : String -> String
+parsePath : String -> List String
 parsePath route =
   route
     |> extractPath
+    |> String.split "/"
+    |> List.filter (\segment -> not (String.isEmpty segment))
 
 
 extractQuery : String -> String
