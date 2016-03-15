@@ -24,14 +24,14 @@ update action model =
     Show id ->
       let
         navAction =
-          navigateTo ("/languages/" ++ id)
+          navigateTo ("/languages/" ++ (toString id))
       in
         ( model.languages, Effects.map HopAction navAction )
 
     Edit id ->
       let
         navAction =
-          navigateTo ("/languages/" ++ id ++ "/edit")
+          navigateTo ("/languages/" ++ (toString id) ++ "/edit")
       in
         ( model.languages, Effects.map HopAction navAction )
 
@@ -53,7 +53,7 @@ update action model =
       ( model.languages, Effects.none )
 
 
-updateWithId : Id -> String -> String -> Language -> Language
+updateWithId : LanguageId -> String -> String -> Language -> Language
 updateWithId id prop value language =
   if id == language.id then
     case prop of

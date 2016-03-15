@@ -37,7 +37,7 @@ newModel =
 
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
-  case Debug.log "Routing.action" action of
+  case action of
     NavigateTo path ->
       ( model, Effects.map HopAction (navigateTo path) )
 
