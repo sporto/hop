@@ -24,7 +24,7 @@ newUrl =
 urlToLocation
 Given a Url.
 Generate a location path.
-e.g. url -> "/users/1?a=1"
+e.g. url -> "#/users/1?a=1"
 -}
 
 

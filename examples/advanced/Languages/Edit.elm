@@ -1,27 +1,31 @@
-module Examples.Advanced.Languages.Edit where
+module Languages.Edit (..) where
 
-import Html as H
+import Html exposing (..)
 import Html.Events
 import Html.Attributes exposing (href, style, src, value, name)
+import Languages.Models exposing (..)
+import Languages.Actions exposing (..)
 
-import Examples.Advanced.Models as Models
-import Examples.Advanced.Languages.Actions as Actions
 
-styles : H.Attribute
+styles : Html.Attribute
 styles =
-  style [
-    ("float", "left")
-  ]
-
-view : Signal.Address Actions.Action -> Models.Language -> H.Html
-view address language =
-  H.div [ styles ] [
-    H.h2 [] [ H.text language.name ],
-    H.form [] [
-      H.input [
-        value language.name,
-        name "name",
-        Html.Events.on "input" Html.Events.targetValue (Signal.message address << Actions.Update language.id "name")
-      ] []
+  style
+    [ ( "float", "left" )
     ]
-  ]
+
+
+view : Signal.Address Action -> Language -> Html
+view address language =
+  div
+    [ styles ]
+    [ h2 [] [ text language.name ]
+    , form
+        []
+        [ input
+            [ value language.name
+            , name "name"
+            , Html.Events.on "input" Html.Events.targetValue (Signal.message address << Update language.id "name")
+            ]
+            []
+        ]
+    ]

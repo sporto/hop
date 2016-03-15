@@ -1,69 +1,84 @@
-module Examples.Advanced.Languages.List where
+module Languages.List (..) where
 
-import Html as H
+import Html exposing (..)
 import Html.Events
 import Html.Attributes exposing (href, style)
 import Hop
 import Dict
+import Languages.Models exposing (..)
+import Languages.Actions exposing (..)
 
-import Examples.Advanced.Models as Models
-import Examples.Advanced.Languages.Actions as Actions
 
-styles : H.Attribute
+type alias ViewModel =
+  { languages : List Language
+  , url : Hop.Url
+  }
+
+
+styles : Html.Attribute
 styles =
-  style [
-    ("float", "left"),
-    ("margin-right", "2rem")
-  ]
+  style
+    [ ( "float", "left" )
+    , ( "margin-right", "2rem" )
+    ]
 
-hasTag :  String -> Models.Language -> Bool
+
+hasTag : String -> Language -> Bool
 hasTag tag language =
   List.any (\t -> t == tag) language.tags
 
-filteredLanguages : List Models.Language -> Hop.Payload -> List Models.Language
-filteredLanguages languages payload =
+
+filteredLanguages : ViewModel -> List Language
+filteredLanguages model =
   let
     typed =
-      payload.params
+      model.url.query
         |> Dict.get "typed"
         |> Maybe.withDefault ""
   in
     case typed of
       "" ->
-        languages
+        model.languages
+
       _ ->
-        List.filter (hasTag typed) languages
+        List.filter (hasTag typed) model.languages
 
-view : Signal.Address Actions.Action -> List Models.Language -> Hop.Payload -> H.Html
-view address languages payload =
-  H.div [ styles ] [
-    H.h2 [] [ H.text "Languages" ],
-    H.table [] [
-      H.tbody [] (tableRows address (filteredLanguages languages payload))
+
+view : Signal.Address Action -> ViewModel -> Html
+view address model =
+  div
+    [ styles ]
+    [ h2 [] [ text "Languages" ]
+    , table
+        []
+        [ tbody [] (tableRows address (filteredLanguages model)) ]
     ]
-  ]
 
-tableRows : Signal.Address Actions.Action -> List Models.Language -> (List H.Html)
+
+tableRows : Signal.Address Action -> List Language -> List Html
 tableRows address collection =
   List.map (rowView address) collection
 
-rowView : Signal.Address Actions.Action -> Models.Language -> H.Html
+
+rowView : Signal.Address Action -> Language -> Html
 rowView address language =
-  H.tr [] [
-    H.td [] [ H.text language.id ],
-    H.td [] [ 
-      H.text language.name
-    ],
-    H.td [] [
-      actionBtn address (Actions.Show language.id) "Show",
-      actionBtn address (Actions.Edit language.id) "Edit"
+  tr
+    []
+    [ td [] [ text language.id ]
+    , td
+        []
+        [ text language.name
+        ]
+    , td
+        []
+        [ actionBtn address (Show language.id) "Show"
+        , actionBtn address (Edit language.id) "Edit"
+        ]
     ]
-  ]
 
+
+actionBtn : Signal.Address Action -> Action -> String -> Html
 actionBtn address action label =
-  H.button [
-    Html.Events.onClick address action
-  ] [
-    H.text label
-  ]
-
+  button
+    [ Html.Events.onClick address action ]
+    [ text label ]

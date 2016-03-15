@@ -1,33 +1,36 @@
-module Examples.Advanced.Languages.Show where
+module Languages.Show (..) where
 
-import Html as H
-import Html.Events
+import Html exposing (..)
 import Html.Attributes exposing (href, style, src)
+import Languages.Models exposing (..)
+import Languages.Actions exposing (..)
 
-import Examples.Advanced.Models as Models
-import Examples.Advanced.Languages.Actions as Actions
 
-styles : H.Attribute
+styles : Html.Attribute
 styles =
-  style [
-    ("float", "left")
-  ]
+  style
+    [ ( "float", "left" )
+    ]
 
-view : Signal.Address Actions.Action -> Models.Language -> H.Html
+
+view : Signal.Address Action -> Language -> Html
 view address language =
-  H.div [ styles ] [
-    H.h2 [] [ H.text language.name ],
-    H.img [ src ("images/" ++ language.image ++ ".png") ] [],
-    tags address language
-  ]
+  div
+    [ styles ]
+    [ h2 [] [ text language.name ]
+    , img [ src ("images/" ++ language.image ++ ".png") ] []
+    , tags address language
+    ]
 
-tags : Signal.Address Actions.Action -> Models.Language -> H.Html
+
+tags : Signal.Address Action -> Language -> Html
 tags address language =
-  H.div [] (List.map (tag address) language.tags)
-  
+  div [] (List.map (tag address) language.tags)
 
-tag : Signal.Address Actions.Action -> String -> H.Html
+
+tag : Signal.Address Action -> String -> Html
 tag address tagName =
-  H.span [] [
-    H.text (tagName ++ ", ")
-  ]
+  span
+    []
+    [ text (tagName ++ ", ")
+    ]

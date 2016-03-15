@@ -1,40 +1,50 @@
-module Examples.Advanced.Languages.Filter where
+module Languages.Filter (..) where
 
-import Html as H
-import Html.Events
+import Html exposing (..)
+import Html.Events exposing (onClick)
 import Html.Attributes exposing (href, style)
 import Dict
 import Hop
+import Languages.Models exposing (..)
+import Languages.Actions exposing (..)
 
-import Examples.Advanced.Models as Models
-import Examples.Advanced.Languages.Actions as Actions
 
-styles : H.Attribute
+styles : Html.Attribute
 styles =
-  style [
-    ("float", "left"),
-    ("margin-left", "2rem"),
-    ("margin-right", "2rem")
-  ]
-
-view : Signal.Address Actions.Action -> List Models.Language -> Hop.Payload -> H.Html
-view address languages payload =
-  H.div [ styles ] [
-    H.h2 [] [ H.text "Filter" ],
-    btn address "SetQuery" (Actions.SetQuery (Dict.singleton "latests" "true")),
-    H.div [] [
-      H.h3 [] [ H.text "Kind" ],
-      H.div [] [
-        btn address "All" (Actions.AddQuery (Dict.singleton "typed" "")),
-        btn address "Dynamic" (Actions.AddQuery (Dict.singleton "typed" "dynamic")),
-        btn address "Static" (Actions.AddQuery (Dict.singleton "typed" "static"))
-      ]
+  style
+    [ ( "float", "left" )
+    , ( "margin-left", "2rem" )
+    , ( "margin-right", "2rem" )
     ]
-  ]
 
+
+type alias ViewModel =
+  { languages : List Language
+  , url : Hop.Url
+  }
+
+
+view : Signal.Address Action -> ViewModel -> Html
+view address model =
+  div
+    [ styles ]
+    [ h2 [] [ text "Filter" ]
+    , btn address "SetQuery" (SetQuery (Dict.singleton "latests" "true"))
+    , div
+        []
+        [ h3 [] [ text "Kind" ]
+        , div
+            []
+            [ btn address "All" (AddQuery (Dict.singleton "typed" ""))
+            , btn address "Dynamic" (AddQuery (Dict.singleton "typed" "dynamic"))
+            , btn address "Static" (AddQuery (Dict.singleton "typed" "static"))
+            ]
+        ]
+    ]
+
+
+btn : Signal.Address Action -> String -> Action -> Html
 btn address label action =
-  H.button [
-    Html.Events.onClick address action
-  ] [
-    H.text label
-  ]
+  button
+    [ onClick address action ]
+    [ text label ]

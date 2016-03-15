@@ -1,46 +1,66 @@
-module Examples.Advanced.Languages.Update where
+module Languages.Update (..) where
 
 import Effects exposing (Effects, Never)
 import Debug
 import Hop
+import Hop.Navigation exposing (navigateTo, addQuery, setQuery)
+import Languages.Models exposing (..)
+import Languages.Actions exposing (..)
 
-import Examples.Advanced.Models as Models
-import Examples.Advanced.Languages.Actions as Actions
 
-update : Actions.Action -> List Models.Language -> Hop.Payload -> (List Models.Language, Effects Actions.Action)
-update action languages routerPayload =
+type alias UpdateModel =
+  { languages : List Language
+  , url : Hop.Url
+  }
+
+
+
+-- TODO use reverse routing
+
+
+update : Action -> UpdateModel -> ( List Language, Effects Action )
+update action model =
   case Debug.log "action" action of
-    Actions.Show id ->
+    Show id ->
       let
         navAction =
-          Hop.navigateTo ("/languages/" ++ id)
+          navigateTo ("/languages/" ++ id)
       in
-        (languages, Effects.map Actions.HopAction navAction)
-    Actions.Edit id ->
-      let
-        navAction =
-          Hop.navigateTo ("/languages/" ++ id ++ "/edit")
-        in
-          (languages, Effects.map Actions.HopAction navAction)
-    Actions.Update id prop value ->
-      -- need to update the language here
-      let udpatedLanguages =
-        List.map (updateWithId id prop value) languages
-      in
-      (udpatedLanguages, Effects.none)
-    Actions.AddQuery query ->
-      (languages, Effects.map Actions.HopAction (Hop.addQuery query routerPayload.url))
-    Actions.SetQuery query ->
-      (languages, Effects.map Actions.HopAction (Hop.setQuery query routerPayload.url))
-    _ ->
-      (languages, Effects.none)
+        ( model.languages, Effects.map HopAction navAction )
 
+    Edit id ->
+      let
+        navAction =
+          navigateTo ("/languages/" ++ id ++ "/edit")
+      in
+        ( model.languages, Effects.map HopAction navAction )
+
+    Update id prop value ->
+      -- need to update the language here
+      let
+        udpatedLanguages =
+          List.map (updateWithId id prop value) model.languages
+      in
+        ( udpatedLanguages, Effects.none )
+
+    AddQuery query ->
+      ( model.languages, Effects.map HopAction (addQuery query model.url) )
+
+    SetQuery query ->
+      ( model.languages, Effects.map HopAction (setQuery query model.url) )
+
+    HopAction () ->
+      ( model.languages, Effects.none )
+
+
+updateWithId : Id -> String -> String -> Language -> Language
 updateWithId id prop value language =
   if id == language.id then
     case prop of
       "name" ->
-        {language | name = value}
+        { language | name = value }
+
       _ ->
-          language
+        language
   else
     language

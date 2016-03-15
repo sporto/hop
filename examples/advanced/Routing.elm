@@ -1,6 +1,7 @@
 module Routing (..) where
 
-import Effects exposing (Effects, Never)
+import Effects exposing (Effects)
+import Debug
 import Hop
 import Hop.Builder exposing (..)
 import Hop.Navigation exposing (navigateTo, setQuery)
@@ -36,7 +37,7 @@ newModel =
 
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
-  case action of
+  case Debug.log "Routing.action" action of
     NavigateTo path ->
       ( model, Effects.map HopAction (navigateTo path) )
 
