@@ -32,9 +32,9 @@ This is done for aesthetics and so the router is fully controlled by the hash fr
 See examples app in `./Examples/`. To run the example apps:
 
 - Clone this repo
-- Navigate to example app (examples/basic or examples/advanced)
-- Install packages `elm package install`
-- Run `elm reactor`
+- In terminal go to example app folder (either examples/basic or examples/advanced)
+- Install packages `elm package install -y`
+- Run `elm reactor` in app folder
 - Open `http://localhost:8000/App.elm`
 
 # Testing

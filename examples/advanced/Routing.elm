@@ -1,64 +1,68 @@
-module Examples.Advanced.Routing where
+module Routing (..) where
 
 import Effects exposing (Effects, Never)
-import Dict
 import Hop
+import Hop.Builder exposing (..)
+import Hop.Navigation exposing (navigateTo, setQuery)
+
+
+type View
+  = About
+  | Languages
+  | Language Int
+  | LanguageEdit Int
+  | NotFound
+
 
 type Action
-  = HopAction Hop.Action
-  | ShowLanguages Hop.Payload
-  | ShowLanguage Hop.Payload
-  | EditLanguage Hop.Payload
-  | ShowAbout Hop.Payload
-  | ShowNotFound Hop.Payload
+  = HopAction ()
+  | Show ( View, Hop.Url )
   | NavigateTo String
-  | SetQuery (Dict.Dict String String)
-  | NoOp
+  | SetQuery Hop.Query
 
-type alias Model = {
-    routerPayload: Hop.Payload,
-    view: String
+
+type alias Model =
+  { url : Hop.Url
+  , view : View
   }
+
 
 newModel : Model
-newModel = 
-  {
-    routerPayload = router.payload,
-    view = "Main"
+newModel =
+  { url = router.url
+  , view = Languages
   }
 
-update : Action -> Model -> (Model, Effects Action)
+
+update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
     NavigateTo path ->
-      (model, Effects.map HopAction (Hop.navigateTo path))
-    ShowLanguage payload ->
-      ({model | view = "language", routerPayload = payload}, Effects.none)
-    EditLanguage payload ->
-      ({model | view = "languageEdit", routerPayload = payload}, Effects.none)
-    ShowLanguages payload ->
-      ({model | view = "languages", routerPayload = payload}, Effects.none)
-    ShowAbout payload ->
-      ({model | view = "about", routerPayload = payload}, Effects.none)
-    ShowNotFound payload ->
-      ({model | view = "notFound", routerPayload = payload}, Effects.none)
-    SetQuery query ->
-      (model, Effects.map HopAction (Hop.setQuery query model.routerPayload.url))
-    _ ->
-      (model, Effects.none)
+      ( model, Effects.map HopAction (navigateTo path) )
 
-routes : List (String, Hop.Payload -> Action)
+    Show ( view, url ) ->
+      ( { model | view = view, url = url }, Effects.none )
+
+    SetQuery query ->
+      ( model, Effects.map HopAction (setQuery query model.url) )
+
+    HopAction () ->
+      ( model, Effects.none )
+
+
+routes : List (Hop.Route View)
 routes =
-  [
-    ("/", ShowLanguages),
-    ("/languages/:id", ShowLanguage),
-    ("/languages/:id/edit", EditLanguage),
-    ("/about", ShowAbout)
+  [ route1 About "/about"
+  , route1 Languages "/"
+  , route2 Language "/languages/" int
+  , route3 LanguageEdit "/languages/" int "/edit"
   ]
 
+
 router : Hop.Router Action
-router = 
-  Hop.new {
-    routes = routes,
-    notFoundAction = ShowNotFound
-  }
+router =
+  Hop.new
+    { routes = routes
+    , action = Show
+    , notFound = NotFound
+    }

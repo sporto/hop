@@ -26,7 +26,7 @@ type alias Route action =
 
 
 type alias Config actionTag routeTag =
-  { action : ( routeTag, Query ) -> actionTag
+  { action : ( routeTag, Url ) -> actionTag
   , notFound : routeTag
   , routes : List (Route routeTag)
   }
@@ -35,5 +35,5 @@ type alias Config actionTag routeTag =
 type alias Router actionTag =
   { signal : Signal actionTag
   , run : Task () ()
-  , query : Query
+  , url : Url
   }

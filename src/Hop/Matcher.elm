@@ -54,7 +54,7 @@ Returns a tuple e.g. (action, query)
 
   (User 1, Dict.singleton "a" "1")
 -}
-matchLocation : List (Route action) -> action -> String -> ( action, Query )
+matchLocation : List (Route action) -> action -> String -> ( action, Url )
 matchLocation routeParsers notFoundAction location =
   let
     url =
@@ -63,7 +63,7 @@ matchLocation routeParsers notFoundAction location =
     matchedAction =
       matchPath routeParsers notFoundAction url.path
   in
-    ( matchedAction, url.query )
+    ( matchedAction, url )
 
 
 routeToPath : Route a -> List String -> String

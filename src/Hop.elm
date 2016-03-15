@@ -13,7 +13,7 @@ module Hop (Config, Router, Route, Query, Url, new) where
 import History
 import Hop.Types as Types
 import Hop.Matcher as Matcher
-import Hop.Url exposing (newQuery)
+import Hop.Url exposing (newUrl, newQuery)
 
 
 ---------------------------------------
@@ -77,7 +77,7 @@ new : Config actionTag routeTag -> Router actionTag
 new config =
   { signal = actionTagSignal config
   , run = History.setPath ""
-  , query = newQuery
+  , url = newUrl
   }
 
 
@@ -96,7 +96,7 @@ actionTagSignal config =
   Signal.map config.action (routeTagAndQuerySignal config)
 
 
-routeTagAndQuerySignal : Config actionTag routeTag -> Signal ( routeTag, Query )
+routeTagAndQuerySignal : Config actionTag routeTag -> Signal ( routeTag, Url )
 routeTagAndQuerySignal config =
   let
     resolve location =

@@ -19,7 +19,7 @@ import Hop.Types exposing (..)
       case action of
         ...
         NavigateTo path ->
-          (model, Effects.map HopAction (Hop.navigateTo path))
+          (model, Effects.map HopAction (navigateTo path))
 -}
 navigateTo : String -> Effects ()
 navigateTo route =

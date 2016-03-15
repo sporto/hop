@@ -1,4 +1,4 @@
-module Examples.Basic (..) where
+module App (..) where
 
 import Effects exposing (Effects, Never)
 import Html exposing (..)
