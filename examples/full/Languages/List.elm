@@ -1,7 +1,7 @@
 module Languages.List (..) where
 
 import Html exposing (..)
-import Html.Events
+import Html.Events exposing (onClick)
 import Html.Attributes exposing (href, style)
 import Dict
 import Languages.Models exposing (..)
@@ -80,5 +80,5 @@ rowView address language =
 actionBtn : Signal.Address Action -> Action -> String -> Html
 actionBtn address action label =
   button
-    [ Html.Events.onClick address action ]
+    [ onClick address action ]
     [ text label ]

@@ -15,17 +15,13 @@ type alias UpdateModel =
   }
 
 
-
--- TODO use reverse routing
-
-
 update : Action -> UpdateModel -> ( List Language, Effects Action )
 update action model =
   case Debug.log "action" action of
     Show id ->
       let
         path =
-          reverse (LanguageRoute id)
+          reverseWithPrefix (LanguageRoute id)
 
         navAction =
           navigateTo path
@@ -35,7 +31,7 @@ update action model =
     Edit id ->
       let
         path =
-          reverse (LanguageEditRoute id)
+          reverseWithPrefix (LanguageEditRoute id)
 
         navAction =
           navigateTo path
@@ -43,7 +39,6 @@ update action model =
         ( model.languages, Effects.map HopAction navAction )
 
     Update id prop value ->
-      -- need to update the language here
       let
         udpatedLanguages =
           List.map (updateWithId id prop value) model.languages

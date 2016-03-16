@@ -1,12 +1,13 @@
 module View (..) where
 
 import Html exposing (..)
-import Html.Events
+import Html.Events exposing (onClick)
 import Html.Attributes exposing (href, style)
 import Models exposing (..)
 import Actions exposing (..)
 import Routing exposing (..)
 import Languages.View
+import Languages.Routing
 
 
 -- TODO use reverse routing
@@ -27,11 +28,11 @@ menu address model =
     []
     [ div
         []
-        [ menuLink "#/" "Home"
+        [ menuLink address HomeRoute "Home"
         , text "|"
-        , menuLink "#/languages" "Languages"
+        , menuLink address (LanguagesRoutes Languages.Routing.LanguagesRoute) "Languages"
         , text "|"
-        , menuLink "#/about" "About"
+        , menuLink address AboutRoute "About"
         ]
     ]
 
@@ -44,12 +45,20 @@ menuBtn address action label =
     ]
 
 
-menuLink : String -> String -> Html
-menuLink path label =
-  a
-    [ href path ]
-    [ text label
-    ]
+menuLink : Signal.Address Action -> Route -> String -> Html
+menuLink address route label =
+  let
+    path =
+      reverse route
+
+    action =
+      RoutingAction (NavigateTo path)
+  in
+    a
+      [ href "//:javascript"
+      , onClick address action
+      ]
+      [ text label ]
 
 
 pageView : Signal.Address Action -> AppModel -> Html
@@ -59,6 +68,7 @@ pageView address model =
       div
         []
         [ h2 [] [ text "Home" ]
+        , div [] [ text "Click on Languages to start routing" ]
         ]
 
     AboutRoute ->

@@ -48,27 +48,25 @@ toS =
 -- Reverse routes
 
 
+reverseWithPrefix : Route -> String
+reverseWithPrefix route =
+  "/languages" ++ (reverse route)
+
+
 reverse : Route -> String
 reverse route =
-  let
-    path =
-      case route of
-        LanguagesRoute ->
-          routeToPath routeLanguages []
+  case route of
+    LanguagesRoute ->
+      routeToPath routeLanguages []
 
-        LanguageRoute id ->
-          routeToPath routeLanguage [ toS id ]
+    LanguageRoute id ->
+      routeToPath routeLanguage [ toS id ]
 
-        LanguageEditRoute id ->
-          routeToPath routeLanguageEdit [ toS id ]
+    LanguageEditRoute id ->
+      routeToPath routeLanguageEdit [ toS id ]
 
-        NotFoundRoute ->
-          ""
-
-    _ =
-      Debug.log "path" path
-  in
-    "/languages" ++ path
+    NotFoundRoute ->
+      ""
 
 
 

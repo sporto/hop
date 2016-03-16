@@ -1,10 +1,11 @@
 module Update (..) where
 
 import Effects exposing (Effects, Never)
-import Routing
+import Routing exposing (..)
 import Actions exposing (..)
 import Models exposing (..)
 import Languages.Update
+import Languages.Routing
 
 
 update : Action -> AppModel -> ( AppModel, Effects Action )

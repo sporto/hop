@@ -5,6 +5,7 @@ import Hop
 import Hop.Types exposing (Url, Query, Router)
 import Hop.Builder exposing (..)
 import Hop.Navigation exposing (navigateTo, setQuery)
+import Hop.Matcher exposing (routeToPath)
 import Languages.Routing
 
 
@@ -44,6 +45,29 @@ routes =
   , routeAbout
   , routesLanguages
   ]
+
+
+reverse : Route -> String
+reverse route =
+  case route of
+    HomeRoute ->
+      routeToPath routeHome []
+
+    AboutRoute ->
+      routeToPath routeAbout []
+
+    LanguagesRoutes subRoute ->
+      let
+        parentPath =
+          routeToPath routesLanguages []
+
+        subPath =
+          Languages.Routing.reverse subRoute
+      in
+        parentPath ++ subPath
+
+    NotFoundRoute ->
+      ""
 
 
 
