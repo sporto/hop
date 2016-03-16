@@ -1,4 +1,4 @@
-module App (..) where
+module Main (..) where
 
 import Effects exposing (Effects, Never)
 import Html exposing (..)
@@ -8,30 +8,31 @@ import Task exposing (Task)
 import Hop
 import Hop.Builder exposing (route1)
 import Hop.Navigation exposing (navigateTo)
+import Hop.Types exposing (Query, Url, Route, Router)
 
 
-type View
-  = About
-  | Main
-  | NotFound
+type AppRoute
+  = AboutRoute
+  | MainRoute
+  | NotFoundRoute
 
 
 type Action
   = HopAction ()
-  | Show ( View, Hop.Query )
+  | ApplyRoute ( AppRoute, Url )
   | NavigateTo String
 
 
 type alias Model =
-  { query : Hop.Query
-  , view : View
+  { url : Url
+  , route : AppRoute
   }
 
 
 newModel : Model
 newModel =
-  { query = router.query
-  , view = Main
+  { url = router.url
+  , route = MainRoute
   }
 
 
@@ -41,26 +42,26 @@ update action model =
     NavigateTo path ->
       ( model, Effects.map HopAction (navigateTo path) )
 
-    Show ( view, query ) ->
-      ( { model | view = view, query = query }, Effects.none )
+    ApplyRoute ( route, url ) ->
+      ( { model | route = route, url = url }, Effects.none )
 
     HopAction () ->
       ( model, Effects.none )
 
 
-routes : List (Hop.Route View)
+routes : List (Route AppRoute)
 routes =
-  [ route1 Main "/"
-  , route1 About "/about"
+  [ route1 MainRoute "/"
+  , route1 AboutRoute "/about"
   ]
 
 
-router : Hop.Router Action
+router : Router Action
 router =
   Hop.new
     { routes = routes
-    , action = Show
-    , notFound = NotFound
+    , action = ApplyRoute
+    , notFound = NotFoundRoute
     }
 
 
@@ -98,14 +99,14 @@ menu address model =
 
 pageView : Signal.Address Action -> Model -> Html
 pageView address model =
-  case model.view of
-    Main ->
+  case model.route of
+    MainRoute ->
       div [] [ h2 [] [ text "Main" ] ]
 
-    About ->
+    AboutRoute ->
       div [] [ h2 [] [ text "About" ] ]
 
-    NotFound ->
+    NotFoundRoute ->
       div [] [ h2 [] [ text "Not found" ] ]
 
 
