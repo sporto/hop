@@ -1,79 +1,129 @@
 module Routing (..) where
 
 import Effects exposing (Effects)
-import Debug
 import Hop
-import Hop.Types exposing (Url, Query, Route, Router)
+import Hop.Types exposing (Url, Query, Router)
 import Hop.Builder exposing (..)
 import Hop.Navigation exposing (navigateTo, setQuery)
-import Languages.Models exposing (LanguageId)
+import Languages.Routing
 
 
-type View
-  = About
-  | Languages
-  | Language LanguageId
-  | LanguageEdit LanguageId
-  | NotFound
+--import Languages.Models exposing (LanguageId)
+
+import Languages.Routing
 
 
-type Action
+-- ROUTES
+
+
+type Route
+  = HomeRoute
+  | AboutRoute
+  | LanguagesRoutes Languages.Routing.Route
+  | NotFoundRoute
+
+
+routeHome : Hop.Types.Route Route
+routeHome =
+  route1 HomeRoute "/"
+
+
+routeAbout : Hop.Types.Route Route
+routeAbout =
+  route1 AboutRoute "/about"
+
+
+routesLanguages : Hop.Types.Route Route
+routesLanguages =
+  nested1 LanguagesRoutes "/languages" Languages.Routing.routes
+
+
+routes : List (Hop.Types.Route Route)
+routes =
+  [ routeHome
+  , routeAbout
+  , routesLanguages
+  ]
+
+
+
+-- ACTION
+
+
+type RoutingAction
   = HopAction ()
-  | Show ( View, Url )
+  | ApplyRoute ( Route, Url )
   | NavigateTo String
   | SetQuery Query
+  | RoutingLanguagesAction Languages.Routing.RoutingAction
+
+
+
+-- MODEL
 
 
 type alias Model =
   { url : Url
-  , view : View
+  , route : Route
+  , languagesRouting : Languages.Routing.Model
   }
 
 
 newModel : Model
 newModel =
   { url = router.url
-  , view = Languages
+  , route = AboutRoute
+  , languagesRouting = Languages.Routing.newModel router.url
   }
 
 
-update : Action -> Model -> ( Model, Effects Action )
+
+-- ROUTER
+
+
+router : Hop.Types.Router RoutingAction
+router =
+  Hop.new
+    { routes = routes
+    , action = ApplyRoute
+    , notFound = NotFoundRoute
+    }
+
+
+
+-- UPDATE
+
+
+update : RoutingAction -> Model -> ( Model, Effects RoutingAction )
 update action model =
   case action of
     NavigateTo path ->
       ( model, Effects.map HopAction (navigateTo path) )
 
-    Show ( view, url ) ->
-      ( { model | view = view, url = url }, Effects.none )
+    ApplyRoute ( route, url ) ->
+      case route of
+        LanguagesRoutes subRoute ->
+          let
+            showAction =
+              Languages.Routing.ApplyRoute ( subRoute, url )
+
+            ( updatedLanguagesModel, fx ) =
+              Languages.Routing.update showAction model.languagesRouting
+          in
+            ( { model | route = route, url = url, languagesRouting = updatedLanguagesModel }, Effects.map RoutingLanguagesAction fx )
+
+        _ ->
+          ( { model | route = route, url = url }, Effects.none )
+
+    RoutingLanguagesAction subAction ->
+      let
+        ( updatedLanguagesModel, fx ) =
+          Languages.Routing.update subAction model.languagesRouting
+      in
+        ( { model | languagesRouting = updatedLanguagesModel }, Effects.map RoutingLanguagesAction fx )
 
     SetQuery query ->
       ( model, Effects.map HopAction (setQuery query model.url) )
 
     HopAction () ->
       ( model, Effects.none )
-
-
-
---routeAbout :
-
-
-routeAbout =
-  route1 About "/about"
-
-
-routes : List (Route View)
-routes =
-  [ route1 About "/about"
-  , route1 Languages "/"
-  , route2 Language "/languages/" int
-  , route3 LanguageEdit "/languages/" int "/edit"
-  ]
-
-
-router : Router Action
-router =
-  Hop.new
-    { routes = routes
-    , action = Show
-    , notFound = NotFound
-    }

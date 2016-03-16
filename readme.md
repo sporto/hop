@@ -52,6 +52,7 @@ See examples app in `./Examples/`. To run the example apps:
 - Change hash without changing query
 - Navigate without adding to history
 - Push state - Support routes without hashes
+- Redirects e.g. "/" -> "/dashboard"
 
 ## Improvements
 

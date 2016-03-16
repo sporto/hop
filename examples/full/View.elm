@@ -5,23 +5,11 @@ import Html.Events
 import Html.Attributes exposing (href, style)
 import Models exposing (..)
 import Actions exposing (..)
-import Routing
-import Languages.Models exposing (LanguageId, Language)
-import Languages.Filter
-import Languages.List
-import Languages.Show
-import Languages.Edit
+import Routing exposing (..)
+import Languages.View
 
 
 -- TODO use reverse routing
-
-
-containerStyle : Html.Attribute
-containerStyle =
-  style
-    [ ( "margin-bottom", "5rem" )
-    , ( "overflow", "auto" )
-    ]
 
 
 view : Signal.Address Action -> AppModel -> Html
@@ -39,7 +27,9 @@ menu address model =
     []
     [ div
         []
-        [ menuLink "#/" "Languages"
+        [ menuLink "#/" "Home"
+        , text "|"
+        , menuLink "#/languages" "Languages"
         , text "|"
         , menuLink "#/about" "About"
         ]
@@ -64,72 +54,30 @@ menuLink path label =
 
 pageView : Signal.Address Action -> AppModel -> Html
 pageView address model =
-  case model.routing.view of
-    Routing.About ->
+  case model.routing.route of
+    HomeRoute ->
+      div
+        []
+        [ h2 [] [ text "Home" ]
+        ]
+
+    AboutRoute ->
       div
         []
         [ h2 [] [ text "About" ]
         ]
 
-    _ ->
+    LanguagesRoutes languagesRoute ->
       let
         viewModel =
           { languages = model.languages
-          , url = model.routing.url
+          , routing = model.routing.languagesRouting
           }
       in
-        div
-          [ containerStyle ]
-          [ Languages.Filter.view (Signal.forwardTo address LanguagesAction) viewModel
-          , Languages.List.view (Signal.forwardTo address LanguagesAction) viewModel
-          , subView address model
-          ]
+        Languages.View.view (Signal.forwardTo address LanguagesAction) viewModel
 
-
-subView : Signal.Address Action -> AppModel -> Html
-subView address model =
-  case model.routing.view of
-    Routing.Language languageId ->
-      let
-        maybeLanguage =
-          getLanguage model.languages languageId
-      in
-        case maybeLanguage of
-          Just language ->
-            Languages.Show.view (Signal.forwardTo address LanguagesAction) language
-
-          Nothing ->
-            emptyView
-
-    Routing.LanguageEdit languageId ->
-      let
-        maybeLanguage =
-          getLanguage model.languages languageId
-      in
-        case maybeLanguage of
-          Just language ->
-            Languages.Edit.view (Signal.forwardTo address LanguagesAction) language
-
-          _ ->
-            emptyView
-
-    Routing.NotFound ->
+    NotFoundRoute ->
       notFoundView address model
-
-    _ ->
-      emptyView
-
-
-emptyView : Html
-emptyView =
-  div [] []
-
-
-getLanguage : List Language -> LanguageId -> Maybe Language
-getLanguage languages id =
-  languages
-    |> List.filter (\lang -> lang.id == id)
-    |> List.head
 
 
 notFoundView : Signal.Address Action -> AppModel -> Html

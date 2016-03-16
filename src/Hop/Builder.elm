@@ -106,13 +106,33 @@ route4 constructor segment1 parser1 segment2 parser2 =
     }
 
 
-{-| nested1
-Create a route with two segments and nested routes
+{-| Create a route with two segments and nested routes
 
-  nested1 UserComments "/users/" int commentRoutes
+  nested1 UserComments "/user" commentRoutes
 -}
-nested1 : (input1 -> subAction -> action) -> String -> Parser input1 -> List (Route subAction) -> Route action
-nested1 constructor segment1 parser1 children =
+nested1 : (subAction -> action) -> String -> List (Route subAction) -> Route action
+nested1 constructor segment1 children =
+  let
+    childrenParsers =
+      List.map .parser children
+
+    parser =
+      Combine.string segment1
+        `Combine.andThen` (\x -> (Combine.choice childrenParsers))
+        |> parserWithBeginningAndEnd
+        |> Combine.map constructor
+  in
+    { parser = parser
+    , segments = [ segment1 ]
+    }
+
+
+{-| Create a route with two segments and nested routes
+
+  nested2 UserComments "/users/" int commentRoutes
+-}
+nested2 : (input1 -> subAction -> action) -> String -> Parser input1 -> List (Route subAction) -> Route action
+nested2 constructor segment1 parser1 children =
   let
     childrenParsers =
       List.map .parser children

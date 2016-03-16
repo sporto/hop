@@ -56,7 +56,7 @@ userTokenRoute =
 
 
 userPostRoute =
-  nested1 UserPosts "/users/" int postRoutes
+  nested2 UserPosts "/users/" int postRoutes
 
 
 topLevelRoutes =

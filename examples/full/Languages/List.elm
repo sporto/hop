@@ -3,16 +3,15 @@ module Languages.List (..) where
 import Html exposing (..)
 import Html.Events
 import Html.Attributes exposing (href, style)
-import Hop
-import Hop.Types exposing (..)
 import Dict
 import Languages.Models exposing (..)
 import Languages.Actions exposing (..)
+import Languages.Routing exposing (..)
 
 
 type alias ViewModel =
   { languages : List Language
-  , url : Url
+  , routing : Languages.Routing.Model
   }
 
 
@@ -33,7 +32,7 @@ filteredLanguages : ViewModel -> List Language
 filteredLanguages model =
   let
     typed =
-      model.url.query
+      model.routing.url.query
         |> Dict.get "typed"
         |> Maybe.withDefault ""
   in
