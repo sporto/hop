@@ -1,7 +1,12 @@
-module Hop.Types (Config, Router, PathMatcher, Query, Url) where
+module Hop.Types (Config, Router, PathMatcher, Query, Location, newLocation, newQuery) where
 
 {-|
-@docs Config, Router, PathMatcher, Query, Url
+
+# Types
+@docs Config, Router, PathMatcher, Query, Location
+
+# Create
+@docs newLocation, newQuery
 -}
 
 import Dict
@@ -17,14 +22,15 @@ type alias Query =
   Dict.Dict String String
 
 
-{-| A Record that includes a `path` and a `query`
+{-| A Record that represents the current location
+Includes a `path` and a `query`
 
     {
       path: String,
       query: Query
     }
 -}
-type alias Url =
+type alias Location =
   { path : List String
   , query : Query
   }
@@ -41,7 +47,7 @@ type alias PathMatcher action =
 {-| Configuration input for Hop.new
 -}
 type alias Config actionTag routeTag =
-  { action : ( routeTag, Url ) -> actionTag
+  { action : ( routeTag, Location ) -> actionTag
   , notFound : routeTag
   , matchers : List (PathMatcher routeTag)
   }
@@ -52,5 +58,22 @@ type alias Config actionTag routeTag =
 type alias Router actionTag =
   { signal : Signal actionTag
   , run : Task () ()
-  , url : Url
+  }
+
+
+{-|
+Create a new Query record
+-}
+newQuery : Query
+newQuery =
+  Dict.empty
+
+
+{-|
+Create a new Location record
+-}
+newLocation : Location
+newLocation =
+  { query = newQuery
+  , path = []
   }

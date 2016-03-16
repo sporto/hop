@@ -3,7 +3,8 @@ module Hop.MatchersTest (..) where
 import Dict
 import Hop
 import Hop.Matchers exposing (..)
-import Hop.Url exposing (newQuery)
+import Hop.Location as Location
+import Hop.Types exposing (..)
 import ElmTest exposing (..)
 
 

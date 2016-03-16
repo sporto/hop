@@ -1,4 +1,4 @@
-module Hop.Url (..) where
+module Hop.Location (..) where
 
 import Dict
 import String
@@ -6,43 +6,35 @@ import Http
 import Hop.Types exposing (..)
 
 
-newQuery : Query
-newQuery =
-  Dict.empty
-
-
-newUrl : Url
-newUrl =
-  { query = newQuery
-  , path = []
-  }
-
-
-
 -------------------------------------------------------------------------------
-{-
-urlToLocation
-Given a Url.
-Generate a location path.
-e.g. url -> "#/users/1?a=1"
+
+
+{-|
+Given a Location.
+Generate a full path.
+e.g. location -> "#/users/1?a=1"
 -}
 
 
-urlToLocation : Url -> String
-urlToLocation url =
+
+-- was urlToLocation
+
+
+locationToFullPath : Location -> String
+locationToFullPath location =
   let
     path' =
-      String.join "/" url.path
+      String.join "/" location.path
   in
-    "#/" ++ path' ++ (queryFromUrl url)
+    "#/" ++ path' ++ (queryFromLocation location)
 
 
 
 -- Normalize a location from user
 
 
-urlFromUser : String -> Url
-urlFromUser route =
+locationFromUser : String -> Location
+locationFromUser route =
   let
     normalized =
       if String.startsWith "#" route then
@@ -53,20 +45,16 @@ urlFromUser route =
     parse normalized
 
 
-
-{-
-queryFromUrl
-Get the query string from an Url.
+{-|
+Get the query string from a Location.
 Including ?
 -}
-
-
-queryFromUrl : Url -> String
-queryFromUrl url =
-  if Dict.isEmpty url.query then
+queryFromLocation : Location -> String
+queryFromLocation location =
+  if Dict.isEmpty location.query then
     ""
   else
-    url.query
+    location.query
       |> Dict.toList
       |> List.map (\( k, v ) -> k ++ "=" ++ v)
       |> String.join "&"
@@ -76,10 +64,10 @@ queryFromUrl url =
 
 -------------------------------------------------------------------------------
 -- PARSING
--- Parse a route into a Url
+-- Parse a route into a Location
 
 
-parse : String -> Url
+parse : String -> Location
 parse route =
   { path = parsePath route
   , query = parseQuery route
@@ -157,29 +145,29 @@ queryKVtoTuple kv =
 -- QUERY MUTATION
 
 
-addQuery : Query -> Url -> Url
-addQuery query url =
+addQuery : Query -> Location -> Location
+addQuery query location =
   let
     updatedQuery =
-      Dict.union query url.query
+      Dict.union query location.query
   in
-    { url | query = updatedQuery }
+    { location | query = updatedQuery }
 
 
-setQuery : Query -> Url -> Url
-setQuery query url =
-  { url | query = query }
+setQuery : Query -> Location -> Location
+setQuery query location =
+  { location | query = query }
 
 
-removeQuery : String -> Url -> Url
-removeQuery key url =
+removeQuery : String -> Location -> Location
+removeQuery key location =
   let
     updatedQuery =
-      Dict.remove key url.query
+      Dict.remove key location.query
   in
-    { url | query = updatedQuery }
+    { location | query = updatedQuery }
 
 
-clearQuery : Url -> Url
-clearQuery url =
-  { url | query = Dict.empty }
+clearQuery : Location -> Location
+clearQuery location =
+  { location | query = Dict.empty }

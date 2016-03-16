@@ -1,8 +1,8 @@
-module Hop.UrlTest (..) where
+module Hop.LocationTest (..) where
 
 import Dict
 import Hop.Types as Types
-import Hop.Url as Url
+import Hop.Location as Location
 import ElmTest exposing (..)
 
 
@@ -18,7 +18,7 @@ parseTest =
     run ( testCase, location, expected ) =
       let
         actual =
-          Url.parse location
+          Location.parse location
 
         result =
           assertEqual expected actual
@@ -30,10 +30,10 @@ parseTest =
       (List.map run inputs)
 
 
-urlToLocationTest =
+locationToFullPathTest =
   let
     empty =
-      Url.newUrl
+      Types.newLocation
 
     inputs =
       [ ( "it is empty when empty"
@@ -57,7 +57,7 @@ urlToLocationTest =
     run ( testCase, url, expected ) =
       let
         actual =
-          Url.urlToLocation url
+          Location.locationToFullPath url
 
         result =
           assertEqual expected actual
@@ -65,14 +65,14 @@ urlToLocationTest =
         test testCase result
   in
     suite
-      "urlToLocation"
+      "locationToFullPath"
       (List.map run inputs)
 
 
 all : Test
 all =
   suite
-    "Url"
+    "Location"
     [ parseTest
-    , urlToLocationTest
+    , locationToFullPathTest
     ]

@@ -8,9 +8,9 @@ module Hop (new) where
 -}
 
 import History
-import Hop.Types as Types
+import Hop.Types exposing (..)
 import Hop.Matchers
-import Hop.Url exposing (newUrl, newQuery)
+import Hop.Location exposing (newUrl, newQuery)
 import Hop.Types exposing (..)
 
 
@@ -18,7 +18,8 @@ import Hop.Types exposing (..)
 -- SETUP
 
 
-{-| Create a Router
+{-|
+Create a Router
 
     router =
       Hop.new {
@@ -31,7 +32,6 @@ new : Config actionTag routeTag -> Router actionTag
 new config =
   { signal = actionTagSignal config
   , run = History.setPath ""
-  , url = newUrl
   }
 
 
@@ -50,7 +50,7 @@ actionTagSignal config =
   Signal.map config.action (routeTagAndQuerySignal config)
 
 
-routeTagAndQuerySignal : Config actionTag routeTag -> Signal ( routeTag, Url )
+routeTagAndQuerySignal : Config actionTag routeTag -> Signal ( routeTag, Location )
 routeTagAndQuerySignal config =
   let
     resolve location =

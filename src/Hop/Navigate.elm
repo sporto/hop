@@ -24,7 +24,7 @@ import Hop.Types exposing (..)
 navigateTo : String -> Effects ()
 navigateTo route =
   route
-    |> Url.urlFromUser
+    |> Url.locationFromUser
     |> navigateToUrl
 
 

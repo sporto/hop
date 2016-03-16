@@ -11,7 +11,7 @@ module Hop.Matchers (match1, match2, match3, match4, nested1, nested2, int, str,
 
 import String
 import Hop.Types exposing (..)
-import Hop.Url
+import Hop.Location
 import Combine exposing (Parser, parse)
 import Combine.Num
 import Combine.Infix exposing ((<$>), (<$), (<*), (*>), (<*>), (<|>))
@@ -220,11 +220,11 @@ Returns a tuple e.g. (action, query)
 
   (User 1, Dict.singleton "a" "1")
 -}
-matchLocation : List (PathMatcher action) -> action -> String -> ( action, Url )
+matchLocation : List (PathMatcher action) -> action -> String -> ( action, Location )
 matchLocation routeParsers notFoundAction location =
   let
     url =
-      Hop.Url.parse location
+      Hop.Location.parse location
 
     path =
       "/" ++ (String.join "/" url.path)
