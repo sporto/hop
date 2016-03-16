@@ -3,27 +3,29 @@ module Routing (..) where
 import Effects exposing (Effects)
 import Debug
 import Hop
+import Hop.Types exposing (Url, Query, Route, Router)
 import Hop.Builder exposing (..)
 import Hop.Navigation exposing (navigateTo, setQuery)
+import Languages.Models exposing (LanguageId)
 
 
 type View
   = About
   | Languages
-  | Language Int
-  | LanguageEdit Int
+  | Language LanguageId
+  | LanguageEdit LanguageId
   | NotFound
 
 
 type Action
   = HopAction ()
-  | Show ( View, Hop.Url )
+  | Show ( View, Url )
   | NavigateTo String
-  | SetQuery Hop.Query
+  | SetQuery Query
 
 
 type alias Model =
-  { url : Hop.Url
+  { url : Url
   , view : View
   }
 
@@ -51,7 +53,15 @@ update action model =
       ( model, Effects.none )
 
 
-routes : List (Hop.Route View)
+
+--routeAbout :
+
+
+routeAbout =
+  route1 About "/about"
+
+
+routes : List (Route View)
 routes =
   [ route1 About "/about"
   , route1 Languages "/"
@@ -60,7 +70,7 @@ routes =
   ]
 
 
-router : Hop.Router Action
+router : Router Action
 router =
   Hop.new
     { routes = routes

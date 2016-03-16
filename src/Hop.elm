@@ -1,9 +1,8 @@
-module Hop (Config, Router, Route, Query, Url, new) where
+module Hop (new) where
 
 {-| A router for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
-# Types
-@docs Config, Router, Route, Query, Url
+
 
 # Setup
 @docs new
@@ -14,50 +13,7 @@ import History
 import Hop.Types as Types
 import Hop.Matcher as Matcher
 import Hop.Url exposing (newUrl, newQuery)
-
-
----------------------------------------
--- TYPES
-
-
-{-| Query
-A Dict that holds query parameters
-
-    Dict.Dict String String
--}
-type alias Query =
-  Types.Query
-
-
-{-| Url
-A Record that includes a `path` and a `query`
-
-    {
-      path: String,
-      query: Query
-    }
--}
-type alias Url =
-  Types.Url
-
-
-{-| A route defintion
--}
-type alias Route action =
-  Types.Route action
-
-
-{-| Configuration input for Hop.new
--}
-type alias Config actionTag routeTag =
-  Types.Config actionTag routeTag
-
-
-{-| Router record created by Hop.new
--}
-type alias Router actionTag =
-  Types.Router actionTag
-
+import Hop.Types exposing (..)
 
 
 ---------------------------------------

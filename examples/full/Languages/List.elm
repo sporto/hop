@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Events
 import Html.Attributes exposing (href, style)
 import Hop
+import Hop.Types exposing (..)
 import Dict
 import Languages.Models exposing (..)
 import Languages.Actions exposing (..)
@@ -11,7 +12,7 @@ import Languages.Actions exposing (..)
 
 type alias ViewModel =
   { languages : List Language
-  , url : Hop.Url
+  , url : Url
   }
 
 
@@ -64,7 +65,7 @@ rowView : Signal.Address Action -> Language -> Html
 rowView address language =
   tr
     []
-    [ td [] [ text language.id ]
+    [ td [] [ text (toString language.id) ]
     , td
         []
         [ text language.name

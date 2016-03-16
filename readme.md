@@ -4,11 +4,15 @@
 
 ## How this works
 
-This router uses a list of tuples to configure routes e.g. `(route, action)`. When a route is matched the router will call the action specified with the appropiate parameters.
+- Routes are defined as union types e.g. `User Int`
+- Then you define route matchers e.g. `route2 User "/users/ int`. This creates a matcher that matches "/users/1" for example.
+- Then you call `Hop.navigateTo` to change the browser location, this will return an effect that your application must run via ports.
+- When the browser location changes, Hop will match the route e.g. "/users/1" -> `User 1`
+- Hop provides a signal that you application consumes, this signal carries the matched routes
 
-To navigate to a different route you call `Hop.navigateTo`, this will return an effect that your application must run via ports.
+Hop works with StartApp out of the box.
 
-This router is made to work with StartApp.
+DIAGRAM
 
 ### Hash routing
 
@@ -32,26 +36,22 @@ This is done for aesthetics and so the router is fully controlled by the hash fr
 See examples app in `./Examples/`. To run the example apps:
 
 - Clone this repo
-- In terminal go to example app folder (either examples/basic or examples/full)
+- Go to example folder (eg examples/basic or examples/full)
 - Install packages `elm package install -y`
-- Run `elm reactor` in app folder
+- Run `elm reactor`
 - Open `http://localhost:8000/App.elm`
 
 # Testing
 
-Inside `test` folder:
-
-```
-elm reactor
-```
-
-Open `/localhost:8000/TestRunner.elm`
+- `cd ./src/Test`
+- `elm reactor`
+- Open `/localhost:8000/TestRunner.elm`
 
 # TODO:
 
 - Change hash without changing query
 - Navigate without adding to history
-- Support routes without hashes (Push state)
+- Push state - Support routes without hashes
 
 ## Improvements
 

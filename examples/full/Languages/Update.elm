@@ -3,6 +3,7 @@ module Languages.Update (..) where
 import Effects exposing (Effects, Never)
 import Debug
 import Hop
+import Hop.Types exposing (..)
 import Hop.Navigation exposing (navigateTo, addQuery, setQuery)
 import Languages.Models exposing (..)
 import Languages.Actions exposing (..)
@@ -10,7 +11,7 @@ import Languages.Actions exposing (..)
 
 type alias UpdateModel =
   { languages : List Language
-  , url : Hop.Url
+  , url : Url
   }
 
 

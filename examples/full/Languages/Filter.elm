@@ -5,6 +5,7 @@ import Html.Events exposing (onClick)
 import Html.Attributes exposing (href, style)
 import Dict
 import Hop
+import Hop.Types exposing (Url)
 import Languages.Models exposing (..)
 import Languages.Actions exposing (..)
 
@@ -20,7 +21,7 @@ styles =
 
 type alias ViewModel =
   { languages : List Language
-  , url : Hop.Url
+  , url : Url
   }
 
 
