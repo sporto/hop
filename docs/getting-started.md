@@ -1,53 +1,80 @@
-## Setup
+# Getting Started
 
-### Import Hop
+## Import Hop modules
 
 ```elm
 import Hop
+import Hop.Builder exposing (..)
+import Hop.Navigation exposing (..)
+import Hop.Types exposing (..)
 ```
 
-### Define actions to be called when a route matches:
+## Define your routes as union types
 
 ```elm
-type Action
-  = HopAction Hop.Action
-  | ShowUsers Hop.Payload
-  | ShowUser Hop.Payload
-  | ShowNotFound Hop.Payload
+type AppRoute
+  = HomeRoute
+  | UserRoute int
+  | NotFoundRoute
 ```
 
-`Hop.Payload` is the payload that your action will receive when called. See about Payload below.
+## Define route matchers
 
-You need to define an action for when a route is not found e.g. `ShowNotFound`.
-
-### Define your routes:
+This will be used to match the browser location
 
 ```elm
-routes : List (String, Hop.Payload -> Action)
-routes = [
-    ("/users", ShowUsers),
-    ("/users/:id", ShowUser)
+routeHome : RouteMatcher AppRoute
+routeHome =
+  route1 HomeRoute "/"
+
+routeUser : RouteMatcher AppRoute
+routeUser =
+  route2 UserRoute "/users" int
+
+routes : List (RouteMatcher AppRoute)
+routes =
+  [ routeHome
+  , routeUser
   ]
 ```
 
-This is a list of tuples with: (`route to match`, `action to call`). 
+## Main actions
 
-To define dynamic parameter use `:`, this parameters will be filled by the router e.g. `/posts/:postId/comments/:commentId`.
-
-### Create the router
+In your main application actions define three extra actions
 
 ```elm
-router : Hop.Router Action
-router =
-  Hop.new {
-    routes = routes,
-    notFoundAction = ShowNotFound
-  }
+type Action
+  = HopAction ()
+  | ApplyRoute ( AppRoute, Url )
+  | NavigateTo String
 ```
 
-`routes` is your list of routes defined above. `notFoundAction` is the action to call when a route is not found.
+- HopAction will be called when a location change happens, this action doesn't have any significance but needs to be accounted for.
+- ApplyRoute will be called when a route matches. ApplyRoute is called with a tuple `(Route, Url)`.
+- NavigateTo is used for navigating to a location.
+
+
+## Create the router
+
+```elm
+router : Router Action
+router =
+  Hop.new
+    { routes = routes
+    , action = ApplyRoute
+    , notFound = NotFoundRoute
+    }
+```
+
+- `routes` is your list of routes defined above.
+- `action` is the action that will be called when a location  changes
+- `notFound` is a route that will be returned when the location doesn't match any known route
 
 `Hop.new` will give you back a `Hop.Router` record:
+
+-------------
+HERE
+&&&&
 
 ```elm
 {

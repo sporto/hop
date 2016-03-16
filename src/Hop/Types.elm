@@ -1,7 +1,7 @@
-module Hop.Types (Config, Router, Route, Query, Url) where
+module Hop.Types (Config, Router, PathMatcher, Query, Url) where
 
 {-|
-@docs Config, Router, Route, Query, Url
+@docs Config, Router, PathMatcher, Query, Url
 -}
 
 import Dict
@@ -30,9 +30,9 @@ type alias Url =
   }
 
 
-{-| A route defintion
+{-| A matcher for a path
 -}
-type alias Route action =
+type alias PathMatcher action =
   { parser : Parser action
   , segments : List String
   }
@@ -43,7 +43,7 @@ type alias Route action =
 type alias Config actionTag routeTag =
   { action : ( routeTag, Url ) -> actionTag
   , notFound : routeTag
-  , routes : List (Route routeTag)
+  , matchers : List (PathMatcher routeTag)
   }
 
 

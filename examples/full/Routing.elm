@@ -2,7 +2,7 @@ module Routing (..) where
 
 import Effects exposing (Effects)
 import Hop
-import Hop.Types exposing (Url, Query, Router)
+import Hop.Types exposing (Url, Query, Router, RouteMatcher)
 import Hop.Builder exposing (..)
 import Hop.Navigation exposing (navigateTo, setQuery)
 import Hop.Matcher exposing (routeToPath)
@@ -24,22 +24,22 @@ type Route
   | NotFoundRoute
 
 
-routeHome : Hop.Types.Route Route
+routeHome : RouteMatcher Route
 routeHome =
   route1 HomeRoute "/"
 
 
-routeAbout : Hop.Types.Route Route
+routeAbout : RouteMatcher Route
 routeAbout =
   route1 AboutRoute "/about"
 
 
-routesLanguages : Hop.Types.Route Route
+routesLanguages : RouteMatcher Route
 routesLanguages =
   nested1 LanguagesRoutes "/languages" Languages.Routing.routes
 
 
-routes : List (Hop.Types.Route Route)
+routes : List (RouteMatcher Route)
 routes =
   [ routeHome
   , routeAbout
@@ -47,7 +47,7 @@ routes =
   ]
 
 
-reverse : Route -> String
+reverse : RouteMatcher -> String
 reverse route =
   case route of
     HomeRoute ->
@@ -105,7 +105,7 @@ newModel =
 -- ROUTER
 
 
-router : Hop.Types.Router RoutingAction
+router : Router RoutingAction
 router =
   Hop.new
     { routes = routes

@@ -6,26 +6,53 @@ import Html.Events exposing (onClick)
 import StartApp
 import Task exposing (Task)
 import Hop
-import Hop.Builder exposing (route1)
-import Hop.Navigation exposing (navigateTo)
-import Hop.Types exposing (Query, Url, Route, Router)
+import Hop.Matchers exposing (..)
+import Hop.Navigate exposing (navigateTo)
+import Hop.Types exposing (Query, Url, PathMatcher, Router)
 
 
-type AppRoute
+-- ROUTES
+
+
+type Route
   = AboutRoute
   | MainRoute
   | NotFoundRoute
 
 
+matchers : List (PathMatcher Route)
+matchers =
+  [ match1 MainRoute "/"
+  , match1 AboutRoute "/about"
+  ]
+
+
+router : Router Action
+router =
+  Hop.new
+    { matchers = matchers
+    , action = ApplyRoute
+    , notFound = NotFoundRoute
+    }
+
+
+
+-- ACTIONS
+
+
 type Action
   = HopAction ()
-  | ApplyRoute ( AppRoute, Url )
+  | ApplyRoute ( Route, Url )
   | NavigateTo String
+
+
+
+-- MODEL
 
 
 type alias Model =
   { url : Url
-  , route : AppRoute
+  , route : Route
   }
 
 
@@ -49,25 +76,8 @@ update action model =
       ( model, Effects.none )
 
 
-routes : List (Route AppRoute)
-routes =
-  [ route1 MainRoute "/"
-  , route1 AboutRoute "/about"
-  ]
 
-
-router : Router Action
-router =
-  Hop.new
-    { routes = routes
-    , action = ApplyRoute
-    , notFound = NotFoundRoute
-    }
-
-
-init : ( Model, Effects Action )
-init =
-  ( newModel, Effects.none )
+-- VIEW
 
 
 view : Signal.Address Action -> Model -> Html
@@ -112,6 +122,11 @@ pageView address model =
 
 
 -- APP
+
+
+init : ( Model, Effects Action )
+init =
+  ( newModel, Effects.none )
 
 
 app : StartApp.App Model

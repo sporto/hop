@@ -2,7 +2,7 @@ module Test.Tests (..) where
 
 import ElmTest exposing (..)
 import Hop.UrlTest
-import Hop.MatcherTest
+import Hop.MatchersTest
 
 
 all : Test
@@ -10,5 +10,5 @@ all =
   suite
     "Tests"
     [ Hop.UrlTest.all
-    , Hop.MatcherTest.all
+    , Hop.MatchersTest.all
     ]

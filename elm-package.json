@@ -9,9 +9,8 @@
     ],
     "exposed-modules": [
         "Hop",
-        "Hop.Builder",
-        "Hop.Matcher",
-        "Hop.Navigation",
+        "Hop.Matchers",
+        "Hop.Navigate",
         "Hop.Types"
     ],
     "dependencies": {

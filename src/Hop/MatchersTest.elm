@@ -1,9 +1,8 @@
-module Hop.MatcherTest (..) where
+module Hop.MatchersTest (..) where
 
 import Dict
 import Hop
-import Hop.Builder exposing (..)
-import Hop.Matcher exposing (..)
+import Hop.Matchers exposing (..)
 import Hop.Url exposing (newQuery)
 import ElmTest exposing (..)
 
@@ -24,11 +23,11 @@ type PostNestedRoutes
 
 
 postsRoute =
-  route1 Posts "/posts"
+  match1 Posts "/posts"
 
 
 postRoute =
-  route2 Post "/posts/" int
+  match2 Post "/posts/" int
 
 
 postRoutes =
@@ -36,23 +35,23 @@ postRoutes =
 
 
 usersRoute =
-  route1 Users "/users"
+  match1 Users "/users"
 
 
 userRoute =
-  route2 User "/users/" int
+  match2 User "/users/" int
 
 
 userStatusRoute =
-  route3 UserStatus "/users/" int "/status"
+  match3 UserStatus "/users/" int "/status"
 
 
 usersTokenRoute =
-  route2 UsersToken "/users/" str
+  match2 UsersToken "/users/" str
 
 
 userTokenRoute =
-  route4 UserToken "/users/" int "/" str
+  match4 UserToken "/users/" int "/" str
 
 
 userPostRoute =
@@ -153,8 +152,8 @@ matchLocationTest =
     suite "matchLocation" (List.map run inputs)
 
 
-routeToPathTest : Test
-routeToPathTest =
+matcherToPathTest : Test
+matcherToPathTest =
   let
     inputs =
       [ ( "Users", usersRoute, [], "/users" )
@@ -166,7 +165,7 @@ routeToPathTest =
     run ( testCase, route, params, expected ) =
       let
         actual =
-          routeToPath route params
+          matcherToPath route params
 
         result =
           assertEqual expected actual
@@ -178,7 +177,7 @@ routeToPathTest =
 
 allTest : List Test
 allTest =
-  [ matchPathTest, matchLocationTest, routeToPathTest ]
+  [ matchPathTest, matchLocationTest, matcherToPathTest ]
 
 
 all : Test

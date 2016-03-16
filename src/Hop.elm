@@ -2,8 +2,6 @@ module Hop (new) where
 
 {-| A router for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
-
-
 # Setup
 @docs new
 
@@ -11,7 +9,7 @@ module Hop (new) where
 
 import History
 import Hop.Types as Types
-import Hop.Matcher as Matcher
+import Hop.Matchers
 import Hop.Url exposing (newUrl, newQuery)
 import Hop.Types exposing (..)
 
@@ -24,7 +22,7 @@ import Hop.Types exposing (..)
 
     router =
       Hop.new {
-        routes = routes,
+        matchers = matchers,
         action = Show,
         notFound = NotFound
       }
@@ -56,6 +54,6 @@ routeTagAndQuerySignal : Config actionTag routeTag -> Signal ( routeTag, Url )
 routeTagAndQuerySignal config =
   let
     resolve location =
-      Matcher.matchLocation config.routes config.notFound location
+      Hop.Matchers.matchLocation config.matchers config.notFound location
   in
     Signal.map resolve History.hash

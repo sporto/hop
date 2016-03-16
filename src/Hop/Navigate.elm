@@ -1,4 +1,4 @@
-module Hop.Navigation (navigateTo, addQuery, setQuery, removeQuery, clearQuery) where
+module Hop.Navigate (navigateTo, addQuery, setQuery, removeQuery, clearQuery) where
 
 {-| Functions for changing the browser location
 
@@ -45,7 +45,6 @@ navigateToUrl url =
 
 
 
---|> Task.map GoToRouteResult
 -------------------------------------------------------------------------------
 -- QUERY
 
