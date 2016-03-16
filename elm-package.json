@@ -11,7 +11,8 @@
         "Hop",
         "Hop.Builder",
         "Hop.Matcher",
-        "Hop.Navigation"
+        "Hop.Navigation",
+        "Hop.Types"
     ],
     "dependencies": {
         "Bogdanp/elm-combine": "2.2.0 <= v < 3.0.0",

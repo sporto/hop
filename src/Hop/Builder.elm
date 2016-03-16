@@ -1,4 +1,4 @@
-module Hop.Builder (route1, route2, route3, route4, nested1, int, str) where
+module Hop.Builder (route1, route2, route3, route4, nested1, nested2, int, str) where
 
 {-| Functions for building routes
 

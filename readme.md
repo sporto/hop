@@ -39,13 +39,13 @@ See examples app in `./Examples/`. To run the example apps:
 - Go to example folder (eg examples/basic or examples/full)
 - Install packages `elm package install -y`
 - Run `elm reactor`
-- Open `http://localhost:8000/App.elm`
+- Open `http://localhost:8000/Main.elm`
 
 # Testing
 
 - `cd ./src/Test`
 - `elm reactor`
-- Open `/localhost:8000/TestRunner.elm`
+- Open `/localhost:8000/Main.elm`
 
 # TODO:
 

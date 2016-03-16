@@ -1,9 +1,11 @@
 module Languages.Routing (..) where
 
+import Debug
 import Effects exposing (Effects)
 import Hop.Types exposing (Url, Query, Router)
 import Hop.Builder exposing (..)
 import Hop.Navigation exposing (navigateTo, setQuery)
+import Hop.Matcher exposing (routeToPath)
 import Languages.Models exposing (..)
 
 
@@ -37,12 +39,44 @@ routes =
   [ routeLanguages, routeLanguage, routeLanguageEdit ]
 
 
+toS : a -> String
+toS =
+  toString
+
+
+
+-- Reverse routes
+
+
+reverse : Route -> String
+reverse route =
+  let
+    path =
+      case route of
+        LanguagesRoute ->
+          routeToPath routeLanguages []
+
+        LanguageRoute id ->
+          routeToPath routeLanguage [ toS id ]
+
+        LanguageEditRoute id ->
+          routeToPath routeLanguageEdit [ toS id ]
+
+        NotFoundRoute ->
+          ""
+
+    _ =
+      Debug.log "path" path
+  in
+    "/languages" ++ path
+
+
 
 -- ACTION
 
 
 type RoutingAction
-  = HopAction ()
+  = RoutingHopAction ()
   | ApplyRoute ( Route, Url )
   | NavigateTo String
 
@@ -72,10 +106,10 @@ update : RoutingAction -> Model -> ( Model, Effects RoutingAction )
 update action model =
   case action of
     NavigateTo path ->
-      ( model, Effects.map HopAction (navigateTo path) )
+      ( model, Effects.map RoutingHopAction (navigateTo path) )
 
     ApplyRoute ( route, url ) ->
       ( { model | route = route, url = url }, Effects.none )
 
-    HopAction () ->
+    RoutingHopAction () ->
       ( model, Effects.none )

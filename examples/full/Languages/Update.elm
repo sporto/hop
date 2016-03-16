@@ -2,11 +2,11 @@ module Languages.Update (..) where
 
 import Effects exposing (Effects, Never)
 import Debug
-import Hop
 import Hop.Types exposing (..)
 import Hop.Navigation exposing (navigateTo, addQuery, setQuery)
 import Languages.Models exposing (..)
 import Languages.Actions exposing (..)
+import Languages.Routing exposing (..)
 
 
 type alias UpdateModel =
@@ -24,15 +24,21 @@ update action model =
   case Debug.log "action" action of
     Show id ->
       let
+        path =
+          reverse (LanguageRoute id)
+
         navAction =
-          navigateTo ("/languages/" ++ (toString id))
+          navigateTo path
       in
         ( model.languages, Effects.map HopAction navAction )
 
     Edit id ->
       let
+        path =
+          reverse (LanguageEditRoute id)
+
         navAction =
-          navigateTo ("/languages/" ++ (toString id) ++ "/edit")
+          navigateTo path
       in
         ( model.languages, Effects.map HopAction navAction )
 

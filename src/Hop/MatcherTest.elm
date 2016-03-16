@@ -153,9 +153,32 @@ matchLocationTest =
     suite "matchLocation" (List.map run inputs)
 
 
+routeToPathTest : Test
+routeToPathTest =
+  let
+    inputs =
+      [ ( "Users", usersRoute, [], "/users" )
+      , ( "One user", userRoute, [ "2" ], "/users/2" )
+      , ( "Too many inputs", userRoute, [ "2", "3" ], "/users/2" )
+      , ( "User status", userStatusRoute, [ "3" ], "/users/3/status" )
+      ]
+
+    run ( testCase, route, params, expected ) =
+      let
+        actual =
+          routeToPath route params
+
+        result =
+          assertEqual expected actual
+      in
+        test testCase result
+  in
+    suite "matchPath" (List.map run inputs)
+
+
 allTest : List Test
 allTest =
-  [ matchPathTest, matchLocationTest ]
+  [ matchPathTest, matchLocationTest, routeToPathTest ]
 
 
 all : Test

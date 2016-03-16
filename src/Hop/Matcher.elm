@@ -1,8 +1,8 @@
-module Hop.Matcher (matchPath, matchLocation) where
+module Hop.Matcher (matchPath, matchLocation, routeToPath) where
 
 {-| Functions for matching routes
 
-@docs matchPath, matchLocation
+@docs matchPath, matchLocation, routeToPath
 -}
 
 import String
@@ -69,11 +69,16 @@ matchLocation routeParsers notFoundAction location =
     ( matchedAction, url )
 
 
+{-| Create a path from a route
+-}
 routeToPath : Route a -> List String -> String
 routeToPath route inputs =
   let
+    inputs' =
+      List.append inputs [ "" ]
+
     makeSegment segment input =
       segment ++ input
   in
-    List.map2 makeSegment route.segments inputs
+    List.map2 makeSegment route.segments inputs'
       |> String.join ""
