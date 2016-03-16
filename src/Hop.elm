@@ -8,9 +8,7 @@ module Hop (new) where
 -}
 
 import History
-import Hop.Types exposing (..)
-import Hop.Matchers
-import Hop.Location exposing (newUrl, newQuery)
+import Hop.Matchers as Matchers
 import Hop.Types exposing (..)
 
 
@@ -54,6 +52,6 @@ routeTagAndQuerySignal : Config actionTag routeTag -> Signal ( routeTag, Locatio
 routeTagAndQuerySignal config =
   let
     resolve location =
-      Hop.Matchers.matchLocation config.matchers config.notFound location
+      Matchers.matchLocation config.matchers config.notFound location
   in
     Signal.map resolve History.hash

@@ -8,7 +8,7 @@ import Task exposing (Task)
 import Hop
 import Hop.Matchers exposing (..)
 import Hop.Navigate exposing (navigateTo)
-import Hop.Types exposing (Query, Url, PathMatcher, Router)
+import Hop.Types exposing (Query, Location, PathMatcher, Router, newLocation)
 
 
 -- ROUTES
@@ -42,7 +42,7 @@ router =
 
 type Action
   = HopAction ()
-  | ApplyRoute ( Route, Url )
+  | ApplyRoute ( Route, Location )
   | NavigateTo String
 
 
@@ -51,14 +51,14 @@ type Action
 
 
 type alias Model =
-  { url : Url
+  { url : Location
   , route : Route
   }
 
 
 newModel : Model
 newModel =
-  { url = router.url
+  { url = newLocation
   , route = MainRoute
   }
 

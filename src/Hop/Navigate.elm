@@ -7,7 +7,7 @@ module Hop.Navigate (navigateTo, addQuery, setQuery, removeQuery, clearQuery) wh
 
 import Effects exposing (Effects, Never)
 import History
-import Hop.Url as Url
+import Hop.Location as Location
 import Hop.Types exposing (..)
 
 
@@ -24,22 +24,22 @@ import Hop.Types exposing (..)
 navigateTo : String -> Effects ()
 navigateTo route =
   route
-    |> Url.locationFromUser
-    |> navigateToUrl
+    |> Location.locationFromUser
+    |> navigateToLocation
 
 
 
 {-
 @private
-navigateToUrl
-Change the location using a Url record
+navigateToLocation
+Change the location using a Location record
 -}
 
 
-navigateToUrl : Url -> Effects ()
-navigateToUrl url =
-  url
-    |> Url.urlToLocation
+navigateToLocation : Location -> Effects ()
+navigateToLocation location =
+  location
+    |> Location.locationToFullPath
     |> History.setPath
     |> Effects.task
 
@@ -55,15 +55,15 @@ navigateToUrl url =
       case action of
         ...
         AddQuery query ->
-          (model, Effects.map HopAction (Hop.addQuery query model.routerPayload.url))
+          (model, Effects.map HopAction (Hop.addQuery query model.routerPayload.location))
 
   To remove a value set the value to ""
 -}
-addQuery : Query -> Url -> Effects ()
+addQuery : Query -> Location -> Effects ()
 addQuery query currentUrl =
   currentUrl
-    |> Url.addQuery query
-    |> navigateToUrl
+    |> Location.addQuery query
+    |> navigateToLocation
 
 
 {-| Set query string values (removes existing values)
@@ -72,13 +72,13 @@ addQuery query currentUrl =
       case action of
         ...
         SetQuery query ->
-          (model, Effects.map HopAction (Hop.setQuery query model.routerPayload.url))
+          (model, Effects.map HopAction (Hop.setQuery query model.routerPayload.location))
 -}
-setQuery : Query -> Url -> Effects ()
+setQuery : Query -> Location -> Effects ()
 setQuery query currentUrl =
   currentUrl
-    |> Url.setQuery query
-    |> navigateToUrl
+    |> Location.setQuery query
+    |> navigateToLocation
 
 
 {-| Remove one query string value
@@ -87,13 +87,13 @@ setQuery query currentUrl =
       case action of
         ...
         RemoveQuery query ->
-          (model, Effects.map HopAction (Hop.removeQuery key model.routerPayload.url))
+          (model, Effects.map HopAction (Hop.removeQuery key model.routerPayload.location))
 -}
-removeQuery : String -> Url -> Effects ()
+removeQuery : String -> Location -> Effects ()
 removeQuery key currentUrl =
   currentUrl
-    |> Url.removeQuery key
-    |> navigateToUrl
+    |> Location.removeQuery key
+    |> navigateToLocation
 
 
 {-| Clear all query string values
@@ -102,10 +102,10 @@ removeQuery key currentUrl =
       case action of
         ...
         ClearQuery ->
-          (model, Effects.map HopAction (Hop.clearQuery model.routerPayload.url))
+          (model, Effects.map HopAction (Hop.clearQuery model.routerPayload.location))
 -}
-clearQuery : Url -> Effects ()
+clearQuery : Location -> Effects ()
 clearQuery currentUrl =
   currentUrl
-    |> Url.clearQuery
-    |> navigateToUrl
+    |> Location.clearQuery
+    |> navigateToLocation
