@@ -23,8 +23,8 @@ test-full:
 	cd ./examples/full && elm make Main.elm
 
 test:
-	make test-hop
+	make test-lib
 	make test-basic
 	make test-full
 
-.PHONY: docs
+.PHONY: docs test
