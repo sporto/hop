@@ -22,6 +22,12 @@ test-basic:
 test-full:
 	cd ./examples/full && elm make Main.elm
 
+test-prepare:
+	cd ./test && npm install
+	cd ./test && elm package install -y
+	cd ./examples/basic && elm package install -y
+	cd ./examples/full && elm package install -y
+
 test:
 	make test-lib
 	make test-basic
