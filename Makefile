@@ -10,3 +10,7 @@ full-up:
 flow:
 	java -jar /usr/local/bin/plantuml.jar -ttxt assets/flow.pu
 
+docs:
+	elm make --docs=documentation.json
+
+.PHONY: docs

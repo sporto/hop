@@ -1,6 +1,7 @@
 module Hop.Matchers (match1, match2, match3, match4, nested1, nested2, int, str, matchPath, matchLocation, matcherToPath) where
 
-{-| Functions for matching paths
+{-|
+Functions for building matchers and matching paths
 
 # Building matchers
 @docs match1, match2, match3, match4, nested1, nested2, int, str
@@ -22,11 +23,16 @@ parserWithBeginningAndEnd parser =
   parser <* Combine.end
 
 
-{-| Create a matcher with one static segment
+{-|
+Create a matcher with one static segment.
 
-  match1 Users "/users"
+    match1 Users "/users"
+
+This will match exactly
+
+    "/user"
 -}
-match1 : action -> String -> PathMatcher action
+match1 : route -> String -> PathMatcher route
 match1 constructor segment1 =
   let
     parser =
@@ -43,21 +49,23 @@ match1 constructor segment1 =
     }
 
 
-{-| Create a matcher with one static segment and one dynamic segment
+{-|
+Create a matcher with one static segment and one dynamic parameter.
 
-  match2 User "/users/" int
+    match2 User "/tokens/" str
+
+This will match a path like
+
+    "/tokens/abc"
 -}
-match2 : (input1 -> action) -> String -> Parser input1 -> PathMatcher action
+match2 : (param1 -> route) -> String -> Parser param1 -> PathMatcher route
 match2 constructor segment1 parser1 =
   let
-    constructor' input1 =
-      constructor input1
-
     parser =
       Combine.string segment1
         *> parser1
         |> parserWithBeginningAndEnd
-        |> Combine.map constructor'
+        |> Combine.map constructor
   in
     { parser = parser
     , segments = [ segment1 ]
@@ -66,20 +74,21 @@ match2 constructor segment1 parser1 =
 
 {-| Create a matcher with three segments.
 
-  match3 UserStatus "/users/" int "/status"
+    match3 UserStatus "/users/" int "/status"
+
+This will match a path like
+
+    "/users/1/status"
 -}
-match3 : (input1 -> action) -> String -> Parser input1 -> String -> PathMatcher action
+match3 : (param1 -> route) -> String -> Parser param1 -> String -> PathMatcher route
 match3 constructor segment1 parser1 segment2 =
   let
-    constructor' input1 =
-      constructor input1
-
     parser =
       Combine.string segment1
         *> parser1
         <* Combine.string segment2
         |> parserWithBeginningAndEnd
-        |> Combine.map constructor'
+        |> Combine.map constructor
   in
     { parser = parser
     , segments = [ segment1, segment2 ]
@@ -88,9 +97,14 @@ match3 constructor segment1 parser1 segment2 =
 
 {-| Create a matcher with four segments.
 
-  match4 UserStatus "/users/" int "/token/" str
+    match4 UserToken "/users/" int "/token/" str
+
+This will match a path like
+
+    "/users/1/token/abc"
+
 -}
-match4 : (input1 -> input2 -> action) -> String -> Parser input1 -> String -> Parser input2 -> PathMatcher action
+match4 : (param1 -> param2 -> route) -> String -> Parser param1 -> String -> Parser param2 -> PathMatcher route
 match4 constructor segment1 parser1 segment2 parser2 =
   let
     constructor' ( a, b ) =
@@ -110,9 +124,17 @@ match4 constructor segment1 parser1 segment2 parser2 =
 
 {-| Create a matcher with two segments and nested routes
 
-  nested1 UserComments "/user" commentRoutes
+    nested1 ShopCategories "/shop" categoriesRoutes
+
+This could match paths like (depending on the nested routes)
+
+    "/shop/games"
+    "/shop/business"
+    "/shop/product/1"
+    "/shop/.."
+
 -}
-nested1 : (subAction -> action) -> String -> List (PathMatcher subAction) -> PathMatcher action
+nested1 : (subRoute -> route) -> String -> List (PathMatcher subRoute) -> PathMatcher route
 nested1 constructor segment1 children =
   let
     childrenParsers =
@@ -132,8 +154,14 @@ nested1 constructor segment1 children =
 {-| Create a matcher with two segments and nested routes
 
   nested2 UserComments "/users/" int commentRoutes
+
+This could match paths like (depending on the nested routes)
+
+    "/users/1/comments"
+    "/users/1/comments/3"
+
 -}
-nested2 : (input1 -> subAction -> action) -> String -> Parser input1 -> List (PathMatcher subAction) -> PathMatcher action
+nested2 : (param1 -> subRoute -> route) -> String -> Parser param1 -> List (PathMatcher subRoute) -> PathMatcher route
 nested2 constructor segment1 parser1 children =
   let
     childrenParsers =
@@ -179,7 +207,7 @@ str =
 
 {-|
 Matches a path e.g. "/users/1/comments/2"
-Returns the matching action
+Returns the matching route
 
   matchPath routes NotFound "/users/1/comments/2"
 
@@ -187,7 +215,7 @@ Returns the matching action
 
   User 1 (Comment 2)
 -}
-matchPath : List (PathMatcher action) -> action -> String -> action
+matchPath : List (PathMatcher route) -> route -> String -> route
 matchPath routeParsers notFoundAction path =
   case routeParsers of
     [] ->
@@ -212,7 +240,7 @@ matchPath routeParsers notFoundAction path =
 
 {-|
 Matches a complete location including path and query e.g. "/users/1/post?a=1"
-Returns a tuple e.g. (action, query)
+Returns a tuple e.g. (route, query)
 
   matchLocation routes NotFound "/users/1?a=1"
 
@@ -220,7 +248,7 @@ Returns a tuple e.g. (action, query)
 
   (User 1, Dict.singleton "a" "1")
 -}
-matchLocation : List (PathMatcher action) -> action -> String -> ( action, Location )
+matchLocation : List (PathMatcher route) -> route -> String -> ( route, Location )
 matchLocation routeParsers notFoundAction location =
   let
     url =

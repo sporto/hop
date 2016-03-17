@@ -23,7 +23,7 @@ participant History #white
 
 App -> Hop : navigateTo path
 Hop -> History : change path
-History --> Hop : Effect
+History --> Hop : Task
 Hop --> App : Effects
 App -> Elm : Task
 @enduml

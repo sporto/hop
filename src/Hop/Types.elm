@@ -46,17 +46,17 @@ type alias PathMatcher action =
 
 {-| Configuration input for Hop.new
 -}
-type alias Config routeTag =
-  { matchers : List (PathMatcher routeTag)
-  , notFound : routeTag
+type alias Config route =
+  { matchers : List (PathMatcher route)
+  , notFound : route
   }
 
 
 {-| Router record created by Hop.new
 -}
-type alias Router routeTag =
+type alias Router route =
   { run : Task () ()
-  , signal : Signal ( routeTag, Location )
+  , signal : Signal ( route, Location )
   }
 
 
