@@ -75,4 +75,4 @@ Call these actions from your views:
 button [ onClick address (SetQuery (Dict.singleton "color" "red")) ] [ text "Set query" ]
 ```
 
-See details of available functions at <TODO>
+See details of available functions at <http://package.elm-lang.org/packages/sporto/hop/latest/Hop-Navigate>

@@ -69,7 +69,7 @@ This is done for aesthetics and so the router is fully controlled by the hash fr
 ### [Getting Started](https://github.com/sporto/hop/blob/master/docs/getting-started.md)
 ### [Building routes](https://github.com/sporto/hop/blob/master/docs/building-routes.md)
 ### [Navigating](https://github.com/sporto/hop/blob/master/docs/navigating.md)
-### API
+### [API](http://package.elm-lang.org/packages/sporto/hop/latest/)
 ### [Upgrade guide 2.1 to 3.0](https://github.com/sporto/hop/blob/master/docs/upgrade-2-to-3.md)
 ### [Version 2 documentation](https://github.com/sporto/hop/tree/v2)
 ### [Changelog](./docs/changelog.md)

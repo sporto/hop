@@ -60,7 +60,7 @@ matchPath [matcher] NotFoundRoute "/users/abc"
 --> UserRoute "abc"
 ```
 
-See more information about matcher in <TODO>
+See more information about matchers in <http://package.elm-lang.org/packages/sporto/hop/latest/Hop-Matchers>
 
 ## Nested routes
 
@@ -146,5 +146,5 @@ reverse route =
       ""
 ```
 
-See more details at <TODO>
+See the API at <http://package.elm-lang.org/packages/sporto/hop/latest/Hop-Matchers>
 
