@@ -60,6 +60,9 @@ See examples app in `./Examples/`. To run the example apps:
 
 - Remove the need to pass the current url to query methods. At the moment we need to send `setQuery url dict` because Hop cannot figure out the current query by itself. [This project](https://github.com/rgrempel/elm-web-api#webapilocation) could be the solution.
 
+## Acknowledgements
+
+Thanks to @etaque and @Bogdanp for the inspiration needed to make this better
 
 
 

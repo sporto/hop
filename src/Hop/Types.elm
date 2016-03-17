@@ -36,7 +36,7 @@ type alias Location =
   }
 
 
-{-| A matcher for a path
+{-| A path matcher
 -}
 type alias PathMatcher action =
   { parser : Parser action
@@ -46,23 +46,26 @@ type alias PathMatcher action =
 
 {-| Configuration input for Hop.new
 -}
-type alias Config actionTag routeTag =
-  { action : ( routeTag, Location ) -> actionTag
+type alias Config routeTag =
+  { matchers : List (PathMatcher routeTag)
   , notFound : routeTag
-  , matchers : List (PathMatcher routeTag)
   }
 
 
 {-| Router record created by Hop.new
 -}
-type alias Router actionTag =
-  { signal : Signal actionTag
-  , run : Task () ()
+type alias Router routeTag =
+  { run : Task () ()
+  , signal : Signal ( routeTag, Location )
   }
 
 
+
+---------------------------------------
+
+
 {-|
-Create a new Query record
+Create an empty Query record
 -}
 newQuery : Query
 newQuery =
@@ -70,7 +73,7 @@ newQuery =
 
 
 {-|
-Create a new Location record
+Create a empty Location record
 -}
 newLocation : Location
 newLocation =

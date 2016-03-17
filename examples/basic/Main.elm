@@ -27,11 +27,10 @@ matchers =
   ]
 
 
-router : Router Action
+router : Router Route
 router =
   Hop.new
     { matchers = matchers
-    , action = ApplyRoute
     , notFound = NotFoundRoute
     }
 
@@ -129,13 +128,18 @@ init =
   ( newModel, Effects.none )
 
 
+taggedRoutedSignal : Signal Action
+taggedRoutedSignal =
+  Signal.map ApplyRoute router.signal
+
+
 app : StartApp.App Model
 app =
   StartApp.start
     { init = init
     , update = update
     , view = view
-    , inputs = [ router.signal ]
+    , inputs = [ taggedRoutedSignal ]
     }
 
 

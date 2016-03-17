@@ -22,14 +22,13 @@ Create a Router
     router =
       Hop.new {
         matchers = matchers,
-        action = Show,
         notFound = NotFound
       }
 -}
-new : Config actionTag routeTag -> Router actionTag
+new : Config routeTag -> Router routeTag
 new config =
-  { signal = actionTagSignal config
-  , run = History.setPath ""
+  { run = History.setPath ""
+  , signal = routeTagAndQuerySignal config
   }
 
 
@@ -41,14 +40,12 @@ new config =
 Each time the hash is changed get a signal
 We pass this signal to the main application
 -}
+--actionTagSignal : Config actionTag routeTag -> Signal actionTag
+--actionTagSignal config =
+--  Signal.map config.action (routeTagAndQuerySignal config)
 
 
-actionTagSignal : Config actionTag routeTag -> Signal actionTag
-actionTagSignal config =
-  Signal.map config.action (routeTagAndQuerySignal config)
-
-
-routeTagAndQuerySignal : Config actionTag routeTag -> Signal ( routeTag, Location )
+routeTagAndQuerySignal : Config routeTag -> Signal ( routeTag, Location )
 routeTagAndQuerySignal config =
   let
     resolve location =
