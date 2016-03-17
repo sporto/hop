@@ -19,6 +19,8 @@ In your view:
 button [ onClick address (NavigateTo "/users/1") ] [ text "User" ]
 ```
 
+You can create the path ("/users/1") by using reverse routing, see [here](https://github.com/sporto/hop/blob/master/docs/building-routes.md#reverse-routing). 
+
 Then in update:
 
 ```elm
@@ -73,4 +75,4 @@ Call these actions from your views:
 button [ onClick address (SetQuery (Dict.singleton "color" "red")) ] [ text "Set query" ]
 ```
 
-See details of available functions at <http://package.elm-lang.org/packages/sporto/hop/latest/Hop>
+See details of available functions at <TODO>

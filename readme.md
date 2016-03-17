@@ -24,7 +24,7 @@ This is done for aesthetics and so the router is fully controlled by the hash fr
 
 ## Docs
 
-### Getting Started
+### [Getting Started](https://github.com/sporto/hop/blob/master/docs/getting-started.md)
 ### Building routes
 ### Navigating
 ### API
@@ -55,11 +55,11 @@ See examples app in `./Examples/`. To run the example apps:
 - Push state - Support routes without hashes
 - Redirects e.g. "/" -> "/dashboard"
 
-## Improvements
+## Possible improvements
 
-- In order to match the initial route we need to manually send tasks to a port. Done via `route.run`. This is one more thing for the user to do. Is this really necessary, can this be removed? e.g. Try to channel the initial match through the existing `router.signal`.
+- In order to match the initial route we need to manually send tasks to a port. Done via `route.run`. This is one more thing for the user to do. Is this really necessary, can this be removed? Maybe in Elm 0.17.
 
-- Remove the need to pass the current url to query methods. At the moment we need to send `setQuery url dict` because Hop cannot figure out the current query by itself. [This project](https://github.com/rgrempel/elm-web-api#webapilocation) could be the solution.
+- Remove the need to pass the current url to query methods. At the moment we need to send `setQuery location dict` because Hop cannot figure out the current query by itself. [This project](https://github.com/rgrempel/elm-web-api#webapilocation) could be the solution.
 
 ## Acknowledgements
 

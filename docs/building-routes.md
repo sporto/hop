@@ -5,20 +5,22 @@ You build your routes by using union types:
 ```elm
 type Route
   = HomeRoute
-  | UserRoute int
-  | UserStatusRoute int
+  | UserRoute Int
+  | UserStatusRoute Int
   | NotFoundRoute
 ```
 
 Then you need to create path matchers for these routes:
 
 ```elm
+import Hop.Matchers exposing (match1, match2, int)
+
 matcherHome : PathMatcher Route
 matcherHome =
   match1 HomeRoute "/"
 ```
 
-This matcher matches a route with one segment thus called `match`.
+This matcher matches a route with one segment thus called `match1`.
 
 ```elm
 matcherUser : PathMatcher Route
@@ -28,11 +30,11 @@ matcherUser =
 
 This matches a route with two segments. The first segment is always a string. The second segment can be `int` or `str` (exposed in Hop.Matchers).
 
-For example a matche like this:
+For example a matcher like this:
 
 ```elm
 matcher =
-  match2 UserRoute "/users" int
+  match2 UserRoute "/users/" int
 ```
 
 Will match "/users/1" but not "/users/abc".
@@ -52,13 +54,13 @@ type Route
   = UserRoute String
 
 matcher =
-  match2 UserRoute "/users" str
+  match2 UserRoute "/users/" str
 
 matchPath [matcher] NotFoundRoute "/users/abc"
 --> UserRoute "abc"
 ```
 
-See more information about matcher in <...>
+See more information about matcher in <TODO>
 
 ## Nested routes
 
@@ -83,7 +85,7 @@ type Route
 Create path matchers:
 
 ```elm
-import Hop.Matchers.exposing (match2, match3, nested2)
+import Hop.Matchers.exposing (match2, match3, nested2, matchPath)
 
 -- Matchers for services
 
@@ -115,7 +117,7 @@ matchPath matchers NotFound "/companies/1/services/2/status"
 --> CompanyServices 1 (ServiceStatus 2)
 ```
 
-`matchPath` happens behind the scene in Hop. In practice the router signal will return a tuple like: `(CompanyServices 1 (ServiceStatus 2), location)`.
+`matchPath` is used internally in Hop. In practice the router signal will return a tuple like: `(CompanyServices 1 (ServiceStatus 2), location)`.
 
 ## Reverse routing
 
@@ -144,5 +146,5 @@ reverse route =
       ""
 ```
 
-See more details at <...>
+See more details at <TODO>
 

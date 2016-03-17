@@ -1,6 +1,6 @@
 # Upgrading from 2 to 3
 
-Hop has changed in many ways in version 3. Please see the Getting started guide. Following is an overview of the major changes.
+Hop has changed in many ways in version 3. Please review the [Getting started guide](https://github.com/sporto/hop/blob/master/docs/getting-started.md). Following is an overview of the major changes.
 
 ## Routes
 
@@ -34,6 +34,8 @@ routes =
 You do:
 
 ```elm
+import Hop.Matchers exposing(match2)
+
 userMatcher =
   match2 User "/users" int
 
@@ -58,7 +60,7 @@ taggedRouterSignal =
   Signal.map ApplyRoute router.signal
 ```
 
-This is so routes (`Route`) are different than the application actions (`Action`).
+This is so routes (`Route`) are different type than the application actions.
 
 ## Payload
 
@@ -70,13 +72,34 @@ Now it returns the matched route with the values e.g. `User 1` and a `Location` 
 (User 1, location)
 ```
 
+`location` has the information about the current path and the query:
+
+```elm
+{
+  path = ["users", "1"],
+  query = <Dict String String>
+}
+```
+
 ## Views
 
 In your views you don't need to 'search' for the correct parameter in the payload anymore. The parameters are now in the route e.g. `User 1`.
 
-The query is still a dictionary. The query is now located in the `location` record:
+So instead of doing:
 
 ```elm
-(User 1, { path = [], query = ... })
+userId =
+  model.routerPayload.params
+    |> Dict.get "userId"
+    |> Maybe.withDefault ""
 ```
+
+You simply get the id from the route:
+
+```elm
+case User userId ->
+  ...
+```
+
+The query is still a dictionary. The query is now in the `location` record as shown above.
 
