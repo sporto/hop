@@ -5,10 +5,14 @@
 ## How this works
 
 - Routes are defined as union types e.g. `User Int`
-- Then you define route matchers e.g. `route2 User "/users/ int`. This creates a matcher that matches "/users/1" for example.
+
+- Then you define route matchers e.g. `match2 User "/users/ int`. This creates a matcher that matches a path like `/users/1`.
+
 - Then you call `Hop.navigateTo` to change the browser location, this will return an effect that your application must run via ports.
-- When the browser location changes, Hop will match the route e.g. "/users/1" -> `User 1`
-- Hop provides a signal that you application consumes, this signal carries the matched routes
+
+- When the browser location changes, Hop will match the route e.g. `/users/1` -> `User 1`.
+
+- Hop provides a signal that you application consumes, this signal carries the matched routes and information about the current location.
 
 Hop works with StartApp out of the box.
 
@@ -34,10 +38,10 @@ This is done for aesthetics and so the router is fully controlled by the hash fr
 
 # Examples
 
-See examples app in `./Examples/`. To run the example apps:
+See [examples](https://github.com/sporto/hop/tree/master/examples). To run the example apps:
 
 - Clone this repo
-- Go to example folder (eg examples/basic or examples/full)
+- Go to example folder (e.g. examples/basic or examples/full)
 - Install packages `elm package install -y`
 - Run `elm reactor`
 - Open `http://localhost:8000/Main.elm`
