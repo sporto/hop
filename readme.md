@@ -29,6 +29,7 @@ This is done for aesthetics and so the router is fully controlled by the hash fr
 ### Navigating
 ### API
 ### Upgrade guide 2.1 to 3.0
+### [Version 2 documentation](https://github.com/sporto/hop/tree/v2)
 ### [Changelog](./docs/changelog.md)
 
 # Examples

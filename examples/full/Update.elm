@@ -5,7 +5,6 @@ import Routing exposing (..)
 import Actions exposing (..)
 import Models exposing (..)
 import Languages.Update
-import Languages.Routing
 
 
 update : Action -> AppModel -> ( AppModel, Effects Action )
@@ -25,7 +24,7 @@ update action model =
       let
         updateModel =
           { languages = model.languages
-          , url = model.routing.url
+          , location = model.routing.location
           }
 
         ( languages, fx ) =

@@ -50,14 +50,14 @@ type Action
 
 
 type alias Model =
-  { url : Location
+  { location : Location
   , route : Route
   }
 
 
 newModel : Model
 newModel =
-  { url = newLocation
+  { location = newLocation
   , route = MainRoute
   }
 
@@ -68,8 +68,8 @@ update action model =
     NavigateTo path ->
       ( model, Effects.map HopAction (navigateTo path) )
 
-    ApplyRoute ( route, url ) ->
-      ( { model | route = route, url = url }, Effects.none )
+    ApplyRoute ( route, location ) ->
+      ( { model | route = route, location = location }, Effects.none )
 
     HopAction () ->
       ( model, Effects.none )

@@ -3,7 +3,7 @@ module Languages.Update (..) where
 import Effects exposing (Effects, Never)
 import Debug
 import Hop.Types exposing (..)
-import Hop.Navigation exposing (navigateTo, addQuery, setQuery)
+import Hop.Navigate exposing (navigateTo, addQuery, setQuery)
 import Languages.Models exposing (..)
 import Languages.Actions exposing (..)
 import Languages.Routing exposing (..)
@@ -11,7 +11,7 @@ import Languages.Routing exposing (..)
 
 type alias UpdateModel =
   { languages : List Language
-  , url : Url
+  , location : Location
   }
 
 
@@ -46,10 +46,10 @@ update action model =
         ( udpatedLanguages, Effects.none )
 
     AddQuery query ->
-      ( model.languages, Effects.map HopAction (addQuery query model.url) )
+      ( model.languages, Effects.map HopAction (addQuery query model.location) )
 
     SetQuery query ->
-      ( model.languages, Effects.map HopAction (setQuery query model.url) )
+      ( model.languages, Effects.map HopAction (setQuery query model.location) )
 
     HopAction () ->
       ( model.languages, Effects.none )

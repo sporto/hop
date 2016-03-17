@@ -32,7 +32,7 @@ filteredLanguages : ViewModel -> List Language
 filteredLanguages model =
   let
     typed =
-      model.routing.url.query
+      model.routing.location.query
         |> Dict.get "typed"
         |> Maybe.withDefault ""
   in

@@ -1,11 +1,9 @@
 module Languages.Routing (..) where
 
-import Debug
 import Effects exposing (Effects)
-import Hop.Types exposing (Url, Query, Router)
-import Hop.Builder exposing (..)
-import Hop.Navigation exposing (navigateTo, setQuery)
-import Hop.Matcher exposing (routeToPath)
+import Hop.Types exposing (Location, Query, Router, PathMatcher, newLocation)
+import Hop.Matchers exposing (..)
+import Hop.Navigate exposing (navigateTo, setQuery)
 import Languages.Models exposing (..)
 
 
@@ -19,24 +17,24 @@ type Route
   | NotFoundRoute
 
 
-routeLanguages : Hop.Types.Route Route
-routeLanguages =
-  route1 LanguagesRoute ""
+matcherLanguages : PathMatcher Route
+matcherLanguages =
+  match1 LanguagesRoute ""
 
 
-routeLanguage : Hop.Types.Route Route
-routeLanguage =
-  route2 LanguageRoute "/" int
+matcherLanguage : PathMatcher Route
+matcherLanguage =
+  match2 LanguageRoute "/" int
 
 
-routeLanguageEdit : Hop.Types.Route Route
-routeLanguageEdit =
-  route3 LanguageEditRoute "/" int "/edit"
+matcherLanguageEdit : PathMatcher Route
+matcherLanguageEdit =
+  match3 LanguageEditRoute "/" int "/edit"
 
 
-routes : List (Hop.Types.Route Route)
-routes =
-  [ routeLanguages, routeLanguage, routeLanguageEdit ]
+matchers : List (PathMatcher Route)
+matchers =
+  [ matcherLanguages, matcherLanguage, matcherLanguageEdit ]
 
 
 toS : a -> String
@@ -57,13 +55,13 @@ reverse : Route -> String
 reverse route =
   case route of
     LanguagesRoute ->
-      routeToPath routeLanguages []
+      matcherToPath matcherLanguages []
 
     LanguageRoute id ->
-      routeToPath routeLanguage [ toS id ]
+      matcherToPath matcherLanguage [ toS id ]
 
     LanguageEditRoute id ->
-      routeToPath routeLanguageEdit [ toS id ]
+      matcherToPath matcherLanguageEdit [ toS id ]
 
     NotFoundRoute ->
       ""
@@ -73,9 +71,9 @@ reverse route =
 -- ACTION
 
 
-type RoutingAction
+type Action
   = RoutingHopAction ()
-  | ApplyRoute ( Route, Url )
+  | ApplyRoute ( Route, Location )
   | NavigateTo String
 
 
@@ -84,14 +82,14 @@ type RoutingAction
 
 
 type alias Model =
-  { url : Url
+  { location : Location
   , route : Route
   }
 
 
-newModel : Url -> Model
-newModel url =
-  { url = url
+newModel : Model
+newModel =
+  { location = newLocation
   , route = LanguagesRoute
   }
 
@@ -100,14 +98,14 @@ newModel url =
 -- UPDATE
 
 
-update : RoutingAction -> Model -> ( Model, Effects RoutingAction )
+update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
     NavigateTo path ->
       ( model, Effects.map RoutingHopAction (navigateTo path) )
 
-    ApplyRoute ( route, url ) ->
-      ( { model | route = route, url = url }, Effects.none )
+    ApplyRoute ( route, location ) ->
+      ( { model | route = route, location = location }, Effects.none )
 
     RoutingHopAction () ->
       ( model, Effects.none )

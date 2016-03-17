@@ -5,5 +5,5 @@ import Languages.Actions
 
 
 type Action
-  = RoutingAction Routing.RoutingAction
+  = RoutingAction Routing.Action
   | LanguagesAction Languages.Actions.Action

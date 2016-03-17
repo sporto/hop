@@ -1,11 +1,11 @@
 module Routing (..) where
 
+import Task exposing (Task)
 import Effects exposing (Effects)
 import Hop
-import Hop.Types exposing (Url, Query, Router, RouteMatcher)
-import Hop.Builder exposing (..)
-import Hop.Navigation exposing (navigateTo, setQuery)
-import Hop.Matcher exposing (routeToPath)
+import Hop.Types exposing (Location, Query, Router, PathMatcher, newLocation)
+import Hop.Matchers exposing (..)
+import Hop.Navigate exposing (navigateTo, setQuery)
 import Languages.Routing
 
 
@@ -24,42 +24,42 @@ type Route
   | NotFoundRoute
 
 
-routeHome : RouteMatcher Route
-routeHome =
-  route1 HomeRoute "/"
+matcherHome : PathMatcher Route
+matcherHome =
+  match1 HomeRoute "/"
 
 
-routeAbout : RouteMatcher Route
-routeAbout =
-  route1 AboutRoute "/about"
+matcherAbout : PathMatcher Route
+matcherAbout =
+  match1 AboutRoute "/about"
 
 
-routesLanguages : RouteMatcher Route
-routesLanguages =
-  nested1 LanguagesRoutes "/languages" Languages.Routing.routes
+matchersLanguages : PathMatcher Route
+matchersLanguages =
+  nested1 LanguagesRoutes "/languages" Languages.Routing.matchers
 
 
-routes : List (RouteMatcher Route)
-routes =
-  [ routeHome
-  , routeAbout
-  , routesLanguages
+matchers : List (PathMatcher Route)
+matchers =
+  [ matcherHome
+  , matcherAbout
+  , matchersLanguages
   ]
 
 
-reverse : RouteMatcher -> String
+reverse : Route -> String
 reverse route =
   case route of
     HomeRoute ->
-      routeToPath routeHome []
+      matcherToPath matcherHome []
 
     AboutRoute ->
-      routeToPath routeAbout []
+      matcherToPath matcherAbout []
 
     LanguagesRoutes subRoute ->
       let
         parentPath =
-          routeToPath routesLanguages []
+          matcherToPath matchersLanguages []
 
         subPath =
           Languages.Routing.reverse subRoute
@@ -74,12 +74,12 @@ reverse route =
 -- ACTION
 
 
-type RoutingAction
+type Action
   = HopAction ()
-  | ApplyRoute ( Route, Url )
+  | ApplyRoute ( Route, Location )
   | NavigateTo String
   | SetQuery Query
-  | RoutingLanguagesAction Languages.Routing.RoutingAction
+  | RoutingLanguagesAction Languages.Routing.Action
 
 
 
@@ -87,7 +87,7 @@ type RoutingAction
 
 
 type alias Model =
-  { url : Url
+  { location : Location
   , route : Route
   , languagesRouting : Languages.Routing.Model
   }
@@ -95,9 +95,9 @@ type alias Model =
 
 newModel : Model
 newModel =
-  { url = router.url
+  { location = newLocation
   , route = AboutRoute
-  , languagesRouting = Languages.Routing.newModel router.url
+  , languagesRouting = Languages.Routing.newModel
   }
 
 
@@ -105,39 +105,43 @@ newModel =
 -- ROUTER
 
 
-router : Router RoutingAction
+router : Router Route
 router =
   Hop.new
-    { routes = routes
-    , action = ApplyRoute
+    { matchers = matchers
     , notFound = NotFoundRoute
     }
+
+
+signal : Signal Action
+signal =
+  Signal.map ApplyRoute router.signal
 
 
 
 -- UPDATE
 
 
-update : RoutingAction -> Model -> ( Model, Effects RoutingAction )
+update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
     NavigateTo path ->
       ( model, Effects.map HopAction (navigateTo path) )
 
-    ApplyRoute ( route, url ) ->
+    ApplyRoute ( route, location ) ->
       case route of
         LanguagesRoutes subRoute ->
           let
             showAction =
-              Languages.Routing.ApplyRoute ( subRoute, url )
+              Languages.Routing.ApplyRoute ( subRoute, location )
 
             ( updatedLanguagesModel, fx ) =
               Languages.Routing.update showAction model.languagesRouting
           in
-            ( { model | route = route, url = url, languagesRouting = updatedLanguagesModel }, Effects.map RoutingLanguagesAction fx )
+            ( { model | route = route, location = location, languagesRouting = updatedLanguagesModel }, Effects.map RoutingLanguagesAction fx )
 
         _ ->
-          ( { model | route = route, url = url }, Effects.none )
+          ( { model | route = route, location = location }, Effects.none )
 
     RoutingLanguagesAction subAction ->
       let
@@ -147,7 +151,12 @@ update action model =
         ( { model | languagesRouting = updatedLanguagesModel }, Effects.map RoutingLanguagesAction fx )
 
     SetQuery query ->
-      ( model, Effects.map HopAction (setQuery query model.url) )
+      ( model, Effects.map HopAction (setQuery query model.location) )
 
     HopAction () ->
       ( model, Effects.none )
+
+
+run : Task () ()
+run =
+  router.run
