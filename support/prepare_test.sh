@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # nvm use 4.0 # already done in CI
 node --version
 npm --version
