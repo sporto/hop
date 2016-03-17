@@ -4,19 +4,55 @@
 
 ## How this works
 
+### Matching routes
+
+     ,-------.            ,---.                ,---.
+     |History|            |Hop|                |App|
+     `---+---'            `-+-'                `-+-'
+         |1 location change |                    |  
+         |----------------->|                    |  
+         |                  |                    |  
+         |                  |2 (Route, Location) |  
+         |                  |------------------->|  
+     ,---+---.            ,-+-.                ,-+-.
+     |History|            |Hop|                |App|
+     `-------'            `---'                `---'
+
+
 - Routes are defined as union types e.g. `User Int`
+- You define path matchers e.g. `match2 User "/users/ int`. This matches a path like `/users/1`.
+- (1) When the browser location changes, Hop will match the path e.g. `/users/1` -> `User 1`.
+- (2) Hop provides a signal that you application consumes, this signal carries the matched routes and information about the current location.
 
-- Then you define path matchers e.g. `match2 User "/users/ int`. This creates a matcher that matches a path like `/users/1`.
+### Navigation
 
-- To change the browser location you call `Hop.Navigate.navigateTo`, this will return an effect that your application must run via ports.
+     ,---.          ,---.              ,---.          ,-------.
+     |Elm|          |App|              |Hop|          |History|
+     `-+-'          `-+-'              `-+-'          `---+---'
+       |              |1 navigateTo path |                |    
+       |              |----------------->|                |    
+       |              |                  |                |    
+       |              |                  | 2 change path  |    
+       |              |                  |--------------->|    
+       |              |                  |                |    
+       |              |                  |   3 Effect     |    
+       |              |                  |<- - - - - - - -|    
+       |              |                  |                |    
+       |              |    4 Effects     |                |    
+       |              |<- - - - - - - - -|                |    
+       |              |                  |                |    
+       |   5 Task     |                  |                |    
+       |<-------------|                  |                |    
+     ,-+-.          ,-+-.              ,-+-.          ,---+---.
+     |Elm|          |App|              |Hop|          |History|
+     `---'          `---'              `---'          `-------'
 
-- When the browser location changes, Hop will match the path e.g. `/users/1` -> `User 1`.
 
-- Hop provides a signal that you application consumes, this signal carries the matched routes and information about the current location.
+- (1-2) To change the browser location you call `Hop.Navigate.navigateTo`.
+- (3-5) This will return an effect that your application must run via ports.
+- When the task is run by Elm the browser location changes.
 
 Hop works with StartApp out of the box.
-
-DIAGRAM
 
 ### Hash routing
 
@@ -36,7 +72,7 @@ This is done for aesthetics and so the router is fully controlled by the hash fr
 ### [Version 2 documentation](https://github.com/sporto/hop/tree/v2)
 ### [Changelog](./docs/changelog.md)
 
-# Examples
+## Examples
 
 See [examples](https://github.com/sporto/hop/tree/master/examples). To run the example apps:
 
@@ -46,13 +82,13 @@ See [examples](https://github.com/sporto/hop/tree/master/examples). To run the e
 - Run `elm reactor`
 - Open `http://localhost:8000/Main.elm`
 
-# Testing
+## Testing
 
 - `cd ./src/Test`
 - `elm reactor`
 - Open `/localhost:8000/Main.elm`
 
-# TODO:
+## TODO:
 
 - Change hash without changing query
 - Navigate without adding to history

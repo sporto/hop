@@ -2,7 +2,7 @@
 
 ## 3.0.0
 
-- Routes are defined by using union types that take arguments
+- Typed values in routes
 - Nested routes
 - Reverse routing
 

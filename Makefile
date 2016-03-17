@@ -6,3 +6,7 @@ basic-up:
 
 full-up:
 	cd ./examples/full && elm reactor
+
+flow:
+	java -jar /usr/local/bin/plantuml.jar -ttxt assets/flow.pu
+
