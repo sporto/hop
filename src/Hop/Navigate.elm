@@ -55,7 +55,7 @@ navigateToLocation location =
       case action of
         ...
         AddQuery query ->
-          (model, Effects.map HopAction (Hop.addQuery query model.routerPayload.location))
+          (model, Effects.map HopAction (Hop.addQuery query model.location))
 
   To remove a value set the value to ""
 -}
@@ -72,7 +72,7 @@ addQuery query currentLocation =
       case action of
         ...
         SetQuery query ->
-          (model, Effects.map HopAction (Hop.setQuery query model.routerPayload.location))
+          (model, Effects.map HopAction (Hop.setQuery query model.location))
 -}
 setQuery : Query -> Location -> Effects ()
 setQuery query currentLocation =
@@ -87,7 +87,7 @@ setQuery query currentLocation =
       case action of
         ...
         RemoveQuery query ->
-          (model, Effects.map HopAction (Hop.removeQuery key model.routerPayload.location))
+          (model, Effects.map HopAction (Hop.removeQuery key model.location))
 -}
 removeQuery : String -> Location -> Effects ()
 removeQuery key currentLocation =
@@ -102,7 +102,7 @@ removeQuery key currentLocation =
       case action of
         ...
         ClearQuery ->
-          (model, Effects.map HopAction (Hop.clearQuery model.routerPayload.location))
+          (model, Effects.map HopAction (Hop.clearQuery model.location))
 -}
 clearQuery : Location -> Effects ()
 clearQuery currentLocation =

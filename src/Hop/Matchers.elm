@@ -26,11 +26,13 @@ parserWithBeginningAndEnd parser =
 {-|
 Create a matcher with one static segment.
 
-    match1 Users "/users"
+    type Route = Books
+
+    match1 Books "/books"
 
 This will match exactly
 
-    "/user"
+    "/books"
 -}
 match1 : route -> String -> PathMatcher route
 match1 constructor segment1 =
@@ -52,11 +54,13 @@ match1 constructor segment1 =
 {-|
 Create a matcher with one static segment and one dynamic parameter.
 
-    match2 User "/tokens/" str
+    type Route = Book Str
+
+    match2 Book "/books/" str
 
 This will match a path like
 
-    "/tokens/abc"
+    "/books/abc"
 -}
 match2 : (param1 -> route) -> String -> Parser param1 -> PathMatcher route
 match2 constructor segment1 parser1 =
@@ -74,11 +78,13 @@ match2 constructor segment1 parser1 =
 
 {-| Create a matcher with three segments.
 
-    match3 UserStatus "/users/" int "/status"
+    type Route = BookReviews Int
+
+    match3 BookReviews "/books/" int "/reviews"
 
 This will match a path like
 
-    "/users/1/status"
+    "/books/1/reviews"
 -}
 match3 : (param1 -> route) -> String -> Parser param1 -> String -> PathMatcher route
 match3 constructor segment1 parser1 segment2 =
@@ -97,11 +103,13 @@ match3 constructor segment1 parser1 segment2 =
 
 {-| Create a matcher with four segments.
 
-    match4 UserToken "/users/" int "/token/" str
+    type Route = BookChapter Int String
+
+    match4 BookChapter "/books/" int "/chapters/" str
 
 This will match a path like
 
-    "/users/1/token/abc"
+    "/books/1/chapters/abc"
 
 -}
 match4 : (param1 -> param2 -> route) -> String -> Parser param1 -> String -> Parser param2 -> PathMatcher route
@@ -124,6 +132,9 @@ match4 constructor segment1 parser1 segment2 parser2 =
 
 {-| Create a matcher with two segments and nested routes
 
+    type CategoriesRoute = Games | Business | Product Int
+    type Route = ShopCategories CategoriesRoute
+
     nested1 ShopCategories "/shop" categoriesRoutes
 
 This could match paths like (depending on the nested routes)
@@ -131,7 +142,6 @@ This could match paths like (depending on the nested routes)
     "/shop/games"
     "/shop/business"
     "/shop/product/1"
-    "/shop/.."
 
 -}
 nested1 : (subRoute -> route) -> String -> List (PathMatcher subRoute) -> PathMatcher route
@@ -153,12 +163,15 @@ nested1 constructor segment1 children =
 
 {-| Create a matcher with two segments and nested routes
 
-  nested2 UserComments "/users/" int commentRoutes
+    type ReviewsRoutes = Reviews | Review Int
+    type Route = BookReviews ReviewsRoutes
+
+    nested2 BookReviews "/books/" int reviewsRoutes
 
 This could match paths like (depending on the nested routes)
 
-    "/users/1/comments"
-    "/users/1/comments/3"
+    "/books/1/reviews"
+    "/books/1/reviews/3"
 
 -}
 nested2 : (param1 -> subRoute -> route) -> String -> Parser param1 -> List (PathMatcher subRoute) -> PathMatcher route
@@ -184,7 +197,7 @@ nested2 constructor segment1 parser1 children =
 
 {-| Parameter matcher that matches an integer
 
-  match2 User "/users/" int
+    match2 User "/users/" int
 -}
 int : Parser Int
 int =
@@ -193,7 +206,7 @@ int =
 
 {-| Parameter matcher that matches a string, except /
 
-  match2 Token "/token/" str
+    match2 Token "/token/" str
 -}
 str : Parser String
 str =
@@ -206,14 +219,14 @@ str =
 
 
 {-|
-Matches a path e.g. "/users/1/comments/2"
-Returns the matching route
+Matches a path e.g. "/users/1/comments/2".
+Returns the matching route.
 
-  matchPath routes NotFound "/users/1/comments/2"
+    matchPath matchers NotFound "/users/1/comments/2"
 
-  ==
+    ==
 
-  User 1 (Comment 2)
+    User 1 (Comment 2)
 -}
 matchPath : List (PathMatcher route) -> route -> String -> route
 matchPath routeParsers notFoundAction path =
@@ -239,32 +252,40 @@ matchPath routeParsers notFoundAction path =
 
 
 {-|
-Matches a complete location including path and query e.g. "/users/1/post?a=1"
-Returns a tuple e.g. (route, query)
+Matches a complete location including path and query e.g. "/users/1/post?a=1".
+Returns a tuple e.g. (route, location).
 
-  matchLocation routes NotFound "/users/1?a=1"
+    matchLocation matchers NotFound "/users/1?a=1"
 
-  ==
+    ==
 
-  (User 1, Dict.singleton "a" "1")
+    (User 1, location)
 -}
 matchLocation : List (PathMatcher route) -> route -> String -> ( route, Location )
-matchLocation routeParsers notFoundAction location =
+matchLocation routeParsers notFoundAction pathWithQuery =
   let
-    url =
-      Hop.Location.parse location
+    location =
+      Hop.Location.parse pathWithQuery
 
     path =
-      "/" ++ (String.join "/" url.path)
+      "/" ++ (String.join "/" location.path)
 
     matchedAction =
       matchPath routeParsers notFoundAction path
   in
-    ( matchedAction, url )
+    ( matchedAction, location )
 
 
 {-|
-Generates a path from a matcher
+Generates a path from a matcher.
+The second parameters should be a list of strings.
+You need to pass one string for each dynamic parameter that this route takes.
+
+    matcherToPath bookReviewMatcher ["1", "2"]
+
+    ==
+
+    "/books/1/reviews/2"
 -}
 matcherToPath : PathMatcher a -> List String -> String
 matcherToPath matcher inputs =
