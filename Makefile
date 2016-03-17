@@ -22,7 +22,7 @@ test-basic:
 test-full:
 	cd ./examples/full && elm make Main.elm
 
-test-prepare:
+ci-prepare:
 	node --version
 	npm --version
 	npm install -g elm
