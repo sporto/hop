@@ -2,8 +2,9 @@
 
 ## 3.0.0
 
-- Routing is defined by using union types
+- Routes are defined by using union types that take arguments
 - Nested routes
+- Reverse routing
 
 ## 2.1.1
 

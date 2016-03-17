@@ -1,49 +1,76 @@
 # Navigating
 
-## Changing the query string
+## Changing the location
 
-__Add actions for changing the query string__
+Use `Hop.Navigate.navigateTo` for changing the browser location.
+
+Add actions for navigation"
 
 ```elm
 type Action
   = ...
-  | AddQuery (Dict.Dict String String)
-  | SetQuery (Dict.Dict String String)
-  | ClearQuery
+  | HopAction ()
+  | NavigateTo String
 ```
 
-__Change update to respond to these actions__
+In your view:
+
+```elm
+button [ onClick address (NavigateTo "/users/1") ] [ text "User" ]
+```
+
+Then in update:
 
 ```elm
 update action model =
   case action of
     ...
-    AddQuery query ->
-      (model, Effects.map HopAction (Hop.addQuery query model.routerPayload.url))
-    SetQuery query ->
-      (model, Effects.map HopAction (Hop.setQuery query model.routerPayload.url))
-    ClearQuery ->
-      (model, Effects.map HopAction (Hop.clearQuery model.routerPayload.url))
+    
+    NavigateTo path ->
+      ( model, Effects.map HopAction (navigateTo path) )
+
+    HopAction () ->
+      ( model, Effects.none )
 ```
 
-__Call these actions from your views__
+## Changing the query string
+
+Add actions for changing the query string:
+
+```elm
+type Action
+  = ...
+  | HopAction ()
+  | AddQuery (Dict.Dict String String)
+  | SetQuery (Dict.Dict String String)
+  | ClearQuery
+```
+
+Change update to respond to these actions:
+
+```elm
+import Hop.Navigate exposing(addQuery, setQuery, clearQuery)
+
+update action model =
+  case action of
+    ...
+
+    AddQuery query ->
+      (model, Effects.map HopAction (addQuery query model.location))
+
+    SetQuery query ->
+      (model, Effects.map HopAction (setQuery query model.location))
+
+    ClearQuery ->
+      (model, Effects.map HopAction (clearQuery model.location))
+```
+
+You need to pass the current `location` record to these functions. Hop will use that record to generate the new path.
+
+Call these actions from your views:
 
 ```elm
 button [ onClick address (SetQuery (Dict.singleton "color" "red")) ] [ text "Set query" ]
 ```
 
-### [`Hop.addQuery`](http://package.elm-lang.org/packages/sporto/hop/latest/Hop#addQuery)
-
-Adds the given Dict to the existing query.
-
-### [`Hop.setQuery`](http://package.elm-lang.org/packages/sporto/hop/latest/Hop#setQuery)
-
-Replaces the existing query with the given Dict.
-
-### [`Hop.removeQuery`](http://package.elm-lang.org/packages/sporto/hop/latest/Hop#removeQuery)
-
-Removes that key / value from the query string.
-
-### [`Hop.clearQuery`](http://package.elm-lang.org/packages/sporto/hop/latest/Hop#clearQuery)
-
-Removes the whole query string.
+See details of available functions at <http://package.elm-lang.org/packages/sporto/hop/latest/Hop>

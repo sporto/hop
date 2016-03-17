@@ -60,8 +60,8 @@ navigateToLocation location =
   To remove a value set the value to ""
 -}
 addQuery : Query -> Location -> Effects ()
-addQuery query currentUrl =
-  currentUrl
+addQuery query currentLocation =
+  currentLocation
     |> Location.addQuery query
     |> navigateToLocation
 
@@ -75,8 +75,8 @@ addQuery query currentUrl =
           (model, Effects.map HopAction (Hop.setQuery query model.routerPayload.location))
 -}
 setQuery : Query -> Location -> Effects ()
-setQuery query currentUrl =
-  currentUrl
+setQuery query currentLocation =
+  currentLocation
     |> Location.setQuery query
     |> navigateToLocation
 
@@ -90,8 +90,8 @@ setQuery query currentUrl =
           (model, Effects.map HopAction (Hop.removeQuery key model.routerPayload.location))
 -}
 removeQuery : String -> Location -> Effects ()
-removeQuery key currentUrl =
-  currentUrl
+removeQuery key currentLocation =
+  currentLocation
     |> Location.removeQuery key
     |> navigateToLocation
 
@@ -105,7 +105,7 @@ removeQuery key currentUrl =
           (model, Effects.map HopAction (Hop.clearQuery model.routerPayload.location))
 -}
 clearQuery : Location -> Effects ()
-clearQuery currentUrl =
-  currentUrl
+clearQuery currentLocation =
+  currentLocation
     |> Location.clearQuery
     |> navigateToLocation
