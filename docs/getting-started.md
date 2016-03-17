@@ -4,39 +4,47 @@
 
 ```elm
 import Hop
-import Hop.Builder exposing (..)
-import Hop.Navigation exposing (..)
-import Hop.Types exposing (..)
+import Hop.Matchers exposing (match1, match2)
+import Hop.Navigate exposing (navigateTo)
+import Hop.Types exposing (Router, PathMatcher, Location)
 ```
 
 ## Define your routes as union types
 
 ```elm
-type AppRoute
+type Route
   = HomeRoute
   | UserRoute int
   | NotFoundRoute
 ```
 
-## Define route matchers
+## Define path matchers
 
 This will be used to match the browser location
 
 ```elm
-routeHome : RouteMatcher AppRoute
-routeHome =
-  route1 HomeRoute "/"
+matcherHome : PathMatcher Route
+matcherHome =
+  match1 HomeRoute "/"
 
-routeUser : RouteMatcher AppRoute
-routeUser =
-  route2 UserRoute "/users" int
+matcherUser : PathMatcher Route
+matcherUser =
+  match2 UserRoute "/users" int
 
-routes : List (RouteMatcher AppRoute)
-routes =
-  [ routeHome
-  , routeUser
+matchers : List (PathMatcher Route)
+matchers =
+  [ matcherHome
+  , matcherUser
   ]
 ```
+
+For example given a path like "/users/1" then
+
+```elm
+matchPath matchers NotFoundRoute "/users/1"
+```
+
+Will return `UserRoute 1`. If no match is found this will return `NotFoundRoute`.
 
 ## Main actions
 
@@ -44,53 +52,54 @@ In your main application actions define three extra actions
 
 ```elm
 type Action
-  = HopAction ()
-  | ApplyRoute ( AppRoute, Url )
-  | NavigateTo String
+  = ...
+  | ApplyRoute ( Route, Location )
 ```
 
-- HopAction will be called when a location change happens, this action doesn't have any significance but needs to be accounted for.
-- ApplyRoute will be called when a route matches. ApplyRoute is called with a tuple `(Route, Url)`.
-- NavigateTo is used for navigating to a location.
-
+- `ApplyRoute` will be called when a path matches. `ApplyRoute` will be called with a tuple `(Route, Location)`.
 
 ## Create the router
 
 ```elm
-router : Router Action
+router : Router Route
 router =
   Hop.new
-    { routes = routes
-    , action = ApplyRoute
+    { matchers = matchers
     , notFound = NotFoundRoute
     }
 ```
 
-- `routes` is your list of routes defined above.
-- `action` is the action that will be called when a location  changes
-- `notFound` is a route that will be returned when the location doesn't match any known route
+- `matchers` is your list of matchers defined above.
+- `notFound` is a route that will be returned when the path doesn't match any known route.
 
 `Hop.new` will give you back a `Hop.Router` record:
 
--------------
-HERE
-&&&&
-
 ```elm
 {
-  signal,
-  payload,
-  run
+  run,
+  signal
 }
 ```
 
-`signal` is the signal that will carry changes when the browser location changes.
+- `signal` is the signal that will carry changes when the browser location changes. This signal has the type `(Route, Location)`.
 
-`payload` is an initial payload when the router is created.
+- `run` is a task to match the initial route, this needs to be send to a port, more details later.
 
-`run` is a task to match the initial route, this needs to be send to a port, more details later.
+## Map the router signal
 
-### Add the router signal to StartApp inputs
+The router signal carries `(Route, Location)`. Map this signal to an application action:
+
+```elm
+type Action
+  ...
+  | ApplyRoute ( Route, Location )
+
+taggedRouterSignal : Signal Action
+taggedRouterSignal =
+  Signal.map ApplyRoute router.signal
+```
+
+## Add the router signal to StartApp inputs
 
 Your start app configuration should include the router signal:
 
@@ -100,61 +109,58 @@ app =
     init = init,
     update = update,
     view = view,
-    inputs = [router.signal]
+    inputs = [taggedRouterSignal]
   }
 ```
 
 This will allow the router to send signal to your application when the location changes.
 
-### Add fields to your model
+## Add fields to your model
 
-Your model needs to store the __router payload__ and an attribute for the __current view__ to display:
+Your model needs to store the current location and route.
 
 ```elm
 type alias Model {
-  routerPayload: Hop.Payload,
-  currentView: String
+  location: Location,
+  route: Route
 }
 ```
 
-See more details about `Hop.Payload` below.
+See more details about `Hop.Types.Location` below.
 
-### Add update actions
+## Add update actions
 
-Add entries to update for actions related to routing:
+Add entries to `update` for actions related to routing:
 
 ```elm
 update action model =
   case action of
-    ShowUsers payload ->
-      ({model | currentView = "users", routerPayload = payload}, Effects.none)
+    ...
+
+    ApplyRoute ( route, location ) ->
+      ( { model | route = route, location = location }, Effects.none )
 ```
 
-It is important that you update the router payload, this is used to store the current url and the current router parameters.
+- `ApplyRoute` will be called when the browser location changes (manually or using `navigateTo`). This action has the route that matches the path and a `Location` record. Set both values on your model.
 
-### Wire up your views
+It is important that you update the `location`, this is needed for matching a query string.
 
-Your views need to decide what to show. Use the attribute `model.currentView` for this. E.g.
+
+## Wire up your views
+
+Your views need to decide what to show. Use the attribute `model.route` for this. E.g.
 
 ```elm
-subView address model =
-  case model.currentView of
-    "users" ->
-      usersView address model
-    "user" ->
-      userView address model
+view address model =
+  case model.route of
+    HomeRoute ->
+      homeView address model
+    UserRoute id ->
+      userView address model id
+    ...
 ```
 
-Get information about the current route from `routerPayload`. e.g.
-
-```elm
-userId =
-  model.routerPayload.params
-    |> Dict.get "userId"
-    |> Maybe.withDefault ""
-```
-
-### Run the router
+## Run the router
 
 In order to match the initial route when the application is loaded you will need to create a port specifically for this.
 
@@ -164,31 +170,20 @@ port routeRunTask =
   router.run
 ```
 
-## About `Hop.Payload`
+## About `Hop.Types.Location`
 
-Your actions are called with a `Payload` record. This record has:
+`router.signal` has a type of `(Route, Location)`. Location is a record that has:
 
 ```elm
 {
-  params: Dict.Dict String String,
-  url: Hop.Url
+  path: List String,
+  query: Hop.Types.Query
 }
 ```
 
-`params` Is dictionary of String String.
+- `path` is an array of string that has the current path e.g. `["users", "1"]` for `"/users/1"`
 
-When a route matches the route params will be populated in this dictionary. Query string values will also be added here.
-
-E.g. given the route `"/users/:userId/projects/:projectId"`,
-when the current url is `#/users/1/projects/2?color=red`, params will contain:
-
-```elm
-Dict {
-  "userId" => "1",
-  "projectId" => "2",
-  "color" => "red"
-}
-```
+`query` Is dictionary of String String. You can access this information in your views to show the content.
 
 ## Navigation
 
@@ -204,16 +199,19 @@ Note that you must add the `#` in this case.
 
 ### 2. Using effects
 
-__Add two actions__
+__Add two application actions__
 
 ```elm
 type Action
   = ...
-  | HopAction Hop.Action
+  | ApplyRoute ( Route, Location )
+  | HopAction ()
   | NavigateTo String
 ```
 
-HopAction is necessary so effects from the router can be run.
+- `HopAction` will be used when a location change happens, this action doesn't have any significance but needs to be accounted for.
+
+- `NavigateTo` will be used for navigating to a location.
 
 __Call the action from your view__
 
@@ -221,7 +219,7 @@ __Call the action from your view__
 button [ onClick address (NavigateTo "/users/1") ] [ text "User" ]
 ```
 
-You don't need to add `#` in this case.
+You don't need to add `#` in this case. Hop also provides reverse routing helpers so you don't need to manually write the path.
 
 __Respond to the action in `update`__
 
@@ -229,56 +227,17 @@ __Respond to the action in `update`__
 update action model =
   case action of
     ...
+    
     NavigateTo path ->
-      (model, Effects.map HopAction (Hop.navigateTo path))
+      ( model, Effects.map HopAction (navigateTo path) )
+
+    HopAction () ->
+      ( model, Effects.none )
 ```
 
-`Hop.navigateTo` will respond with an effect that needs to be run by your application. When this effect is run the hash will change. After that your application will receive a location change signal as described before.
+`NavigateTo` sends a selected path to `Hop.Navigate.navigateTo`. `navigateTo` will return an effect that needs to be run by your application. When this effect is run the hash will change. 
 
-## Changing the query string
+After that your application will receive a location change signal as described before. Tag this effect with an action of your own e.g. `HopAction`.
 
-__Add actions for changing the query string__
+`HopAction` will be called after the `navigateTo` effect is run. This effect doesn't return anything significant, thus `()`.
 
-```elm
-type Action
-  = ...
-  | AddQuery (Dict.Dict String String)
-  | SetQuery (Dict.Dict String String)
-  | ClearQuery
-```
-
-__Change update to respond to these actions__
-
-```elm
-update action model =
-  case action of
-    ...
-    AddQuery query ->
-      (model, Effects.map HopAction (Hop.addQuery query model.routerPayload.url))
-    SetQuery query ->
-      (model, Effects.map HopAction (Hop.setQuery query model.routerPayload.url))
-    ClearQuery ->
-      (model, Effects.map HopAction (Hop.clearQuery model.routerPayload.url))
-```
-
-__Call these actions from your views__
-
-```elm
-button [ onClick address (SetQuery (Dict.singleton "color" "red")) ] [ text "Set query" ]
-```
-
-### [`Hop.addQuery`](http://package.elm-lang.org/packages/sporto/hop/latest/Hop#addQuery)
-
-Adds the given Dict to the existing query.
-
-### [`Hop.setQuery`](http://package.elm-lang.org/packages/sporto/hop/latest/Hop#setQuery)
-
-Replaces the existing query with the given Dict.
-
-### [`Hop.removeQuery`](http://package.elm-lang.org/packages/sporto/hop/latest/Hop#removeQuery)
-
-Removes that key / value from the query string.
-
-### [`Hop.clearQuery`](http://package.elm-lang.org/packages/sporto/hop/latest/Hop#clearQuery)
-
-Removes the whole query string.

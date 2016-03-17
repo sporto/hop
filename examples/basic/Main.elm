@@ -128,8 +128,8 @@ init =
   ( newModel, Effects.none )
 
 
-taggedRoutedSignal : Signal Action
-taggedRoutedSignal =
+taggedRouterSignal : Signal Action
+taggedRouterSignal =
   Signal.map ApplyRoute router.signal
 
 
@@ -139,7 +139,7 @@ app =
     { init = init
     , update = update
     , view = view
-    , inputs = [ taggedRoutedSignal ]
+    , inputs = [ taggedRouterSignal ]
     }
 
 
