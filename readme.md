@@ -86,9 +86,12 @@ See [examples](https://github.com/sporto/hop/tree/master/examples). To run the e
 
 ## Testing
 
-- `cd ./src/Test`
-- `elm reactor`
-- Open `/localhost:8000/Main.elm`
+```bash
+cd ./test
+elm package install -y
+npm i
+npm test
+```
 
 ## TODO:
 
