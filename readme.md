@@ -1,5 +1,7 @@
 # Hop: A router for Elm SPAs
 
+[ ![Codeship Status for sporto/hop](https://codeship.com/projects/dd1caad0-cea9-0133-1fa5-5ed74b30bb55/status?branch=master)](https://codeship.com/projects/141023)
+
 ![alt Hop](https://raw.githubusercontent.com/sporto/hop/master/assets/logo.png)
 
 ## How this works
