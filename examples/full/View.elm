@@ -5,7 +5,7 @@ import Html.Events exposing (onClick)
 import Html.Attributes exposing (href, style)
 import Models exposing (..)
 import Actions exposing (..)
-import Routing exposing (..)
+import Routing
 import Languages.View
 import Languages.Routing
 
@@ -28,11 +28,11 @@ menu address model =
     []
     [ div
         []
-        [ menuLink address HomeRoute "Home"
+        [ menuLink address Routing.HomeRoute "Home"
         , text "|"
-        , menuLink address (LanguagesRoutes Languages.Routing.LanguagesRoute) "Languages"
+        , menuLink address (Routing.LanguagesRoutes Languages.Routing.LanguagesRoute) "Languages"
         , text "|"
-        , menuLink address AboutRoute "About"
+        , menuLink address Routing.AboutRoute "About"
         ]
     ]
 
@@ -45,14 +45,14 @@ menuBtn address action label =
     ]
 
 
-menuLink : Signal.Address Action -> Route -> String -> Html
+menuLink : Signal.Address Action -> Routing.Route -> String -> Html
 menuLink address route label =
   let
     path =
-      reverse route
+      Routing.reverse route
 
     action =
-      RoutingAction (NavigateTo path)
+      RoutingAction (Routing.NavigateTo path)
   in
     a
       [ href "//:javascript"
@@ -64,20 +64,20 @@ menuLink address route label =
 pageView : Signal.Address Action -> AppModel -> Html
 pageView address model =
   case model.routing.route of
-    HomeRoute ->
+    Routing.HomeRoute ->
       div
         []
         [ h2 [] [ text "Home" ]
         , div [] [ text "Click on Languages to start routing" ]
         ]
 
-    AboutRoute ->
+    Routing.AboutRoute ->
       div
         []
         [ h2 [] [ text "About" ]
         ]
 
-    LanguagesRoutes languagesRoute ->
+    Routing.LanguagesRoutes languagesRoute ->
       let
         viewModel =
           { languages = model.languages
@@ -86,7 +86,7 @@ pageView address model =
       in
         Languages.View.view (Signal.forwardTo address LanguagesAction) viewModel
 
-    NotFoundRoute ->
+    Routing.NotFoundRoute ->
       notFoundView address model
 
 

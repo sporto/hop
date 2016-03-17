@@ -4,7 +4,7 @@
   "description": "## TODO:",
   "main": "elm.js",
   "dependencies": {
-
+    "elm-test": "^0.16.0"
   },
   "devDependencies": {},
   "scripts": {

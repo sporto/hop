@@ -6,7 +6,7 @@ import Hop.Types exposing (..)
 import Hop.Navigate exposing (navigateTo, addQuery, setQuery)
 import Languages.Models exposing (..)
 import Languages.Actions exposing (..)
-import Languages.Routing exposing (..)
+import Languages.Routing
 
 
 type alias UpdateModel =
@@ -21,7 +21,7 @@ update action model =
     Show id ->
       let
         path =
-          reverseWithPrefix (LanguageRoute id)
+          Languages.Routing.reverseWithPrefix (Languages.Routing.LanguageRoute id)
 
         navAction =
           navigateTo path
@@ -31,7 +31,7 @@ update action model =
     Edit id ->
       let
         path =
-          reverseWithPrefix (LanguageEditRoute id)
+          Languages.Routing.reverseWithPrefix (Languages.Routing.LanguageEditRoute id)
 
         navAction =
           navigateTo path

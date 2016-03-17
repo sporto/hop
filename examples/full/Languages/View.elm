@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (href, style)
 import Languages.Models exposing (LanguageId, Language)
 import Languages.Actions exposing (..)
-import Languages.Routing exposing (..)
+import Languages.Routing
 import Languages.Filter
 import Languages.List
 import Languages.Show
@@ -38,7 +38,7 @@ view address model =
 subView : Signal.Address Action -> ViewModel -> Html
 subView address model =
   case model.routing.route of
-    LanguageRoute languageId ->
+    Languages.Routing.LanguageRoute languageId ->
       let
         maybeLanguage =
           getLanguage model.languages languageId
@@ -50,7 +50,7 @@ subView address model =
           Nothing ->
             notFoundView address model
 
-    LanguageEditRoute languageId ->
+    Languages.Routing.LanguageEditRoute languageId ->
       let
         maybeLanguage =
           getLanguage model.languages languageId
@@ -62,10 +62,10 @@ subView address model =
           _ ->
             notFoundView address model
 
-    LanguagesRoute ->
+    Languages.Routing.LanguagesRoute ->
       emptyView
 
-    NotFoundRoute ->
+    Languages.Routing.NotFoundRoute ->
       notFoundView address model
 
 

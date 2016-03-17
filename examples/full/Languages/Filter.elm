@@ -6,7 +6,7 @@ import Html.Attributes exposing (href, style)
 import Dict
 import Languages.Models exposing (..)
 import Languages.Actions exposing (..)
-import Languages.Routing exposing (..)
+import Languages.Routing
 
 
 styles : Html.Attribute

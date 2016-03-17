@@ -1,7 +1,7 @@
 module Update (..) where
 
 import Effects exposing (Effects, Never)
-import Routing exposing (..)
+import Routing
 import Actions exposing (..)
 import Models exposing (..)
 import Languages.Update
