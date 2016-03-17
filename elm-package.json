@@ -1,5 +1,5 @@
 {
-    "version": "2.1.2",
+    "version": "3.0.0",
     "summary": "A router for SPAs in Elm",
     "repository": "https://github.com/sporto/hop.git",
     "license": "MIT",

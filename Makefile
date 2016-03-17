@@ -27,17 +27,17 @@ ci-prepare:
 	npm --version
 	npm install -g elm
 
-	echo "============================"
-	echo "Installing deps for test"
+	@echo "============================"
+	@echo "Installing deps for test"
 	cd ./test && npm install
 	cd ./test && elm package install -y
 
-	echo "============================"
-	echo "Installing deps for basic app"
+	@echo "============================"
+	@echo "Installing deps for basic app"
 	cd ./examples/basic && elm package install -y
 
-	echo "============================"
-	echo "Installing deps for full app"
+	@echo "============================"
+	@echo "Installing deps for full app"
 	cd ./examples/full && elm package install -y
 
 test:
