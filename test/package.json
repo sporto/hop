@@ -1,0 +1,14 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "elm.js",
+  "scripts": {
+    "test": "elm-test TestRunner.elm "
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "elm-test": "^0.16.0"
+  }
+}

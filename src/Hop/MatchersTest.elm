@@ -160,7 +160,7 @@ matcherToPathTest =
       [ ( "Users", usersRoute, [], "/users" )
       , ( "One user", userRoute, [ "2" ], "/users/2" )
       , ( "Too many inputs", userRoute, [ "2", "3" ], "/users/2" )
-      , ( "User status", userStatusRoute, [ "3" ], "/users/3/statusAA" )
+      , ( "User status", userStatusRoute, [ "3" ], "/users/3/status" )
       ]
 
     run ( testCase, route, params, expected ) =

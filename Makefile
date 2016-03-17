@@ -13,6 +13,9 @@ flow:
 docs:
 	elm make --docs=documentation.json
 
+test-lib:
+	cd ./test && npm test
+
 test-basic:
 	cd ./examples/basic && elm make Main.elm
 
@@ -20,6 +23,7 @@ test-full:
 	cd ./examples/full && elm make Main.elm
 
 test:
+	make test-hop
 	make test-basic
 	make test-full
 

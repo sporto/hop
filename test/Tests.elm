@@ -1,4 +1,4 @@
-module Test.Tests (..) where
+module Tests (..) where
 
 import ElmTest exposing (..)
 import Hop.LocationTest
