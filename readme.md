@@ -95,7 +95,8 @@ npm test
 
 ## TODO:
 
-- Change hash without changing query
+- Navigate needs functions to:
+  - Change path only (without changing the query)
 - Navigate without adding to history
 - Push state - Support routes without hashes
 - Redirects e.g. "/" -> "/dashboard"
