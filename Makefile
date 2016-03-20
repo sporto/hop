@@ -20,7 +20,7 @@ test-basic:
 	cd ./examples/basic && elm make Main.elm
 
 test-full:
-	cd ./examples/full && elm make Main.elm
+	cd ./examples/full && elm make src/Main.elm && rm index.html
 
 ci-prepare:
 	node --version
