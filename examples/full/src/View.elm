@@ -2,7 +2,7 @@ module View (..) where
 
 import Html exposing (..)
 import Html.Events exposing (onClick)
-import Html.Attributes exposing (href, style)
+import Html.Attributes exposing (class, href, style)
 import Models exposing (..)
 import Actions exposing (..)
 import Routing
@@ -25,7 +25,7 @@ view address model =
 menu : Signal.Address Action -> AppModel -> Html
 menu address model =
   div
-    []
+    [ class "p2 white bg-black" ]
     [ div
         []
         [ menuLink address Routing.HomeRoute "Home"
@@ -56,6 +56,7 @@ menuLink address route label =
   in
     a
       [ href "//:javascript"
+      , class "white px2"
       , onClick address action
       ]
       [ text label ]

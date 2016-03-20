@@ -2,7 +2,7 @@ module Languages.Filter (..) where
 
 import Html exposing (..)
 import Html.Events exposing (onClick)
-import Html.Attributes exposing (href, style)
+import Html.Attributes exposing (class, href, style)
 import Dict
 import Languages.Models exposing (..)
 import Languages.Actions exposing (..)
@@ -46,5 +46,5 @@ view address model =
 btn : Signal.Address Action -> String -> Action -> Html
 btn address label action =
   button
-    [ onClick address action ]
+    [ class "btn btn-primary btn-small inline-block mr1", onClick address action ]
     [ text label ]

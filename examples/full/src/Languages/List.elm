@@ -2,7 +2,7 @@ module Languages.List (..) where
 
 import Html exposing (..)
 import Html.Events exposing (onClick)
-import Html.Attributes exposing (href, style)
+import Html.Attributes exposing (class, href, style)
 import Dict
 import Languages.Models exposing (..)
 import Languages.Actions exposing (..)
@@ -80,5 +80,5 @@ rowView address language =
 actionBtn : Signal.Address Action -> Action -> String -> Html
 actionBtn address action label =
   button
-    [ onClick address action ]
+    [ class "regular btn btn-small", onClick address action ]
     [ text label ]

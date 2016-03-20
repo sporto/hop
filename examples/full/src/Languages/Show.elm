@@ -18,7 +18,7 @@ view address language =
   div
     [ styles ]
     [ h2 [] [ text language.name ]
-    , img [ src ("images/" ++ language.image ++ ".png") ] []
+    , img [ src ("/images/" ++ language.image ++ ".png") ] []
     , tags address language
     ]
 

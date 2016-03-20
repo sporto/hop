@@ -80,9 +80,7 @@ See [examples](https://github.com/sporto/hop/tree/master/examples). To run the e
 
 - Clone this repo
 - Go to example folder (e.g. `examples/basic` or `examples/full`)
-- Install packages `elm package install -y`
-- Run `elm reactor`
-- Open `http://localhost:8000/Main.elm`
+- Follow the readme in that folder
 
 ## Testing
 
