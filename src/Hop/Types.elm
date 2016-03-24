@@ -12,6 +12,7 @@ module Hop.Types (Config, Router, PathMatcher, Query, Location, newLocation, new
 import Dict
 import Task exposing (Task)
 import Combine exposing (Parser)
+import Effects exposing (Effects)
 
 
 {-| A Dict that holds query parameters
@@ -47,7 +48,8 @@ type alias PathMatcher action =
 {-| Configuration input for Hop.new
 -}
 type alias Config route =
-  { matchers : List (PathMatcher route)
+  { hash : Bool
+  , matchers : List (PathMatcher route)
   , notFound : route
   }
 

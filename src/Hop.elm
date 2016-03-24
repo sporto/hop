@@ -10,6 +10,7 @@ module Hop (new) where
 import History
 import Hop.Matchers as Matchers
 import Hop.Types exposing (..)
+import Hop.Navigate exposing (..)
 
 
 ---------------------------------------

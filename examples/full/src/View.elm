@@ -5,9 +5,9 @@ import Html.Events exposing (onClick)
 import Html.Attributes exposing (class, href, style)
 import Models exposing (..)
 import Actions exposing (..)
-import Routing
+import Routing.Config exposing (reverse)
 import Languages.View
-import Languages.Routing
+import Languages.Models
 
 
 -- TODO use reverse routing
@@ -28,11 +28,11 @@ menu address model =
     [ class "p2 white bg-black" ]
     [ div
         []
-        [ menuLink address Routing.HomeRoute "Home"
+        [ menuLink address HomeRoute "Home"
         , text "|"
-        , menuLink address (Routing.LanguagesRoutes Languages.Routing.LanguagesRoute) "Languages"
+        , menuLink address (LanguagesRoutes Languages.Models.LanguagesRoute) "Languages"
         , text "|"
-        , menuLink address Routing.AboutRoute "About"
+        , menuLink address AboutRoute "About"
         ]
     ]
 
@@ -45,14 +45,14 @@ menuBtn address action label =
     ]
 
 
-menuLink : Signal.Address Action -> Routing.Route -> String -> Html
+menuLink : Signal.Address Action -> Route -> String -> Html
 menuLink address route label =
   let
     path =
-      Routing.reverse route
+      reverse route
 
     action =
-      RoutingAction (Routing.NavigateTo path)
+      NavigateTo path
   in
     a
       [ href "//:javascript"
@@ -64,30 +64,31 @@ menuLink address route label =
 
 pageView : Signal.Address Action -> AppModel -> Html
 pageView address model =
-  case model.routing.route of
-    Routing.HomeRoute ->
+  case model.route of
+    HomeRoute ->
       div
         []
         [ h2 [] [ text "Home" ]
         , div [] [ text "Click on Languages to start routing" ]
         ]
 
-    Routing.AboutRoute ->
+    AboutRoute ->
       div
         []
         [ h2 [] [ text "About" ]
         ]
 
-    Routing.LanguagesRoutes languagesRoute ->
+    LanguagesRoutes languagesRoute ->
       let
         viewModel =
           { languages = model.languages
-          , routing = model.routing.languagesRouting
+          , route = languagesRoute
+          , location = model.location
           }
       in
         Languages.View.view (Signal.forwardTo address LanguagesAction) viewModel
 
-    Routing.NotFoundRoute ->
+    NotFoundRoute ->
       notFoundView address model
 
 

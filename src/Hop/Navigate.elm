@@ -5,7 +5,7 @@ module Hop.Navigate (navigateTo, addQuery, setQuery, removeQuery, clearQuery) wh
 @docs navigateTo, addQuery, removeQuery, setQuery, clearQuery
 -}
 
-import Effects exposing (Effects, Never)
+import Effects exposing (Effects)
 import History
 import Hop.Location as Location
 import Hop.Types exposing (..)
@@ -21,11 +21,11 @@ import Hop.Types exposing (..)
         NavigateTo path ->
           (model, Effects.map HopAction (navigateTo path))
 -}
-navigateTo : String -> Effects ()
-navigateTo route =
+navigateTo : Config route -> String -> Effects ()
+navigateTo config route =
   route
     |> Location.locationFromUser
-    |> navigateToLocation
+    |> navigateToLocation config
 
 
 
@@ -36,10 +36,10 @@ Change the location using a Location record
 -}
 
 
-navigateToLocation : Location -> Effects ()
-navigateToLocation location =
+navigateToLocation : Config route -> Location -> Effects ()
+navigateToLocation config location =
   location
-    |> Location.locationToFullPath
+    |> Location.locationToFullPath config.hash
     |> History.setPath
     |> Effects.task
 
@@ -59,11 +59,11 @@ navigateToLocation location =
 
   To remove a value set the value to ""
 -}
-addQuery : Query -> Location -> Effects ()
-addQuery query currentLocation =
+addQuery : Config route -> Query -> Location -> Effects ()
+addQuery config query currentLocation =
   currentLocation
     |> Location.addQuery query
-    |> navigateToLocation
+    |> navigateToLocation config
 
 
 {-| Set query string values (removes existing values)
@@ -74,11 +74,11 @@ addQuery query currentLocation =
         SetQuery query ->
           (model, Effects.map HopAction (Hop.setQuery query model.location))
 -}
-setQuery : Query -> Location -> Effects ()
-setQuery query currentLocation =
+setQuery : Config route -> Query -> Location -> Effects ()
+setQuery config query currentLocation =
   currentLocation
     |> Location.setQuery query
-    |> navigateToLocation
+    |> navigateToLocation config
 
 
 {-| Remove one query string value
@@ -89,11 +89,11 @@ setQuery query currentLocation =
         RemoveQuery query ->
           (model, Effects.map HopAction (Hop.removeQuery key model.location))
 -}
-removeQuery : String -> Location -> Effects ()
-removeQuery key currentLocation =
+removeQuery : Config route -> String -> Location -> Effects ()
+removeQuery config key currentLocation =
   currentLocation
     |> Location.removeQuery key
-    |> navigateToLocation
+    |> navigateToLocation config
 
 
 {-| Clear all query string values
@@ -104,8 +104,8 @@ removeQuery key currentLocation =
         ClearQuery ->
           (model, Effects.map HopAction (Hop.clearQuery model.location))
 -}
-clearQuery : Location -> Effects ()
-clearQuery currentLocation =
+clearQuery : Config route -> Location -> Effects ()
+clearQuery config currentLocation =
   currentLocation
     |> Location.clearQuery
-    |> navigateToLocation
+    |> navigateToLocation config

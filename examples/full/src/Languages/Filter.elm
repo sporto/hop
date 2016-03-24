@@ -6,7 +6,10 @@ import Html.Attributes exposing (class, href, style)
 import Dict
 import Languages.Models exposing (..)
 import Languages.Actions exposing (..)
-import Languages.Routing
+
+
+type alias ViewModel =
+  {}
 
 
 styles : Html.Attribute
@@ -16,12 +19,6 @@ styles =
     , ( "margin-left", "2rem" )
     , ( "margin-right", "2rem" )
     ]
-
-
-type alias ViewModel =
-  { languages : List Language
-  , routing : Languages.Routing.Model
-  }
 
 
 view : Signal.Address Action -> ViewModel -> Html
