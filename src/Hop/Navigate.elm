@@ -28,14 +28,9 @@ navigateTo config route =
     |> navigateToLocation config
 
 
-
-{-
-@private
-navigateToLocation
+{-| @private
 Change the location using a Location record
 -}
-
-
 navigateToLocation : Config route -> Location -> Effects ()
 navigateToLocation config location =
   location
