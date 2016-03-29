@@ -32,24 +32,3 @@ toS =
 
 
 -- Reverse routes
-
-
-reverseWithPrefix : Route -> String
-reverseWithPrefix route =
-  "/languages" ++ (reverse route)
-
-
-reverse : Route -> String
-reverse route =
-  case route of
-    LanguagesRoute ->
-      matcherToPath matcherLanguages []
-
-    LanguageRoute id ->
-      matcherToPath matcherLanguage [ toS id ]
-
-    LanguageEditRoute id ->
-      matcherToPath matcherLanguageEdit [ toS id ]
-
-    NotFoundRoute ->
-      ""

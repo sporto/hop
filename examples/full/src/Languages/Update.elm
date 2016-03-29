@@ -4,11 +4,12 @@ import Effects exposing (Effects, Never)
 import Debug
 import Task
 import Hop.Navigate exposing (navigateTo, addQuery, setQuery)
-import Hop.Types exposing (Location)
+import Hop.Types exposing (Config, Location)
 import Routing.Config
+import Models
 import Languages.Models exposing (..)
 import Languages.Actions exposing (Action, Action(..))
-import Languages.Routing.Config
+import Languages.Routing.Utils
 
 
 type alias UpdateModel =
@@ -17,6 +18,7 @@ type alias UpdateModel =
   }
 
 
+routerConfig : Config Models.Route
 routerConfig =
   Routing.Config.config
 
@@ -30,7 +32,7 @@ update action model =
     Show id ->
       let
         path =
-          Languages.Routing.Config.reverseWithPrefix (Languages.Models.LanguageRoute id)
+          Languages.Routing.Utils.reverseWithPrefix (Languages.Models.LanguageRoute id)
 
         fx =
           Task.succeed (NavigateTo path)
@@ -41,7 +43,7 @@ update action model =
     Edit id ->
       let
         path =
-          Languages.Routing.Config.reverseWithPrefix (Languages.Models.LanguageEditRoute id)
+          Languages.Routing.Utils.reverseWithPrefix (Languages.Models.LanguageEditRoute id)
 
         fx =
           Task.succeed (NavigateTo path)

@@ -5,12 +5,9 @@ import Html.Events exposing (onClick)
 import Html.Attributes exposing (class, href, style)
 import Models exposing (..)
 import Actions exposing (..)
-import Routing.Config exposing (reverse)
+import Routing.Utils exposing (reverse)
 import Languages.View
 import Languages.Models
-
-
--- TODO use reverse routing
 
 
 view : Signal.Address Action -> AppModel -> Html
@@ -55,9 +52,9 @@ menuLink address route label =
       NavigateTo path
   in
     a
-      [ href "//:javascript"
-      , class "white px2"
+      [ href "javascript://"
       , onClick address action
+      , class "white px2"
       ]
       [ text label ]
 

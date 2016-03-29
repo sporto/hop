@@ -1,5 +1,6 @@
 module Update (..) where
 
+import Debug
 import Effects exposing (Effects)
 import Hop.Navigate exposing (navigateTo, setQuery)
 import Actions exposing (..)
@@ -10,7 +11,7 @@ import Languages.Update
 
 update : Action -> AppModel -> ( AppModel, Effects Action )
 update action model =
-  case action of
+  case Debug.log "action" action of
     LanguagesAction subAction ->
       let
         updateModel =

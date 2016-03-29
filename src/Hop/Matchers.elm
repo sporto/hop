@@ -278,7 +278,7 @@ matchLocation routeParsers notFoundAction pathWithQuery =
 
 {-|
 Generates a path from a matcher.
-The second parameters should be a list of strings.
+The last parameters should be a list of strings.
 You need to pass one string for each dynamic parameter that this route takes.
 
     matcherToPath bookReviewMatcher ["1", "2"]
@@ -295,6 +295,9 @@ matcherToPath matcher inputs =
 
     makeSegment segment input =
       segment ++ input
+
+    path =
+      List.map2 makeSegment matcher.segments inputs'
+        |> String.join ""
   in
-    List.map2 makeSegment matcher.segments inputs'
-      |> String.join ""
+    path

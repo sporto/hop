@@ -21,7 +21,8 @@ init =
 router : Router Route
 router =
   Hop.new
-    { hash = True
+    { basePath = "/app/"
+    , hash = True
     , matchers = Routing.Config.matchers
     , notFound = NotFoundRoute
     }

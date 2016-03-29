@@ -10,7 +10,6 @@ module Hop (new) where
 import History
 import Hop.Matchers as Matchers
 import Hop.Types exposing (..)
-import Hop.Navigate exposing (..)
 
 
 ---------------------------------------
@@ -29,27 +28,38 @@ Create a Router
 new : Config routeTag -> Router routeTag
 new config =
   { run = History.setPath ""
-  , signal = routeTagAndQuerySignal config
+  , signal = routerSignal config
   }
 
 
 
 ---------------------------------------
 -- UTILS
-{-
-@private
+
+
+{-| @private
 Each time the hash is changed get a signal
 We pass this signal to the main application
 -}
---actionTagSignal : Config actionTag routeTag -> Signal actionTag
---actionTagSignal config =
---  Signal.map config.action (routeTagAndQuerySignal config)
-
-
-routeTagAndQuerySignal : Config routeTag -> Signal ( routeTag, Location )
-routeTagAndQuerySignal config =
+routerSignal : Config routeTag -> Signal ( routeTag, Location )
+routerSignal config =
   let
+    signal =
+      locationSignal config
+
     resolve location =
-      Matchers.matchLocation config.matchers config.notFound location
+      let
+        _ =
+          Debug.log "routerSignal location" location
+      in
+        Matchers.matchLocation config.matchers config.notFound location
   in
-    Signal.map resolve History.hash
+    Signal.map resolve signal
+
+
+locationSignal : Config route -> Signal String
+locationSignal config =
+  if config.hash then
+    History.hash
+  else
+    History.path

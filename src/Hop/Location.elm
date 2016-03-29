@@ -14,19 +14,19 @@ Given a Location.
 Generate a full path.
 e.g. location -> "#/users/1?a=1" when using hash
 -}
-locationToFullPath : Bool -> Location -> String
-locationToFullPath usingHash location =
+locationToFullPath : Config route -> Location -> String
+locationToFullPath config location =
   let
     joined =
       String.join "/" location.path
 
-    withPrefix =
-      if usingHash then
-        "#/" ++ joined
-      else
-        joined
+    query =
+      queryFromLocation location
   in
-    withPrefix ++ (queryFromLocation location)
+    if config.hash then
+      "#/" ++ joined ++ query
+    else
+      config.basePath ++ joined ++ query
 
 
 

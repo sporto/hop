@@ -34,7 +34,7 @@ Change the location using a Location record
 navigateToLocation : Config route -> Location -> Effects ()
 navigateToLocation config location =
   location
-    |> Location.locationToFullPath config.hash
+    |> Location.locationToFullPath config
     |> History.setPath
     |> Effects.task
 
