@@ -26,7 +26,7 @@ locationToFullPath config location =
     if config.hash then
       "#/" ++ joined ++ query
     else
-      config.basePath ++ joined ++ query
+      config.basePath ++ "/" ++ joined ++ query
 
 
 

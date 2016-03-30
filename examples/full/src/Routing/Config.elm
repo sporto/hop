@@ -8,7 +8,7 @@ import Languages.Routing.Config
 
 matcherHome : PathMatcher Route
 matcherHome =
-  match1 HomeRoute "/"
+  match1 HomeRoute ""
 
 
 matcherAbout : PathMatcher Route
@@ -31,7 +31,7 @@ matchers =
 
 config : Config Route
 config =
-  { basePath = "/app/"
+  { basePath = "/app"
   , hash = False
   , matchers = matchers
   , notFound = NotFoundRoute

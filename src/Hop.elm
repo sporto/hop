@@ -38,7 +38,19 @@ new config =
 
 
 {-| @private
-Each time the hash is changed get a signal
+
+-}
+resolveLocation : Config route -> String -> ( route, Location )
+resolveLocation config locationString =
+  let
+    _ =
+      Debug.log "routerSignal locationString" locationString
+  in
+    Matchers.matchLocation config locationString
+
+
+{-| @private
+Each time the location is changed get a signal (route, location)
 We pass this signal to the main application
 -}
 routerSignal : Config routeTag -> Signal ( routeTag, Location )
@@ -46,20 +58,44 @@ routerSignal config =
   let
     signal =
       locationSignal config
-
-    resolve location =
-      let
-        _ =
-          Debug.log "routerSignal location" location
-      in
-        Matchers.matchLocation config.matchers config.notFound location
   in
-    Signal.map resolve signal
+    Signal.map (resolveLocation config) signal
 
 
 locationSignal : Config route -> Signal String
 locationSignal config =
-  if config.hash then
-    History.hash
-  else
-    History.path
+  let
+    filter ( kind, path ) =
+      case kind of
+        Path ->
+          config.hash == False
+
+        Hash ->
+          config.hash == True
+
+    extract ( kind, path ) =
+      path
+  in
+    combinedLocationSignal
+      |> Signal.filter filter ( Path, "" )
+      |> Signal.map extract
+
+
+type HistoryKind
+  = Path
+  | Hash
+
+
+pathSignal : Signal ( HistoryKind, String )
+pathSignal =
+  Signal.map (\path -> ( Path, path )) History.path
+
+
+hashSignal : Signal ( HistoryKind, String )
+hashSignal =
+  Signal.map (\path -> ( Hash, path )) History.hash
+
+
+combinedLocationSignal : Signal ( HistoryKind, String )
+combinedLocationSignal =
+  Signal.merge pathSignal hashSignal

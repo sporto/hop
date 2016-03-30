@@ -20,12 +20,7 @@ init =
 
 router : Router Route
 router =
-  Hop.new
-    { basePath = "/app/"
-    , hash = True
-    , matchers = Routing.Config.matchers
-    , notFound = NotFoundRoute
-    }
+  Hop.new Routing.Config.config
 
 
 routerSignal : Signal Action

@@ -13,6 +13,11 @@ config =
   Routing.Config.config
 
 
+toS : a -> String
+toS =
+  toString
+
+
 reverseWithPrefix : Route -> String
 reverseWithPrefix route =
   "/languages" ++ (reverse route)

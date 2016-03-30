@@ -23,12 +23,3 @@ matcherLanguageEdit =
 matchers : List (PathMatcher Route)
 matchers =
   [ matcherLanguages, matcherLanguage, matcherLanguageEdit ]
-
-
-toS : a -> String
-toS =
-  toString
-
-
-
--- Reverse routes

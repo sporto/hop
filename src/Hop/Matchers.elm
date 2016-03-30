@@ -11,6 +11,7 @@ Functions for building matchers and matching paths
 -}
 
 import String
+import Regex
 import Hop.Types exposing (..)
 import Hop.Location
 import Combine exposing (Parser, parse)
@@ -219,17 +220,46 @@ str =
 
 
 {-|
-Matches a path e.g. "/users/1/comments/2".
+Matches a path including basePath.
+e.g. "/users/1/comments/2".
+
 Returns the matching route.
 
-    matchPath matchers NotFound "/users/1/comments/2"
+    matchPath config "/basepath/users/1/comments/2"
 
     ==
 
     User 1 (Comment 2)
 -}
-matchPath : List (PathMatcher route) -> route -> String -> route
-matchPath routeParsers notFoundAction path =
+matchPath : Config route -> String -> route
+matchPath config path =
+  let
+    regex =
+      Regex.regex config.basePath
+
+    pathWithoutBasePath =
+      Regex.replace (Regex.AtMost 1) regex (always "") path
+
+    _ =
+      Debug.log "path" path
+  in
+    matchPathWithoutBasePath config.matchers config.notFound pathWithoutBasePath
+
+
+{-| @private
+Matches a path (without basePath).
+e.g. "/users/1/comments/2".
+
+Returns the matching route.
+
+    matchPathWithoutBasePath matchers NotFound "/users/1/comments/2"
+
+    ==
+
+    User 1 (Comment 2)
+-}
+matchPathWithoutBasePath : List (PathMatcher route) -> route -> String -> route
+matchPathWithoutBasePath routeParsers notFoundAction path =
   case routeParsers of
     [] ->
       notFoundAction
@@ -248,21 +278,24 @@ matchPath routeParsers notFoundAction path =
           res
 
         ( Err _, context ) ->
-          matchPath rest notFoundAction path
+          matchPathWithoutBasePath rest notFoundAction path
 
 
 {-|
-Matches a complete location including path and query e.g. "/users/1/post?a=1".
+Matches a complete location including basePath, path and query
+e.g. "/users/1/post?a=1".
+
+If config.hash = False then basePath is considered in the match.
 Returns a tuple e.g. (route, location).
 
-    matchLocation matchers NotFound "/users/1?a=1"
+    matchLocation config "/basepath/users/1?a=1"
 
     ==
 
     (User 1, location)
 -}
-matchLocation : List (PathMatcher route) -> route -> String -> ( route, Location )
-matchLocation routeParsers notFoundAction pathWithQuery =
+matchLocation : Config route -> String -> ( route, Location )
+matchLocation config pathWithQuery =
   let
     location =
       Hop.Location.parse pathWithQuery
@@ -270,14 +303,18 @@ matchLocation routeParsers notFoundAction pathWithQuery =
     path =
       "/" ++ (String.join "/" location.path)
 
+    _ =
+      Debug.log "location" location
+
     matchedAction =
-      matchPath routeParsers notFoundAction path
+      matchPath config path
   in
     ( matchedAction, location )
 
 
 {-|
 Generates a path from a matcher.
+Use this for reverse routing.
 The last parameters should be a list of strings.
 You need to pass one string for each dynamic parameter that this route takes.
 
