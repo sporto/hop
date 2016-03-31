@@ -239,9 +239,6 @@ matchPath config path =
 
     pathWithoutBasePath =
       Regex.replace (Regex.AtMost 1) regex (always "") path
-
-    _ =
-      Debug.log "path" path
   in
     matchPathWithoutBasePath config.matchers config.notFound pathWithoutBasePath
 
@@ -302,9 +299,6 @@ matchLocation config pathWithQuery =
 
     path =
       "/" ++ (String.join "/" location.path)
-
-    _ =
-      Debug.log "location" location
 
     matchedAction =
       matchPath config path

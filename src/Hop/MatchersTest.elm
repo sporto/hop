@@ -63,24 +63,64 @@ topLevelRoutes =
   [ usersRoute, userRoute, userStatusRoute, usersTokenRoute, userPostRoute, userTokenRoute ]
 
 
+config =
+  { hash = True
+  , basePath = ""
+  , matchers = topLevelRoutes
+  , notFound = NotFound
+  }
+
+
 matchPathTest : Test
 matchPathTest =
   let
     inputs =
-      [ ( "Matches users", "/users", Users )
-      , ( "Matches one user", "/users/1", User 1 )
-      , ( "Matches user status", "/users/2/status", UserStatus 2 )
-      , ( "Matches users token", "/users/abc", UsersToken "abc" )
-      , ( "Matches one user token", "/users/3/abc", UserToken 3 "abc" )
-      , ( "Matches user posts", "/users/4/posts", UserPosts 4 (Posts) )
-      , ( "Matches one user post", "/users/4/posts/2", UserPosts 4 (Post 2) )
-      , ( "Matches not found", "/posts", NotFound )
+      [ ( "Matches users"
+        , config
+        , "/users"
+        , Users
+        )
+      , ( "Matches one user"
+        , config
+        , "/users/1"
+        , User 1
+        )
+      , ( "Matches user status"
+        , config
+        , "/users/2/status"
+        , UserStatus 2
+        )
+      , ( "Matches users token"
+        , config
+        , "/users/abc"
+        , UsersToken "abc"
+        )
+      , ( "Matches one user token"
+        , config
+        , "/users/3/abc"
+        , UserToken 3 "abc"
+        )
+      , ( "Matches user posts"
+        , config
+        , "/users/4/posts"
+        , UserPosts 4 (Posts)
+        )
+      , ( "Matches one user post"
+        , config
+        , "/users/4/posts/2"
+        , UserPosts 4 (Post 2)
+        )
+      , ( "Matches not found"
+        , config
+        , "/posts"
+        , NotFound
+        )
       ]
 
-    run ( testCase, input, expected ) =
+    run ( testCase, cfg, input, expected ) =
       let
         actual =
-          matchPath topLevelRoutes NotFound input
+          matchPath cfg input
 
         result =
           assertEqual expected actual
@@ -95,55 +135,66 @@ matchLocationTest =
   let
     inputs =
       [ ( "Matches users"
+        , config
         , "/users"
         , ( Users, { path = [ "users" ], query = newQuery } )
         )
       , ( "Matches users with query"
+        , config
         , "/users?a=1"
         , ( Users, { path = [ "users" ], query = Dict.singleton "a" "1" } )
         )
       , ( "Matches one user"
+        , config
         , "/users/1"
         , ( User 1, { path = [ "users", "1" ], query = newQuery } )
         )
       , ( "Matches one user with query"
+        , config
         , "/users/1?a=1"
         , ( User 1, { path = [ "users", "1" ], query = Dict.singleton "a" "1" } )
         )
       , ( "Matches user status"
+        , config
         , "/users/2/status"
         , ( UserStatus 2, { path = [ "users", "2", "status" ], query = newQuery } )
         )
       , ( "Matches users token"
+        , config
         , "/users/abc"
         , ( UsersToken "abc", { path = [ "users", "abc" ], query = newQuery } )
         )
       , ( "Matches one user token"
+        , config
         , "/users/3/abc"
         , ( UserToken 3 "abc", { path = [ "users", "3", "abc" ], query = newQuery } )
         )
       , ( "Matches user posts"
+        , config
         , "/users/4/posts"
         , ( UserPosts 4 (Posts), { path = [ "users", "4", "posts" ], query = newQuery } )
         )
       , ( "Matches one user post"
+        , config
         , "/users/4/posts/2"
         , ( UserPosts 4 (Post 2), { path = [ "users", "4", "posts", "2" ], query = newQuery } )
         )
       , ( "Matches one user post with query"
+        , config
         , "/users/4/posts/2?a=1"
         , ( UserPosts 4 (Post 2), { path = [ "users", "4", "posts", "2" ], query = Dict.singleton "a" "1" } )
         )
       , ( "Matches not found"
+        , config
         , "/posts"
         , ( NotFound, { path = [ "posts" ], query = newQuery } )
         )
       ]
 
-    run ( testCase, input, expected ) =
+    run ( testCase, cfg, input, expected ) =
       let
         actual =
-          matchLocation topLevelRoutes NotFound input
+          matchLocation cfg input
 
         result =
           assertEqual expected actual
