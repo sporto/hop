@@ -17,16 +17,25 @@ e.g. location -> "#/users/1?a=1" when using hash
 locationToFullPath : Config route -> Location -> String
 locationToFullPath config location =
   let
+    path' =
+      if config.hash then
+        location.path
+      else
+        config.basePath :: location.path
+
     joined =
-      String.join "/" location.path
+      String.join "/" path'
 
     query =
       queryFromLocation location
+
+    prefix =
+      if config.hash then
+        "#/"
+      else
+        ""
   in
-    if config.hash then
-      "#/" ++ joined ++ query
-    else
-      config.basePath ++ "/" ++ joined ++ query
+    prefix ++ joined ++ query
 
 
 
