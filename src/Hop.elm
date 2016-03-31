@@ -7,6 +7,7 @@ module Hop (new) where
 
 -}
 
+import Task exposing (Task)
 import History
 import Hop.Matchers as Matchers
 import Hop.Types exposing (..)
@@ -14,20 +15,25 @@ import Hop.Types exposing (..)
 
 ---------------------------------------
 -- SETUP
+---------------------------------------
 
 
 {-|
 Create a Router
 
-    router =
-      Hop.new {
-        matchers = matchers,
-        notFound = NotFound
+    config =
+      { basePath = "/app"
+      , hash = False
+      , matchers = matchers
+      , notFound = NotFound
       }
+
+    router =
+      Hop.new config
 -}
 new : Config routeTag -> Router routeTag
 new config =
-  { run = History.setPath ""
+  { run = run config
   , signal = routerSignal config
   }
 
@@ -35,6 +41,15 @@ new config =
 
 ---------------------------------------
 -- UTILS
+---------------------------------------
+
+
+{-| @private
+Initial task to match the initial route
+-}
+run : Config route -> Task error ()
+run config =
+  History.replacePath ""
 
 
 {-| @private
@@ -42,11 +57,7 @@ new config =
 -}
 resolveLocation : Config route -> String -> ( route, Location )
 resolveLocation config locationString =
-  let
-    _ =
-      Debug.log "routerSignal locationString" locationString
-  in
-    Matchers.matchLocation config locationString
+  Matchers.matchLocation config locationString
 
 
 {-| @private
@@ -58,10 +69,16 @@ routerSignal config =
   let
     signal =
       locationSignal config
+
+    loggedSignal =
+      Signal.map (Debug.log "routerSignal") signal
   in
-    Signal.map (resolveLocation config) signal
+    Signal.map (resolveLocation config) loggedSignal
 
 
+{-| @private
+combinedLocationSignal filtered depending on config.hash
+-}
 locationSignal : Config route -> Signal String
 locationSignal config =
   let
@@ -98,4 +115,11 @@ hashSignal =
 
 combinedLocationSignal : Signal ( HistoryKind, String )
 combinedLocationSignal =
-  Signal.merge pathSignal hashSignal
+  let
+    signal =
+      Signal.merge pathSignal hashSignal
+
+    loggedSignal =
+      Signal.map (Debug.log "combinedLocationSignal") signal
+  in
+    loggedSignal

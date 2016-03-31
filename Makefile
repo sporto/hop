@@ -5,7 +5,7 @@ basic-up:
 	cd ./examples/basic && elm reactor
 
 full-up:
-	cd ./examples/full && elm reactor
+	cd ./examples/full && npm run dev
 
 flow:
 	java -jar /usr/local/bin/plantuml.jar -ttxt assets/flow.pu
