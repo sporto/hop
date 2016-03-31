@@ -219,6 +219,18 @@ str =
 -- MATCHING
 
 
+{-| @private
+Remove basePath from full path
+-}
+locationStringWithoutBase : Config route -> String -> String
+locationStringWithoutBase config locationString =
+  let
+    regex =
+      Regex.regex config.basePath
+  in
+    Regex.replace (Regex.AtMost 1) regex (always "") locationString
+
+
 {-|
 Matches a path including basePath.
 e.g. "/users/1/comments/2".
@@ -234,11 +246,8 @@ Returns the matching route.
 matchPath : Config route -> String -> route
 matchPath config path =
   let
-    regex =
-      Regex.regex config.basePath
-
     pathWithoutBasePath =
-      Regex.replace (Regex.AtMost 1) regex (always "") path
+      locationStringWithoutBase config path
   in
     matchPathWithoutBasePath config.matchers config.notFound pathWithoutBasePath
 
@@ -292,13 +301,16 @@ Returns a tuple e.g. (route, location).
     (User 1, location)
 -}
 matchLocation : Config route -> String -> ( route, Location )
-matchLocation config pathWithQuery =
+matchLocation config locationString =
   let
+    pathWithoutBasePath =
+      locationStringWithoutBase config locationString
+
     location =
-      Hop.Location.parse pathWithQuery
+      Hop.Location.parse pathWithoutBasePath
 
     path =
-      "/" ++ (String.join "/" location.path)
+      String.join "/" ("" :: location.path)
 
     matchedAction =
       matchPath config path
