@@ -8,7 +8,7 @@ import Task exposing (Task)
 import Hop
 import Hop.Matchers exposing (..)
 import Hop.Navigate exposing (navigateTo)
-import Hop.Types exposing (Query, Location, PathMatcher, Router, newLocation)
+import Hop.Types exposing (Config, Query, Location, PathMatcher, Router, newLocation)
 
 
 -- ROUTES
@@ -22,17 +22,23 @@ type Route
 
 matchers : List (PathMatcher Route)
 matchers =
-  [ match1 MainRoute "/"
+  [ match1 MainRoute ""
   , match1 AboutRoute "/about"
   ]
 
 
+routerConfig : Config Route
+routerConfig =
+  { hash = True
+  , basePath = ""
+  , matchers = matchers
+  , notFound = NotFoundRoute
+  }
+
+
 router : Router Route
 router =
-  Hop.new
-    { matchers = matchers
-    , notFound = NotFoundRoute
-    }
+  Hop.new routerConfig
 
 
 
@@ -66,7 +72,7 @@ update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
     NavigateTo path ->
-      ( model, Effects.map HopAction (navigateTo path) )
+      ( model, Effects.map HopAction (navigateTo routerConfig path) )
 
     ApplyRoute ( route, location ) ->
       ( { model | route = route, location = location }, Effects.none )

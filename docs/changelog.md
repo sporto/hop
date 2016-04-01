@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.0.0
+
+- Support setState (No hashes)
+- Most functions take a config record
+
 ## 3.0.0
 
 - Typed values in routes

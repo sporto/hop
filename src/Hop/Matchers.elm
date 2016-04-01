@@ -19,6 +19,11 @@ import Combine.Num
 import Combine.Infix exposing ((<$>), (<$), (<*), (*>), (<*>), (<|>))
 
 
+---------------------------------------
+-- Matchers
+---------------------------------------
+
+
 parserWithBeginningAndEnd : Parser a -> Parser a
 parserWithBeginningAndEnd parser =
   parser <* Combine.end
@@ -217,10 +222,13 @@ str =
 
 ---------------------------------------
 -- MATCHING
+---------------------------------------
 
 
-{-| @private
-Remove basePath from full path
+{-| @priv
+Remove the basePath from a location string
+
+"/basepath/a/b?k=1" -> "/a/b?k=1"
 -}
 locationStringWithoutBase : Config route -> String -> String
 locationStringWithoutBase config locationString =
@@ -233,7 +241,7 @@ locationStringWithoutBase config locationString =
 
 {-|
 Matches a path including basePath.
-e.g. "/users/1/comments/2".
+e.g. "/basepath/users/1/comments/2".
 
 Returns the matching route.
 
@@ -252,7 +260,7 @@ matchPath config path =
     matchPathWithoutBasePath config.matchers config.notFound pathWithoutBasePath
 
 
-{-| @private
+{-| @priv
 Matches a path (without basePath).
 e.g. "/users/1/comments/2".
 
@@ -292,6 +300,7 @@ Matches a complete location including basePath, path and query
 e.g. "/users/1/post?a=1".
 
 If config.hash = False then basePath is considered in the match.
+
 Returns a tuple e.g. (route, location).
 
     matchLocation config "/basepath/users/1?a=1"
@@ -319,10 +328,9 @@ matchLocation config locationString =
 
 
 {-|
-Generates a path from a matcher.
-Use this for reverse routing.
-The last parameters should be a list of strings.
-You need to pass one string for each dynamic parameter that this route takes.
+Generates a path from a matcher. Use this for reverse routing.
+
+The last parameters is a list of strings. You need to pass one string for each dynamic parameter that this route takes.
 
     matcherToPath bookReviewMatcher ["1", "2"]
 

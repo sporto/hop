@@ -44,7 +44,7 @@ new config =
 ---------------------------------------
 
 
-{-| @private
+{-| @priv
 Initial task to match the initial route
 -}
 run : Config route -> Task error ()
@@ -52,7 +52,7 @@ run config =
   History.replacePath ""
 
 
-{-| @private
+{-| @priv
 
 -}
 resolveLocation : Config route -> String -> ( route, Location )
@@ -60,7 +60,7 @@ resolveLocation config locationString =
   Matchers.matchLocation config locationString
 
 
-{-| @private
+{-| @priv
 Each time the location is changed get a signal (route, location)
 We pass this signal to the main application
 -}
@@ -76,7 +76,7 @@ routerSignal config =
     Signal.map (resolveLocation config) loggedSignal
 
 
-{-| @private
+{-| @priv
 combinedLocationSignal filtered depending on config.hash
 -}
 locationSignal : Config route -> Signal String

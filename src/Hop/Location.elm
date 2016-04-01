@@ -9,7 +9,7 @@ import Hop.Types exposing (..)
 -------------------------------------------------------------------------------
 
 
-{-| @private
+{-| @priv
 Given a Location.
 Generate a full path.
 e.g. location -> "#/users/1?a=1" when using hash
@@ -38,10 +38,6 @@ locationToFullPath config location =
     prefix ++ joined ++ query
 
 
-
--- Normalize a location from user
-
-
 locationFromUser : String -> Location
 locationFromUser route =
   let
@@ -54,7 +50,7 @@ locationFromUser route =
     parse normalized
 
 
-{-|
+{-| @priv
 Get the query string from a Location.
 Including ?
 -}
@@ -71,9 +67,10 @@ queryFromLocation location =
 
 
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- PARSING
 -- Parse a route into a Location
+--------------------------------------------------------------------------------
 
 
 parse : String -> Location
@@ -152,6 +149,7 @@ queryKVtoTuple kv =
 
 -------------------------------------------------------------------------------
 -- QUERY MUTATION
+-------------------------------------------------------------------------------
 
 
 addQuery : Query -> Location -> Location
