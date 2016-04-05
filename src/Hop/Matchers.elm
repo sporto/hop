@@ -229,6 +229,7 @@ str =
 Remove the basePath from a location string
 
 "/basepath/a/b?k=1" -> "/a/b?k=1"
+******* REMOVE FROM HERE
 -}
 locationStringWithoutBase : Config route -> String -> String
 locationStringWithoutBase config locationString =

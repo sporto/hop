@@ -54,12 +54,12 @@
 - (3-5) This will return an effect that your application must run via ports.
 - When the task is run by Elm the browser location changes.
 
-Hop works with StartApp out of the box. Hop supports push state or hash routing.
+Hop works with StartApp out of the box. From v4 __Hop supports push state or hash routing__.
 
 ### Hash routing
 
 A proper url should have the query before the hash e.g. `?keyword=Ja#/users/1`,
-but when using hash routing query parameters are appended after the hash path e.g. `#/users/1?keyword=Ja`. 
+but when using hash routing, query parameters are appended after the hash path e.g. `#/users/1?keyword=Ja`. 
 This is done for aesthetics and so the router is fully controlled by the hash fragment.
 
 ## Docs

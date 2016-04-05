@@ -2,6 +2,7 @@ module Hop.Location (..) where
 
 import Dict
 import String
+import Regex
 import Http
 import Hop.Types exposing (..)
 
@@ -10,8 +11,8 @@ import Hop.Types exposing (..)
 
 
 {-| @priv
-Given a Location.
-Generate a full path.
+Given a Location generate a full path.
+Used for navigation.
 e.g. location -> "#/users/1?a=1" when using hash
 -}
 locationToFullPath : Config route -> Location -> String
@@ -69,8 +70,75 @@ queryFromLocation location =
 
 --------------------------------------------------------------------------------
 -- PARSING
--- Parse a route into a Location
+-- Parse a path into a Location
 --------------------------------------------------------------------------------
+
+
+{-| @priv
+Remove the basePath from a location string
+
+"/basepath/a/b?k=1" -> "/a/b?k=1"
+-}
+locationStringWithoutBase : Config route -> String -> String
+locationStringWithoutBase config locationString =
+  let
+    regex =
+      Regex.regex config.basePath
+  in
+    Regex.replace (Regex.AtMost 1) regex (always "") locationString
+
+
+{-| @priv
+Return only the relevant part of the location
+
+    http://localhost:3000/app/languages --> /app/languages
+-}
+hrefToLocationString : Config route -> String -> String
+hrefToLocationString config href =
+  let
+    withoutProtocol =
+      href
+        |> String.split "//"
+        |> List.reverse
+        |> List.head
+        |> Maybe.withDefault ""
+
+    withoutDomain =
+      withoutProtocol
+        |> String.split "/"
+        |> List.tail
+        |> Maybe.withDefault []
+        |> String.join "/"
+        |> String.append "/"
+  in
+    if config.hash then
+      withoutDomain
+        |> String.split "#"
+        |> List.reverse
+        |> List.head
+        |> Maybe.withDefault ""
+    else
+      withoutDomain
+        |> String.split "#"
+        |> List.head
+        |> Maybe.withDefault ""
+
+
+{-|
+  http://localhost:3000/app/languages --> { path = ..., query = .... }
+-}
+hrefToLocation : Config route -> String -> Location
+hrefToLocation config href =
+  let
+    relevantLocationString =
+      hrefToLocationString config href
+  in
+    if config.hash then
+      parse relevantLocationString
+    else
+      relevantLocationString
+        |> locationStringWithoutBase config
+        |> parse
 
 
 parse : String -> Location

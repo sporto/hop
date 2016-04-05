@@ -52,6 +52,13 @@ run config =
   History.replacePath ""
 
 
+
+-- REFACTOR
+-- 1. Convert incoming History signal to location record
+-- 2. Match location record, not string
+-- 3. Return tuple (route, location)
+
+
 {-| @priv
 
 -}
@@ -76,50 +83,18 @@ routerSignal config =
     Signal.map (resolveLocation config) loggedSignal
 
 
-{-| @priv
-combinedLocationSignal filtered depending on config.hash
+{-|
+Given a complete href extract the part relevant to the current routing
 -}
+extractPath : Config route -> String -> String
+extractPath config href =
+  let
+    _ =
+      Debug.log "href" href
+  in
+    href
+
+
 locationSignal : Config route -> Signal String
 locationSignal config =
-  let
-    filter ( kind, path ) =
-      case kind of
-        Path ->
-          config.hash == False
-
-        Hash ->
-          config.hash == True
-
-    extract ( kind, path ) =
-      path
-  in
-    combinedLocationSignal
-      |> Signal.filter filter ( Path, "" )
-      |> Signal.map extract
-
-
-type HistoryKind
-  = Path
-  | Hash
-
-
-pathSignal : Signal ( HistoryKind, String )
-pathSignal =
-  Signal.map (\path -> ( Path, path )) History.path
-
-
-hashSignal : Signal ( HistoryKind, String )
-hashSignal =
-  Signal.map (\path -> ( Hash, path )) History.hash
-
-
-combinedLocationSignal : Signal ( HistoryKind, String )
-combinedLocationSignal =
-  let
-    signal =
-      Signal.merge pathSignal hashSignal
-
-    loggedSignal =
-      Signal.map (Debug.log "combinedLocationSignal") signal
-  in
-    loggedSignal
+  Signal.map (extractPath config) History.href

@@ -10,6 +10,70 @@ type Route
   = NotFound
 
 
+config =
+  { hash = True
+  , basePath = ""
+  , matchers = []
+  , notFound = NotFound
+  }
+
+
+configWithPath =
+  { config | hash = False }
+
+
+configWithPathAndBase =
+  { configWithPath | basePath = "/app/v1" }
+
+
+hrefToLocationTest =
+  let
+    inputs =
+      [ ( "it parses a hash"
+        , config
+        , "http://localhost:3000/basepath#/users/1"
+        , { path = [ "users", "1" ], query = Dict.empty }
+        )
+      , ( "it parses a path"
+        , configWithPath
+        , "http://localhost:3000/users/1"
+        , { path = [ "users", "1" ], query = Dict.empty }
+        )
+      , ( "it parses a path with basepath"
+        , configWithPathAndBase
+        , "http://localhost:3000/app/v1/users/1"
+        , { path = [ "users", "1" ], query = Dict.empty }
+        )
+      , ( "it parses a hash with query"
+        , config
+        , "http://localhost:3000/basepath#/users/1?a=1"
+        , { path = [ "users", "1" ], query = Dict.singleton "a" "1" }
+        )
+      , ( "it parses a path with query"
+        , configWithPath
+        , "http://localhost:3000/users/1?a=1"
+        , { path = [ "users", "1" ], query = Dict.singleton "a" "1" }
+        )
+      , ( "it parses a path with basepath and query"
+        , configWithPathAndBase
+        , "http://localhost:3000/app/v1/users/1?a=1"
+        , { path = [ "users", "1" ], query = Dict.singleton "a" "1" }
+        )
+      ]
+
+    run ( testCase, config, href, expected ) =
+      let
+        actual =
+          Location.hrefToLocation config href
+
+        result =
+          assertEqual expected actual
+      in
+        test testCase result
+  in
+    suite "hrefToLocation" (List.map run inputs)
+
+
 parseTest =
   let
     inputs =
@@ -26,9 +90,7 @@ parseTest =
       in
         test testCase result
   in
-    suite
-      "parse"
-      (List.map run inputs)
+    suite "parse" (List.map run inputs)
 
 
 locationToFullPathTest =
@@ -125,15 +187,14 @@ locationToFullPathTest =
       in
         test testCase result
   in
-    suite
-      "locationToFullPath"
-      (List.map run inputs)
+    suite "locationToFullPath" (List.map run inputs)
 
 
 all : Test
 all =
   suite
     "Location"
-    [ parseTest
+    [ hrefToLocationTest
+    , parseTest
     , locationToFullPathTest
     ]
