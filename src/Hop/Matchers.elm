@@ -11,9 +11,7 @@ Functions for building matchers and matching paths
 -}
 
 import String
-import Regex
 import Hop.Types exposing (..)
-import Hop.Location
 import Combine exposing (Parser, parse)
 import Combine.Num
 import Combine.Infix exposing ((<$>), (<$), (<*), (*>), (<*>), (<|>))
@@ -226,55 +224,19 @@ str =
 
 
 {-| @priv
-Remove the basePath from a location string
-
-"/basepath/a/b?k=1" -> "/a/b?k=1"
-******* REMOVE FROM HERE
--}
-locationStringWithoutBase : Config route -> String -> String
-locationStringWithoutBase config locationString =
-  let
-    regex =
-      Regex.regex config.basePath
-  in
-    Regex.replace (Regex.AtMost 1) regex (always "") locationString
-
-
-{-|
-Matches a path including basePath.
-e.g. "/basepath/users/1/comments/2".
-
-Returns the matching route.
-
-    matchPath config "/basepath/users/1/comments/2"
-
-    ==
-
-    User 1 (Comment 2)
--}
-matchPath : Config route -> String -> route
-matchPath config path =
-  let
-    pathWithoutBasePath =
-      locationStringWithoutBase config path
-  in
-    matchPathWithoutBasePath config.matchers config.notFound pathWithoutBasePath
-
-
-{-| @priv
 Matches a path (without basePath).
 e.g. "/users/1/comments/2".
 
 Returns the matching route.
 
-    matchPathWithoutBasePath matchers NotFound "/users/1/comments/2"
+    matchPathWithPathList matchers NotFound "/users/1/comments/2"
 
     ==
 
     User 1 (Comment 2)
 -}
-matchPathWithoutBasePath : List (PathMatcher route) -> route -> String -> route
-matchPathWithoutBasePath routeParsers notFoundAction path =
+matchPathWithPathList : List (PathMatcher route) -> route -> String -> route
+matchPathWithPathList routeParsers notFoundAction path =
   case routeParsers of
     [] ->
       notFoundAction
@@ -293,39 +255,44 @@ matchPathWithoutBasePath routeParsers notFoundAction path =
           res
 
         ( Err _, context ) ->
-          matchPathWithoutBasePath rest notFoundAction path
+          matchPathWithPathList rest notFoundAction path
 
 
 {-|
-Matches a complete location including basePath, path and query
-e.g. "/users/1/post?a=1".
+Matches a path.
+BasePath should already be removed.
+e.g. "/users/1/comments/2".
 
-If config.hash = False then basePath is considered in the match.
+Returns the matched route.
 
-Returns a tuple e.g. (route, location).
-
-    matchLocation config "/basepath/users/1?a=1"
+    matchPath config "/users/1/comments/2"
 
     ==
 
-    (User 1, location)
+    User 1 (Comment 2)
 -}
-matchLocation : Config route -> String -> ( route, Location )
-matchLocation config locationString =
+matchPath : Config route -> String -> route
+matchPath config path =
+  matchPathWithPathList config.matchers config.notFound path
+
+
+{-|
+Matches a location record.
+Returns the matched route.
+
+    matchLocation config { path = ["users", "1"], query = [] }
+
+    ==
+
+    (User 1)
+-}
+matchLocation : Config route -> Location -> route
+matchLocation config location =
   let
-    pathWithoutBasePath =
-      locationStringWithoutBase config locationString
-
-    location =
-      Hop.Location.parse pathWithoutBasePath
-
-    path =
+    pathString =
       String.join "/" ("" :: location.path)
-
-    matchedAction =
-      matchPath config path
   in
-    ( matchedAction, location )
+    matchPath config pathString
 
 
 {-|

@@ -89,7 +89,7 @@ locationStringWithoutBase config locationString =
 
 
 {-| @priv
-Return only the relevant part of the location
+Return only the relevant part of a location string
 
     http://localhost:3000/app/languages --> /app/languages
 -}
@@ -125,7 +125,12 @@ hrefToLocationString config href =
 
 
 {-|
-  http://localhost:3000/app/languages --> { path = ..., query = .... }
+Convert a full url to a location
+
+- Considers path or hash routing
+- Removes the basePath if necessary
+
+    http://localhost:3000/app/languages --> { path = ..., query = .... }
 -}
 hrefToLocation : Config route -> String -> Location
 hrefToLocation config href =

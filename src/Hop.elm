@@ -11,6 +11,7 @@ import Task exposing (Task)
 import History
 import Hop.Matchers as Matchers
 import Hop.Types exposing (..)
+import Hop.Location exposing (hrefToLocation)
 
 
 ---------------------------------------
@@ -62,9 +63,9 @@ run config =
 {-| @priv
 
 -}
-resolveLocation : Config route -> String -> ( route, Location )
-resolveLocation config locationString =
-  Matchers.matchLocation config locationString
+resolveLocation : Config route -> Location -> ( route, Location )
+resolveLocation config location =
+  ( Matchers.matchLocation config location, location )
 
 
 {-| @priv
@@ -80,21 +81,9 @@ routerSignal config =
     loggedSignal =
       Signal.map (Debug.log "routerSignal") signal
   in
-    Signal.map (resolveLocation config) loggedSignal
+    Signal.map (resolveLocation config) signal
 
 
-{-|
-Given a complete href extract the part relevant to the current routing
--}
-extractPath : Config route -> String -> String
-extractPath config href =
-  let
-    _ =
-      Debug.log "href" href
-  in
-    href
-
-
-locationSignal : Config route -> Signal String
+locationSignal : Config route -> Signal Location
 locationSignal config =
-  Signal.map (extractPath config) History.href
+  Signal.map (hrefToLocation config) History.href
