@@ -53,13 +53,6 @@ run config =
   History.replacePath ""
 
 
-
--- REFACTOR
--- 1. Convert incoming History signal to location record
--- 2. Match location record, not string
--- 3. Return tuple (route, location)
-
-
 {-| @priv
 
 -}
@@ -77,13 +70,14 @@ routerSignal config =
   let
     signal =
       locationSignal config
-
-    loggedSignal =
-      Signal.map (Debug.log "routerSignal") signal
   in
     Signal.map (resolveLocation config) signal
 
 
 locationSignal : Config route -> Signal Location
 locationSignal config =
-  Signal.map (hrefToLocation config) History.href
+  let
+    loggedSignal =
+      Signal.map (Debug.log "href") History.href
+  in
+    Signal.map (hrefToLocation config) loggedSignal

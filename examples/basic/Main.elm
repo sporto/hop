@@ -4,10 +4,11 @@ import Effects exposing (Effects, Never)
 import Html exposing (..)
 import Html.Events exposing (onClick)
 import StartApp
+import Dict
 import Task exposing (Task)
 import Hop
 import Hop.Matchers exposing (..)
-import Hop.Navigate exposing (navigateTo)
+import Hop.Navigate exposing (navigateTo, setQuery)
 import Hop.Types exposing (Config, Query, Location, PathMatcher, Router, newLocation)
 
 
@@ -49,6 +50,7 @@ type Action
   = HopAction ()
   | ApplyRoute ( Route, Location )
   | NavigateTo String
+  | SetQuery Query
 
 
 
@@ -70,9 +72,12 @@ newModel =
 
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
-  case action of
+  case (Debug.log "action" action) of
     NavigateTo path ->
       ( model, Effects.map HopAction (navigateTo routerConfig path) )
+
+    SetQuery query ->
+      ( model, Effects.map HopAction (setQuery routerConfig query model.location) )
 
     ApplyRoute ( route, location ) ->
       ( { model | route = route, location = location }, Effects.none )
@@ -108,8 +113,26 @@ menu address model =
             [ onClick address (NavigateTo "about")
             ]
             [ text "About" ]
+        , button
+            [ onClick address (SetQuery (Dict.singleton "keyword" "elm"))
+            ]
+            [ text "Set query string" ]
+        , currentQuery model
         ]
     ]
+
+
+currentQuery : Model -> Html
+currentQuery model =
+  let
+    query =
+      toString model.location.query
+  in
+    text query
+
+
+
+-- TODO add query here
 
 
 pageView : Signal.Address Action -> Model -> Html
