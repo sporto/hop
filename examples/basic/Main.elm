@@ -2,6 +2,7 @@ module Main (..) where
 
 import Effects exposing (Effects, Never)
 import Html exposing (..)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import StartApp
 import Dict
@@ -106,7 +107,8 @@ menu address model =
     [ div
         []
         [ button
-            [ onClick address (NavigateTo "")
+            [ class "btnMain"
+            , onClick address (NavigateTo "")
             ]
             [ text "Main" ]
         , button
@@ -139,13 +141,13 @@ pageView : Signal.Address Action -> Model -> Html
 pageView address model =
   case model.route of
     MainRoute ->
-      div [] [ h2 [] [ text "Main" ] ]
+      div [] [ h2 [ class "title" ] [ text "Main" ] ]
 
     AboutRoute ->
-      div [] [ h2 [] [ text "About" ] ]
+      div [] [ h2 [ class "title" ] [ text "About" ] ]
 
     NotFoundRoute ->
-      div [] [ h2 [] [ text "Not found" ] ]
+      div [] [ h2 [ class "title" ] [ text "Not found" ] ]
 
 
 
