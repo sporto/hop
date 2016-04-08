@@ -2,6 +2,12 @@ FROM elixir
 
 ENV UPDATED_ON 2016-04-08
 
-WORKDIR /src/usr
-ADD . /src/usr
-RUN mix deps.get
+RUN apt-get update
+
+RUN apt-get install -y netcat
+
+# RUN mix local.hex
+
+# WORKDIR /src/usr
+# ADD . /src/usr
+# RUN mix deps.get
