@@ -76,10 +76,10 @@ This is done for aesthetics and so the router is fully controlled by the hash fr
 
 ## Examples
 
-See [examples](https://github.com/sporto/hop/tree/master/examples). To run the example apps:
+See `example-basic` and `example-full` folders. To run the example apps:
 
 - Clone this repo
-- Go to example folder (e.g. `examples/basic` or `examples/full`)
+- Go to example folder
 - Follow the readme in that folder
 
 ## Testing

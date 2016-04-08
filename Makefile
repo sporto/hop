@@ -16,11 +16,20 @@ docs:
 test-lib:
 	cd ./test && npm test
 
-test-basic:
+# Test that basic app builds
+test-basic-build:
 	cd ./examples/basic && elm make Main.elm
 
-test-full:
+# Test that full app builds
+test-full-build:
 	cd ./examples/full && elm make src/Main.elm && rm index.html
+
+# Run basic app test inside a docker container
+test-basic-int:
+	docker-compose run example-basic-test
+
+# example-basic-sh:
+# 	docker-compose run example-basic /bin/bash
 
 ci-prepare:
 	node --version
@@ -42,7 +51,7 @@ ci-prepare:
 
 test:
 	make test-lib
-	make test-basic
-	make test-full
+	make test-basic-build
+	make test-full-build
 
 .PHONY: docs test

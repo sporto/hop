@@ -1,0 +1,26 @@
+webdriver-chrome:
+  build: webdriver-chrome
+  ports:
+    - "9515:9515"
+  command: chromedriver
+
+example-basic:
+  build: .
+  dockerfile: example-basic.dockerfile
+  ports:
+   - "8000:8000"
+  volumes:
+    - .:/usr/src
+  working_dir: /usr/src
+  command: ./start-example-basic.sh
+
+example-full:
+  build: .
+  dockerfile: example-full.dockerfile
+
+example-basic-test:
+  build: ./example-basic-test
+  links:
+    - example-basic
+    - webdriver-chrome
+  command: mix test

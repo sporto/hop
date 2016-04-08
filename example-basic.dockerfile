@@ -1,0 +1,5 @@
+FROM codesimple/elm:0.16
+
+ENV UPDATED_ON 2016-04-08
+
+ENTRYPOINT []
