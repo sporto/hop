@@ -20,11 +20,11 @@ example_full:
   dockerfile: example_full.dockerfile
 
 example_basic_test:
-  build: ./example_basic_test
+  build: ./test/integration/examples/basic
   links:
     - webdriver
     - example_basic:app
   volumes:
-    - ./example_basic_test:/usr/src
+    - ./test/integration/examples/basic:/usr/src
   working_dir: /usr/src
   command: ./start.sh

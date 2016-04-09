@@ -1,18 +1,19 @@
-test-up:
-	cd ./src/Test && elm reactor
-
+# Start basic application example locally
 basic-up:
 	cd ./examples/basic && elm reactor
 
 full-up:
 	cd ./examples/full && npm run dev
 
+# Generate diagramas using PlantUML
 flow:
 	java -jar /usr/local/bin/plantuml.jar -ttxt assets/flow.pu
 
+# Generate documentation for preview
 docs:
 	elm make --docs=documentation.json
 
+# Run unit tests
 test-lib:
 	cd ./test && npm test
 
