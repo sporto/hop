@@ -15,7 +15,7 @@ docs:
 
 # Run unit tests
 test-lib:
-	cd ./test && npm test
+	cd ./test/unit && npm test
 
 # Test that basic app builds
 test-basic-build:
