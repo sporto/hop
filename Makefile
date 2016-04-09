@@ -13,9 +13,13 @@ flow:
 docs:
 	elm make --docs=documentation.json
 
-# Run unit tests
-test-lib:
+# Run unit tests locally
+test-unit:
 	cd ./test/unit && npm test
+
+# Run unit test in docker
+test-unit-doc:
+	docker-compose up test_unit
 
 # Test that basic app builds
 test-basic-build:
@@ -28,7 +32,7 @@ test-full-build:
 # Run basic app test inside a docker container
 # Run integration tests
 test-basic-int:
-	docker-compose up example_basic_test
+	docker-compose up test_example_basic
 
 # example-basic-sh:
 # 	docker-compose run example-basic /bin/bash

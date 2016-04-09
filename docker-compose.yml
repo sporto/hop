@@ -19,7 +19,15 @@ example_full:
   build: .
   dockerfile: example_full.dockerfile
 
-example_basic_test:
+test_unit:
+  build: .
+  dockerfile: test_unit.dockerfile
+  volumes:
+    - .:/usr/src
+  working_dir: /usr/src
+  command: ./start_test_unit.sh
+
+test_example_basic:
   build: ./test/integration/examples/basic
   links:
     - webdriver
