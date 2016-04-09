@@ -1,20 +1,9 @@
-# webdriver:
-#   image: robcherry/docker-chromedriver
-#   links:
-#     - example_basic
-
 webdriver:
   image: selenium/standalone-firefox
   links:
     - example_basic:app
   ports:
     - "4444:4444"
-
-  # image: selenium/standalone-firefox
-  # build: webdriver
-  # ports:
-  #   - "4444:4444"
-  # entrypoint: /opt/bin/entry_point.sh
 
 example_basic:
   build: .

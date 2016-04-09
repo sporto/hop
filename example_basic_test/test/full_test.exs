@@ -12,19 +12,20 @@ defmodule FullTest do
 
   test "shows not found" do
     navigate_to("/Main.elm")
-    take_screenshot()
 
     element_id = find_element(:class, "title")
+    # take_screenshot("./tmp/not-found.png")
 
-    assert inner_text(element_id) == "Not found"
+    assert inner_html(element_id) == "Not found"
   end
 
   test "shows main when route is main" do
     navigate_to("/Main.elm#/")
 
     element_id = find_element(:class, "title")
+    # take_screenshot("./tmp/main.png")
 
-    assert inner_text(element_id) == "Main"
+    assert inner_html(element_id) == "Main"
   end
 
   test "switches to view" do
@@ -35,7 +36,9 @@ defmodule FullTest do
     :timer.sleep(500)
 
     title = find_title()
-    assert inner_text(title) == "Main"
+    take_screenshot("./tmp/main-2.png")
+
+    assert inner_html(title) == "Main"
   end
 
 end
