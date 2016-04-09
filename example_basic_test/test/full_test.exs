@@ -11,7 +11,8 @@ defmodule FullTest do
   end
 
   test "shows not found" do
-    navigate_to("http://localhost:8000/Main.elm")
+    navigate_to("/Main.elm")
+    take_screenshot()
 
     element_id = find_element(:class, "title")
 
@@ -19,7 +20,7 @@ defmodule FullTest do
   end
 
   test "shows main when route is main" do
-    navigate_to("http://localhost:8000/Main.elm#/")
+    navigate_to("/Main.elm#/")
 
     element_id = find_element(:class, "title")
 
@@ -27,7 +28,7 @@ defmodule FullTest do
   end
 
   test "switches to view" do
-    navigate_to("http://localhost:8000/Main.elm")
+    navigate_to("/Main.elm")
 
     btn = find_element(:class, "btnMain") 
     click(btn)

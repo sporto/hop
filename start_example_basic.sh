@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cd example-basic
+cd example_basic
 elm package install -y
 elm reactor
