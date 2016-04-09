@@ -13,8 +13,8 @@ defmodule FullTest do
   test "shows not found" do
     navigate_to("/Main.elm")
 
+    take_screenshot("./tmp/not-found.png")
     element_id = find_element(:class, "title")
-    # take_screenshot("./tmp/not-found.png")
 
     assert inner_html(element_id) == "Not found"
   end

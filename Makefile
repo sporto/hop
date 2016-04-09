@@ -25,8 +25,9 @@ test-full-build:
 	cd ./examples/full && elm make src/Main.elm && rm index.html
 
 # Run basic app test inside a docker container
+# Run integration tests
 test-basic-int:
-	docker-compose run example-basic-test
+	docker-compose up example_basic_test
 
 # example-basic-sh:
 # 	docker-compose run example-basic /bin/bash
