@@ -18,7 +18,7 @@ test-unit:
 	cd ./test/unit && npm test
 
 # Run unit test in docker
-test-unit-doc:
+test-unit-docker:
 	docker-compose up test_unit
 
 # Test that basic app builds
@@ -31,11 +31,8 @@ test-full-build:
 
 # Run basic app test inside a docker container
 # Run integration tests
-test-basic-int:
+test-basic-int-doc:
 	docker-compose up test_example_basic
-
-# example-basic-sh:
-# 	docker-compose run example-basic /bin/bash
 
 ci-prepare:
 	node --version
