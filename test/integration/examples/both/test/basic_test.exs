@@ -1,4 +1,4 @@
-defmodule AppTest do
+defmodule BasicTest do
   use ExUnit.Case
   # doctest App
 

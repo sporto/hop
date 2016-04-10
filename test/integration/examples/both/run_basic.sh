@@ -17,4 +17,4 @@ until nc -z $WEBDRIVER_HOST $WEBDRIVER_PORT; do
 done
 
 
-mix test
+mix test test/basic_test.exs
