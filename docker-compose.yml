@@ -1,7 +1,14 @@
-webdriver:
+webdriver_basic:
   image: selenium/standalone-firefox
   links:
-    - example_basic:app
+    - example_basic
+  ports:
+    - "4444:4444"
+
+webdriver_full:
+  image: selenium/standalone-firefox
+  links:
+    - example_full
   ports:
     - "4444:4444"
 
@@ -18,6 +25,12 @@ example_basic:
 example_full:
   build: .
   dockerfile: example_full.dockerfile
+  ports:
+    - "3000:3000"
+  volumes:
+    - .:/usr/src
+  working_dir: /usr/src
+  command: ./start_example_full.sh
 
 test_unit:
   build: .
@@ -30,9 +43,29 @@ test_unit:
 test_example_basic:
   build: ./test/integration/examples/basic
   links:
-    - webdriver
-    - example_basic:app
+    - webdriver_basic
+    - example_basic
   volumes:
     - ./test/integration/examples/basic:/usr/src
   working_dir: /usr/src
   command: ./start.sh
+  environment:
+    APP_HOST: example_basic
+    APP_PORT: 8000
+    WEBDRIVER_HOST: webdriver_basic
+    WEBDRIVER_PORT: 4444
+
+test_example_full:
+  build: ./test/integration/examples/full
+  links:
+    - webdriver_full
+    - example_full
+  volumes:
+    - ./test/integration/examples/full:/usr/src
+  working_dir: /usr/src
+  command: ./start.sh
+  environment:
+    APP_HOST: example_basic
+    APP_PORT: 8000
+    WEBDRIVER_HOST: webdriver_basic
+    WEBDRIVER_PORT: 4444

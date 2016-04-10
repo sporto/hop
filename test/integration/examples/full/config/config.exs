@@ -5,7 +5,7 @@ use Mix.Config
 # https://github.com/HashNuke/hound/blob/master/notes/configuring-hound.md
 
 config :hound,
-  host: "http://#{System.get_env("WEBDRIVER_HOST")}",
-  port: System.get_env("WEBDRIVER_PORT"),
-  app_host: "http://#{System.get_env("APP_HOST")}",
-  app_port: System.get_env("APP_PORT")
+  host: "http://#{get_env("WEBDRIVER_HOST")}",
+  port: get_env("WEBDRIVER_PORT"),
+  app_host: "http://#{get_env("APP_HOST")}",
+  app_port: get_env("APP_PORT")

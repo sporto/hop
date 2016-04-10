@@ -1,5 +1,7 @@
 # Full Hop Example
 
+This example uses push state.
+
 To run:
 
 ```
