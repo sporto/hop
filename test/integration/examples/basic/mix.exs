@@ -1,8 +1,8 @@
-defmodule Full.Mixfile do
+defmodule App.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :full,
+    [app: :app,
      version: "0.0.1",
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,

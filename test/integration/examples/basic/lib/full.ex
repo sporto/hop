@@ -1,2 +1,0 @@
-defmodule Full do
-end
