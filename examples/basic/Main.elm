@@ -112,11 +112,13 @@ menu address model =
             ]
             [ text "Main" ]
         , button
-            [ onClick address (NavigateTo "about")
+            [ class "btnAbout"
+            , onClick address (NavigateTo "about")
             ]
             [ text "About" ]
         , button
-            [ onClick address (SetQuery (Dict.singleton "keyword" "elm"))
+            [ class "btnQuery"
+            , onClick address (SetQuery (Dict.singleton "keyword" "elm"))
             ]
             [ text "Set query string" ]
         , currentQuery model
@@ -130,7 +132,9 @@ currentQuery model =
     query =
       toString model.location.query
   in
-    text query
+    span
+      [ class "labelQuery" ]
+      [ text query ]
 
 
 
