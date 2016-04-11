@@ -1,7 +1,7 @@
 module Languages.Show (..) where
 
 import Html exposing (..)
-import Html.Attributes exposing (href, style, src)
+import Html.Attributes exposing (id, href, style, src)
 import Languages.Models exposing (..)
 import Languages.Actions exposing (..)
 
@@ -17,7 +17,7 @@ view : Signal.Address Action -> Language -> Html
 view address language =
   div
     [ styles ]
-    [ h2 [] [ text language.name ]
+    [ h2 [ id "titleLanguage" ] [ text language.name ]
     , img [ src ("/images/" ++ language.image ++ ".png") ] []
     , tags address language
     ]

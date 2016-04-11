@@ -30,4 +30,7 @@ test-unit-docker:
 test-basic-int-docker:
 	docker-compose up test_example_basic
 
+test-full-int-docker:
+	docker-compose up test_example_full
+
 .PHONY: docs test

@@ -2,7 +2,7 @@ module View (..) where
 
 import Html exposing (..)
 import Html.Events exposing (onClick)
-import Html.Attributes exposing (class, href, style)
+import Html.Attributes exposing (id, class, href, style)
 import Models exposing (..)
 import Actions exposing (..)
 import Routing.Utils exposing (reverse)
@@ -25,25 +25,17 @@ menu address model =
     [ class "p2 white bg-black" ]
     [ div
         []
-        [ menuLink address HomeRoute "Home"
+        [ menuLink address HomeRoute "btnHome" "Home"
         , text "|"
-        , menuLink address (LanguagesRoutes Languages.Models.LanguagesRoute) "Languages"
+        , menuLink address (LanguagesRoutes Languages.Models.LanguagesRoute) "btnLanguages" "Languages"
         , text "|"
-        , menuLink address AboutRoute "About"
+        , menuLink address AboutRoute "btnAbout" "About"
         ]
     ]
 
 
-menuBtn : Signal.Address Action -> Action -> String -> Html
-menuBtn address action label =
-  button
-    [ Html.Events.onClick address action ]
-    [ text label
-    ]
-
-
-menuLink : Signal.Address Action -> Route -> String -> Html
-menuLink address route label =
+menuLink : Signal.Address Action -> Route -> String -> String -> Html
+menuLink address route viewId label =
   let
     path =
       reverse route
@@ -52,7 +44,8 @@ menuLink address route label =
       NavigateTo path
   in
     a
-      [ href "javascript://"
+      [ id viewId
+      , href "javascript://"
       , onClick address action
       , class "white px2"
       ]
@@ -64,15 +57,15 @@ pageView address model =
   case model.route of
     HomeRoute ->
       div
-        []
-        [ h2 [] [ text "Home" ]
+        [ class "p2" ]
+        [ h1 [ id "title", class "m0" ] [ text "Home" ]
         , div [] [ text "Click on Languages to start routing" ]
         ]
 
     AboutRoute ->
       div
-        []
-        [ h2 [] [ text "About" ]
+        [ class "p2" ]
+        [ h1 [ id "title", class "m0" ] [ text "About" ]
         ]
 
     LanguagesRoutes languagesRoute ->
@@ -83,7 +76,11 @@ pageView address model =
           , location = model.location
           }
       in
-        Languages.View.view (Signal.forwardTo address LanguagesAction) viewModel
+        div
+          [ class "p2" ]
+          [ h1 [ id "title", class "m0" ] [ text "Languages" ]
+          , Languages.View.view (Signal.forwardTo address LanguagesAction) viewModel
+          ]
 
     NotFoundRoute ->
       notFoundView address model
