@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd examples/basic
+cd examples/full
 elm package install -y
 npm i
 npm run dev

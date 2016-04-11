@@ -2,4 +2,6 @@ FROM node
 
 ENV UPDATED_ON 2016-04-08
 
+RUN npm i elm -g
+
 ENTRYPOINT []
