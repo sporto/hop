@@ -23,6 +23,6 @@ WORKDIR /usr/src/examples/basic
 RUN elm package install -y
 
 # Make sure it compiles
-RUN elm make Main.elm
+RUN LANG=en_US.UTF-8 elm make Main.elm
 
 CMD elm reactor
