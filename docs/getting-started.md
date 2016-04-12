@@ -4,7 +4,7 @@
 
 ```elm
 import Hop
-import Hop.Matchers exposing (match1, match2)
+import Hop.Matchers exposing (int, str, match1, match2)
 import Hop.Navigate exposing (navigateTo)
 import Hop.Types exposing (Config, Router, PathMatcher, Location)
 ```
@@ -14,7 +14,7 @@ import Hop.Types exposing (Config, Router, PathMatcher, Location)
 ```elm
 type Route
   = HomeRoute
-  | UserRoute int
+  | UserRoute Int
   | NotFoundRoute
 ```
 
@@ -37,6 +37,8 @@ matchers =
   , matcherUser
   ]
 ```
+
+- `int` is a matcher that matches only integers for a string use `str`
 
 ## Create a config record
 
