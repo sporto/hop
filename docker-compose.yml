@@ -67,7 +67,7 @@ test_example_full:
   command: ./run.sh
   environment:
     APP_HOST: example_full
-    APP_PORT: 8000
+    APP_PORT: 3000
     WEBDRIVER_HOST: webdriver_full
     WEBDRIVER_PORT: 4444
     TEST_DIR: full

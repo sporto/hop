@@ -28,9 +28,11 @@ test-unit-docker:
 # Run basic app test inside a docker container
 # Run integration tests
 test-basic-int-docker:
-	docker-compose up test_example_basic
+	docker-compose up --abort-on-container-exit test_example_basic
+	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
 test-full-int-docker:
-	docker-compose up test_example_full
+	docker-compose up --abort-on-container-exit test_example_full
+	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
 .PHONY: docs test

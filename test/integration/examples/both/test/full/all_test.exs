@@ -17,7 +17,7 @@ defmodule BFullTest do
 
   def click_btn(id) do
     ele = find_element(:id, id)
-    click(id)
+    click(ele)
   end
 
   test "it shows home" do
@@ -59,9 +59,9 @@ defmodule BFullTest do
   end
 
   test "it changes the query" do
-    navigate_to("/app")
+    navigate_to("/app/languages")
 
-    assert_title("Home")
+    assert_title("Languages")
 
     click_btn("btnDynamic")
 
