@@ -5,7 +5,11 @@ ENV UPDATED_ON 2016-04-08
 RUN npm i elm -g
 ADD . /usr/src
 WORKDIR /usr/src/examples/full
-RUN elm package install -y
+
+# Install elm packages
+RUN ./install-packages.sh
+
 RUN npm i
 
-ENTRYPOINT ["npm", "run", "dev"]
+CMD npm run dev
+ENTRYPOINT []
