@@ -25,9 +25,6 @@ defmodule BasicTest do
 
     navigate_to("/Main.elm")
 
-    source = page_source()
-    IO.puts source
-
     # take_screenshot("./tmp/not-found.png")
     element_id = find_element(:class, "title")
 

@@ -23,6 +23,9 @@ defmodule BFullTest do
   test "it shows home" do
     :timer.sleep(500)
 
+    source = page_source()
+    IO.puts source
+
     navigate_to("/app")
 
     assert_title("Home")
