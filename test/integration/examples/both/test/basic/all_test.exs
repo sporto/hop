@@ -21,6 +21,8 @@ defmodule BasicTest do
   end
 
   test "shows initial view" do
+    :timer.sleep(500)
+
     navigate_to("/Main.elm")
 
     # take_screenshot("./tmp/not-found.png")
@@ -30,6 +32,8 @@ defmodule BasicTest do
   end
 
   test "shows main when route is main" do
+    :timer.sleep(500)
+
     navigate_to("/Main.elm#/")
 
     element_id = find_element(:class, "title")
@@ -39,6 +43,8 @@ defmodule BasicTest do
   end
 
   test "shows about when route is about" do
+    :timer.sleep(500)
+
     navigate_to("/Main.elm#/about")
 
     element_id = find_element(:class, "title")
@@ -47,11 +53,15 @@ defmodule BasicTest do
   end
 
   test "shows to query string" do
+    :timer.sleep(500)
+
     navigate_to("/Main.elm#/?keyword=elm")
     assert_query()
   end
 
   test "switches to main view" do
+    :timer.sleep(500)
+
     navigate_to("/Main.elm")
 
     btn = find_element(:class, "btnMain") 
@@ -65,6 +75,8 @@ defmodule BasicTest do
   end
 
   test "switches to about view" do
+    :timer.sleep(500)
+
     navigate_to("/Main.elm")
 
     btn = find_element(:class, "btnAbout") 
@@ -79,6 +91,8 @@ defmodule BasicTest do
 
 
   test "switches to query string" do
+    :timer.sleep(500)
+
     navigate_to("/Main.elm")
 
     btn = find_element(:class, "btnQuery") 

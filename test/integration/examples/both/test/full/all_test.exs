@@ -21,22 +21,30 @@ defmodule BFullTest do
   end
 
   test "it shows home" do
+    :timer.sleep(500)
+
     navigate_to("/app")
 
     assert_title("Home")
   end
 
   test "it shows languages" do
+    :timer.sleep(500)
+
     navigate_to("/app/languages")
     assert_title("Languages")
   end
 
   test "it shows about" do
+    :timer.sleep(500)
+
     navigate_to("/app/about")
     assert_title("About")
   end
 
   test "it shows a language" do
+    :timer.sleep(500)
+
     navigate_to("/app/languages/1")
     ele = find_element(:id, "titleLanguage")
     assert inner_html(ele) == "Elm"
@@ -48,6 +56,8 @@ defmodule BFullTest do
   end
 
   test "it changes the path" do
+    :timer.sleep(500)
+
     navigate_to("/app")
 
     assert_title("Home")
@@ -59,6 +69,8 @@ defmodule BFullTest do
   end
 
   test "it changes the query" do
+    :timer.sleep(500)
+
     navigate_to("/app/languages")
 
     assert_title("LanguagesFFFF")
