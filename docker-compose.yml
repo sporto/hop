@@ -3,20 +3,12 @@ example_basic:
   dockerfile: example_basic.dockerfile
   ports:
    - "8000:8000"
-  volumes:
-    - .:/usr/src
-  working_dir: /usr/src
-  command: ./start_example_basic.sh
 
 example_full:
   build: .
   dockerfile: example_full.dockerfile
   ports:
     - "3000:3000"
-  volumes:
-    - .:/usr/src
-  working_dir: /usr/src
-  command: ./start_example_full.sh
 
 webdriver:
   image: selenium/standalone-firefox
