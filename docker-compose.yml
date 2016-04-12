@@ -1,11 +1,3 @@
-webdriver:
-  image: selenium/standalone-firefox
-  links:
-    - example_basic
-    - example_full
-  ports:
-    - "4444:4444"
-
 example_basic:
   build: .
   dockerfile: example_basic.dockerfile
@@ -25,6 +17,14 @@ example_full:
     - .:/usr/src
   working_dir: /usr/src
   command: ./start_example_full.sh
+
+webdriver:
+  image: selenium/standalone-firefox
+  links:
+    - example_basic
+    - example_full
+  ports:
+    - "4444:4444"
 
 test_unit:
   build: .
