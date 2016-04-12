@@ -1,8 +1,11 @@
-FROM node
+FROM codesimple/elm:0.16
 
 ENV UPDATED_ON 2016-04-08
 
-RUN npm i elm -g
+# Install node
+RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
+RUN apt-get install -y nodejs
+
 ADD . /usr/src
 WORKDIR /usr/src/examples/full
 
