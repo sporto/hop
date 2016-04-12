@@ -4,7 +4,7 @@
 
 ```elm
 import Hop
-import Hop.Matchers exposing (match1, match2)
+import Hop.Matchers exposing (match1, match2, int)
 import Hop.Navigate exposing (navigateTo)
 import Hop.Types exposing (Router, PathMatcher, Location)
 ```
@@ -14,7 +14,7 @@ import Hop.Types exposing (Router, PathMatcher, Location)
 ```elm
 type Route
   = HomeRoute
-  | UserRoute int
+  | UserRoute Int
   | NotFoundRoute
 ```
 
@@ -45,6 +45,8 @@ matchPath matchers NotFoundRoute "/users/1"
 ```
 
 Will return `UserRoute 1`. If no match is found this will return `NotFoundRoute`.
+
+- `int` is a matcher that matches only integers for strings use `str`
 
 ## Main actions
 
