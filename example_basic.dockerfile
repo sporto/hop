@@ -16,8 +16,13 @@ ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
 RUN npm i elm -g
+
+# Add the application and install packages
 ADD . /usr/src
 WORKDIR /usr/src/examples/basic
 RUN elm package install -y
 
-ENTRYPOINT ["elm", "reactor"]
+# Make sure it compiles
+RUN elm make Main.elm
+
+CMD elm reactor
