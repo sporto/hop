@@ -61,7 +61,7 @@ defmodule BFullTest do
   test "it changes the query" do
     navigate_to("/app/languages")
 
-    assert_title("Languages")
+    assert_title("LanguagesFFFF")
 
     click_btn("btnDynamic")
 
