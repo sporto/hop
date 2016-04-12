@@ -28,7 +28,6 @@ test-unit-docker:
 # Run basic app test inside a docker container
 # Run integration tests
 test-basic-int-docker:
-	docker-compose up -d
 	docker-compose run --rm --service-ports test_example_basic
 	docker-compose stop
 	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
