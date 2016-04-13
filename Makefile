@@ -23,7 +23,8 @@ test-unit:
 
 # Run unit test in docker
 test-unit-docker:
-	docker-compose up test_unit
+	docker-compose run --rm test_unit
+	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
 # Run basic app test inside a docker container
 # Run integration tests
