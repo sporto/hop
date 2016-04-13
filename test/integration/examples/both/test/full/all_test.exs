@@ -10,6 +10,10 @@ defmodule BFullTest do
     find_element(:id, "title")
   end
 
+  defp wait_for_app do
+    :timer.sleep(500)
+  end
+
   defp wait do
     :timer.sleep(200)
   end
@@ -25,10 +29,8 @@ defmodule BFullTest do
   end
 
   test "it shows home" do
-    wait()
-
     navigate_to("/app")
-    wait()
+    wait_for_app()
 
     str = visible_page_text()
     IO.puts str
@@ -37,45 +39,35 @@ defmodule BFullTest do
   end
 
   test "it shows languages" do
-    wait()
-
     navigate_to("/app/languages")
-    wait()
+    wait_for_app()
 
     assert_title("Languages")
   end
 
   test "it shows about" do
-    wait()
-
     navigate_to("/app/about")
-    wait()
+    wait_for_app()
 
     assert_title("About")
   end
 
   test "it shows a language" do
-    wait()
-
     navigate_to("/app/languages/1")
-    wait()
+    wait_for_app()
 
     ele = find_element(:id, "titleLanguage")
     assert inner_html(ele) == "Elm"
   end
 
   test "it shows the query" do
-    wait()
-
     navigate_to("/app/languages/1?typed=dynamic")
     # TODO
   end
 
   test "it changes the path" do
-    wait()
-
     navigate_to("/app")
-    wait()
+    wait_for_app()
 
     assert_title("Home")
 
@@ -87,10 +79,8 @@ defmodule BFullTest do
   end
 
   test "it changes the query" do
-    wait()
-
     navigate_to("/app/languages")
-    wait()
+    wait_for_app()
 
     assert_title("LanguagesFFFF")
 
