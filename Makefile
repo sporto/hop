@@ -29,6 +29,7 @@ test-unit-docker:
 # Run integration tests
 test-basic-int-docker:
 	docker-compose run --rm --service-ports test_example_basic
+	docker-compose stop
 	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
 test-full-int-docker:
