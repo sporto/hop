@@ -1,20 +1,12 @@
-FROM node
+FROM codesimple/elm:0.16
 
 ENV UPDATED_ON 2016-04-08
 
-RUN apt-get update && apt-get install -y \
-         locales
-
-RUN dpkg-reconfigure locales && \
-         locale-gen C.UTF-8 && \
-         update-locale LANG=C.UTF-8
-
-ENV LC_ALL C.UTF-8
+# Install node
+RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
+RUN apt-get install -y nodejs
 
 RUN npm install elm -g
 RUN npm install elm-test -g
-
-ENV ELM_HOME /usr/local/lib/node_modules/elm/share
-
 
 ENTRYPOINT []
