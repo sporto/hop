@@ -2,4 +2,4 @@
 
 cd test/unit
 elm package install -y
-npm test
+elm-test TestRunner.elm
