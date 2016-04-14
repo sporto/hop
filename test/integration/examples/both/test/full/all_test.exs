@@ -35,8 +35,8 @@ defmodule BFullTest do
     str = visible_page_text()
     IO.puts str
 
-    # log = fetch_errors()
-    # assert log =~ ""
+    log = fetch_errors()
+    assert log =~ ""
 
     assert_title("Home")
   end
