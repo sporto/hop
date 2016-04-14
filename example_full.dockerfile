@@ -16,7 +16,11 @@ RUN ./install-packages.sh
 RUN elm make ./src/Main.elm
 
 # Install npm stuff
+RUN npm install webpack -g
 RUN npm i
+
+# Make sure webpack bundle builds
+RUN webpack
 
 CMD npm run dev
 ENTRYPOINT []
