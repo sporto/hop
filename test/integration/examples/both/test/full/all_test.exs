@@ -32,11 +32,11 @@ defmodule BFullTest do
     navigate_to("/app")
     wait_for_app()
 
-    # str = visible_page_text()
-    # IO.puts str
+    str = visible_page_text()
+    IO.puts str
 
-    log = fetch_errors()
-    assert log =~ ""
+    # log = fetch_errors()
+    # assert log =~ ""
 
     assert_title("Home")
   end
