@@ -1,6 +1,6 @@
 # Hop: A router for Elm SPAs
 
-[ ![Codeship Status for sporto/hop](https://codeship.com/projects/dd1caad0-cea9-0133-1fa5-5ed74b30bb55/status?branch=master)](https://codeship.com/projects/141023)
+[![Build Status](https://semaphoreci.com/api/v1/sporto/hop/branches/master/badge.svg)](https://semaphoreci.com/sporto/hop)
 
 ![alt Hop](https://raw.githubusercontent.com/sporto/hop/master/assets/logo.png)
 
