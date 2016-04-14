@@ -93,7 +93,7 @@ defmodule BFullTest do
     navigate_to("/app/languages")
     wait_for_app()
 
-    assert_title("LanguagesFFFF")
+    assert_title("Languages")
 
     click_btn("btnDynamic")
     wait()
