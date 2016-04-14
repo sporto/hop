@@ -11,7 +11,7 @@ example_full:
     - "3000:3000"
 
 webdriver:
-  image: selenium/standalone-firefox
+  image: selenium/standalone-chrome
   links:
     - example_basic
     - example_full
