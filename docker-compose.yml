@@ -19,8 +19,7 @@ webdriver:
     - "4444:4444"
 
 test_unit:
-  build: .
-  dockerfile: test_unit.dockerfile
+  image: sporto/elm-node-webpack
   volumes:
     - .:/usr/src
   working_dir: /usr/src

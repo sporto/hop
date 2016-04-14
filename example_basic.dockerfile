@@ -1,4 +1,4 @@
-FROM codesimple/elm:0.16
+FROM sporto/elm-node-webpack
 
 ENV UPDATED_ON 2016-04-08
 
@@ -11,4 +11,3 @@ RUN ./install-packages.sh
 RUN elm make Main.elm
 
 CMD elm reactor
-ENTRYPOINT []
