@@ -29,7 +29,6 @@ defmodule App.Mixfile do
   defp deps do
     [
       {:hound, "~> 0.8"}
-      # {:hound, github: "HashNuke/hound"}
     ]
   end
 end

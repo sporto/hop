@@ -42,64 +42,64 @@ defmodule BFullTest do
     assert_title("Home")
   end
 
-  # test "it shows home" do
-  #   navigate_to("/app")
-  #   wait_for_app()
+  test "it shows home" do
+    navigate_to("/app")
+    wait_for_app()
 
-  #   assert_title("Home")
-  # end
+    assert_title("Home")
+  end
 
-  # test "it shows languages" do
-  #   navigate_to("/app/languages")
-  #   wait_for_app()
+  test "it shows languages" do
+    navigate_to("/app/languages")
+    wait_for_app()
 
-  #   assert_title("Languages")
-  # end
+    assert_title("Languages")
+  end
 
-  # test "it shows about" do
-  #   navigate_to("/app/about")
-  #   wait_for_app()
+  test "it shows about" do
+    navigate_to("/app/about")
+    wait_for_app()
 
-  #   assert_title("About")
-  # end
+    assert_title("About")
+  end
 
-  # test "it shows a language" do
-  #   navigate_to("/app/languages/1")
-  #   wait_for_app()
+  test "it shows a language" do
+    navigate_to("/app/languages/1")
+    wait_for_app()
 
-  #   ele = find_element(:id, "titleLanguage")
-  #   assert inner_html(ele) == "Elm"
-  # end
+    ele = find_element(:id, "titleLanguage")
+    assert inner_html(ele) == "Elm"
+  end
 
-  # test "it shows the query" do
-  #   navigate_to("/app/languages/1?typed=dynamic")
-  #   # TODO
-  # end
+  test "it shows the query" do
+    navigate_to("/app/languages/1?typed=dynamic")
+    # TODO
+  end
 
-  # test "it changes the path" do
-  #   navigate_to("/app")
-  #   wait_for_app()
+  test "it changes the path" do
+    navigate_to("/app")
+    wait_for_app()
 
-  #   assert_title("Home")
+    assert_title("Home")
 
-  #   click_btn("btnLanguages")
-  #   wait()
+    click_btn("btnLanguages")
+    wait()
 
-  #   actual = execute_script("return window.location.pathname")
-  #   assert actual == "/app/languages"
-  # end
+    actual = execute_script("return window.location.pathname")
+    assert actual == "/app/languages"
+  end
 
-  # test "it changes the query" do
-  #   navigate_to("/app/languages")
-  #   wait_for_app()
+  test "it changes the query" do
+    navigate_to("/app/languages")
+    wait_for_app()
 
-  #   assert_title("LanguagesFFFF")
+    assert_title("LanguagesFFFF")
 
-  #   click_btn("btnDynamic")
-  #   wait()
+    click_btn("btnDynamic")
+    wait()
 
-  #   actual = execute_script("return window.location.search")
-  #   assert actual == "?typed=dynamic"
-  # end
+    actual = execute_script("return window.location.search")
+    assert actual == "?typed=dynamic"
+  end
 
 end
