@@ -28,12 +28,22 @@ defmodule BFullTest do
     click(ele)
   end
 
-  test "it shows home" do
+  test "it works" do
     navigate_to("/app")
     wait_for_app()
 
-    str = visible_page_text()
-    IO.puts str
+    # str = visible_page_text()
+    # IO.puts str
+
+    log = fetch_errors()
+    assert log =~ ""
+
+    assert_title("Home")
+  end
+
+  test "it shows home" do
+    navigate_to("/app")
+    wait_for_app()
 
     assert_title("Home")
   end
