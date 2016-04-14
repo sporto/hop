@@ -5,6 +5,7 @@ use Mix.Config
 # https://github.com/HashNuke/hound/blob/master/notes/configuring-hound.md
 
 config :hound,
+  browser: "chrome",
   host: "http://#{System.get_env("WEBDRIVER_HOST")}",
   port: System.get_env("WEBDRIVER_PORT"),
   app_host: "http://#{System.get_env("APP_HOST")}",
