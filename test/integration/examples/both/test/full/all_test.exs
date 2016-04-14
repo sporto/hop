@@ -11,7 +11,7 @@ defmodule BFullTest do
   end
 
   defp wait_for_app do
-    :timer.sleep(1000)
+    :timer.sleep(5000)
   end
 
   defp wait do
