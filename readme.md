@@ -54,14 +54,12 @@
 - (3-5) This will return an effect that your application must run via ports.
 - When the task is run by Elm the browser location changes.
 
-Hop works with StartApp out of the box.
+Hop works with StartApp out of the box. From v4 __Hop supports push state or hash routing__.
 
 ### Hash routing
 
-__At the moment only hash routes are supported i.e. `#/users/1`.__
-
-Although a proper url should have the query before the hash e.g. `?keyword=Ja#/users/1`,
-in Hop query parameters are appended after the hash path e.g. `#/users/1?keyword=Ja`. 
+A proper url should have the query before the hash e.g. `?keyword=Ja#/users/1`,
+but when using hash routing, query parameters are appended after the hash path e.g. `#/users/1?keyword=Ja`. 
 This is done for aesthetics and so the router is fully controlled by the hash fragment.
 
 ## Docs
@@ -70,16 +68,18 @@ This is done for aesthetics and so the router is fully controlled by the hash fr
 ### [Building routes](https://github.com/sporto/hop/blob/master/docs/building-routes.md)
 ### [Navigating](https://github.com/sporto/hop/blob/master/docs/navigating.md)
 ### [API](http://package.elm-lang.org/packages/sporto/hop/latest/)
+### [Upgrade guide 3 to 4](https://github.com/sporto/hop/blob/master/docs/upgrade-3-to-4.md)
 ### [Upgrade guide 2.1 to 3.0](https://github.com/sporto/hop/blob/master/docs/upgrade-2-to-3.md)
+### [Version 3 documentation](https://github.com/sporto/hop/tree/v3)
 ### [Version 2 documentation](https://github.com/sporto/hop/tree/v2)
 ### [Changelog](./docs/changelog.md)
 
 ## Examples
 
-See [examples](https://github.com/sporto/hop/tree/master/examples). To run the example apps:
+See `example-basic` and `example-full` folders. To run the example apps:
 
 - Clone this repo
-- Go to example folder (e.g. `examples/basic` or `examples/full`)
+- Go to example folder
 - Follow the readme in that folder
 
 ## Testing
@@ -96,7 +96,6 @@ npm test
 - Navigate needs functions to:
   - Change path only (without changing the query)
 - Navigate without adding to history
-- Push state - Support routes without hashes
 - Redirects e.g. "/" -> "/dashboard"
 
 ## Possible improvements

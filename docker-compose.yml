@@ -1,0 +1,58 @@
+example_basic:
+  build: .
+  dockerfile: example_basic.dockerfile
+  ports:
+   - "8000:8000"
+
+example_full:
+  build: .
+  dockerfile: example_full.dockerfile
+  ports:
+    - "3000:3000"
+
+webdriver:
+  image: selenium/standalone-chrome
+  links:
+    - example_basic
+    - example_full
+  ports:
+    - "4444:4444"
+
+test_unit:
+  image: sporto/elm-node-webpack
+  volumes:
+    - .:/usr/src
+  working_dir: /usr/src
+  command: ./start_test_unit.sh
+
+test_example_basic:
+  build: ./test/integration/examples/both
+  links:
+    - example_basic
+    - webdriver
+  volumes:
+    - ./test/integration/examples/both:/usr/src
+  working_dir: /usr/src
+  command: ./run.sh
+  environment:
+    APP_HOST: example_basic
+    APP_PORT: 8000
+    WEBDRIVER_HOST: webdriver
+    WEBDRIVER_PORT: 4444
+    TEST_DIR: basic
+
+test_example_full:
+  build: ./test/integration/examples/both
+  links:
+    - example_full
+    - webdriver
+  volumes:
+    - ./test/integration/examples/both:/usr/src
+  working_dir: /usr/src
+  command: ./run.sh
+  environment:
+    APP_HOST: example_full
+    APP_PORT: 3000
+    WEBDRIVER_HOST: webdriver
+    WEBDRIVER_PORT: 4444
+    TEST_DIR: full

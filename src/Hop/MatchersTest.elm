@@ -35,6 +35,10 @@ postRoutes =
   [ postsRoute, postRoute ]
 
 
+rootRoute =
+  match1 Users ""
+
+
 usersRoute =
   match1 Users "/users"
 
@@ -60,27 +64,122 @@ userPostRoute =
 
 
 topLevelRoutes =
-  [ usersRoute, userRoute, userStatusRoute, usersTokenRoute, userPostRoute, userTokenRoute ]
+  [ rootRoute, usersRoute, userRoute, userStatusRoute, usersTokenRoute, userPostRoute, userTokenRoute ]
+
+
+config =
+  { hash = True
+  , basePath = ""
+  , matchers = topLevelRoutes
+  , notFound = NotFound
+  }
+
+
+configWithPath =
+  { config | hash = False }
+
+
+
+-- TODO add root "/"
 
 
 matchPathTest : Test
 matchPathTest =
   let
     inputs =
-      [ ( "Matches users", "/users", Users )
-      , ( "Matches one user", "/users/1", User 1 )
-      , ( "Matches user status", "/users/2/status", UserStatus 2 )
-      , ( "Matches users token", "/users/abc", UsersToken "abc" )
-      , ( "Matches one user token", "/users/3/abc", UserToken 3 "abc" )
-      , ( "Matches user posts", "/users/4/posts", UserPosts 4 (Posts) )
-      , ( "Matches one user post", "/users/4/posts/2", UserPosts 4 (Post 2) )
-      , ( "Matches not found", "/posts", NotFound )
+      [ ( "hash: Matches users"
+        , config
+        , ""
+        , Users
+        )
+      , ( "path: Matches users"
+        , configWithPath
+        , ""
+        , Users
+        )
+        -- users
+      , ( "hash: Matches users"
+        , config
+        , "/users"
+        , Users
+        )
+      , ( "path: Matches users"
+        , configWithPath
+        , "/users"
+        , Users
+        )
+        -- one user
+      , ( "hash: Matches one user"
+        , config
+        , "/users/1"
+        , User 1
+        )
+      , ( "path: Matches one user"
+        , configWithPath
+        , "/users/1"
+        , User 1
+        )
+        -- user status
+      , ( "hash: Matches user status"
+        , config
+        , "/users/2/status"
+        , UserStatus 2
+        )
+      , ( "path: Matches user status"
+        , configWithPath
+        , "/users/2/status"
+        , UserStatus 2
+        )
+        -- users token
+      , ( "hash: Matches users token"
+        , config
+        , "/users/abc"
+        , UsersToken "abc"
+        )
+      , ( "path: Matches users token"
+        , configWithPath
+        , "/users/abc"
+        , UsersToken "abc"
+        )
+        -- one user token
+      , ( "hash: Matches one user token"
+        , config
+        , "/users/3/abc"
+        , UserToken 3 "abc"
+        )
+      , ( "path: Matches one user token"
+        , configWithPath
+        , "/users/3/abc"
+        , UserToken 3 "abc"
+        )
+        -- user posts
+      , ( "hash: Matches user posts"
+        , config
+        , "/users/4/posts"
+        , UserPosts 4 (Posts)
+        )
+      , ( "hash: Matches one user post"
+        , config
+        , "/users/4/posts/2"
+        , UserPosts 4 (Post 2)
+        )
+        -- not found
+      , ( "hash: Matches not found"
+        , config
+        , "/posts"
+        , NotFound
+        )
+      , ( "path: Matches not found"
+        , configWithPath
+        , "/app/users"
+        , NotFound
+        )
       ]
 
-    run ( testCase, input, expected ) =
+    run ( testCase, cfg, input, expected ) =
       let
         actual =
-          matchPath topLevelRoutes NotFound input
+          matchPath cfg input
 
         result =
           assertEqual expected actual
@@ -94,56 +193,103 @@ matchLocationTest : Test
 matchLocationTest =
   let
     inputs =
-      [ ( "Matches users"
-        , "/users"
-        , ( Users, { path = [ "users" ], query = newQuery } )
+      [ ( "hash: Matches root"
+        , config
+        , { path = [], query = newQuery }
+        , Users
         )
-      , ( "Matches users with query"
-        , "/users?a=1"
-        , ( Users, { path = [ "users" ], query = Dict.singleton "a" "1" } )
+      , ( "path: Matches root"
+        , configWithPath
+        , { path = [], query = newQuery }
+        , Users
         )
-      , ( "Matches one user"
-        , "/users/1"
-        , ( User 1, { path = [ "users", "1" ], query = newQuery } )
+        -- users
+      , ( "hash: Matches users"
+        , config
+        , { path = [ "users" ], query = newQuery }
+        , Users
         )
-      , ( "Matches one user with query"
-        , "/users/1?a=1"
-        , ( User 1, { path = [ "users", "1" ], query = Dict.singleton "a" "1" } )
+      , ( "path: Matches users"
+        , configWithPath
+        , { path = [ "users" ], query = newQuery }
+        , Users
         )
-      , ( "Matches user status"
-        , "/users/2/status"
-        , ( UserStatus 2, { path = [ "users", "2", "status" ], query = newQuery } )
+        -- users with query
+      , ( "hash: Matches users with query"
+        , config
+        , { path = [ "users" ], query = Dict.singleton "a" "1" }
+        , Users
         )
-      , ( "Matches users token"
-        , "/users/abc"
-        , ( UsersToken "abc", { path = [ "users", "abc" ], query = newQuery } )
+      , ( "path: Matches users with query"
+        , configWithPath
+        , { path = [ "users" ], query = Dict.singleton "a" "1" }
+        , Users
         )
-      , ( "Matches one user token"
-        , "/users/3/abc"
-        , ( UserToken 3 "abc", { path = [ "users", "3", "abc" ], query = newQuery } )
+        -- one user
+      , ( "hash: Matches one user"
+        , config
+        , { path = [ "users", "1" ], query = newQuery }
+        , User 1
         )
-      , ( "Matches user posts"
-        , "/users/4/posts"
-        , ( UserPosts 4 (Posts), { path = [ "users", "4", "posts" ], query = newQuery } )
+        -- one user with query
+      , ( "hash: Matches one user with query"
+        , config
+        , { path = [ "users", "1" ], query = Dict.singleton "a" "1" }
+        , User 1
         )
-      , ( "Matches one user post"
-        , "/users/4/posts/2"
-        , ( UserPosts 4 (Post 2), { path = [ "users", "4", "posts", "2" ], query = newQuery } )
+        -- user status
+      , ( "hash: Matches user status"
+        , config
+        , { path = [ "users", "2", "status" ], query = newQuery }
+        , UserStatus 2
         )
-      , ( "Matches one user post with query"
-        , "/users/4/posts/2?a=1"
-        , ( UserPosts 4 (Post 2), { path = [ "users", "4", "posts", "2" ], query = Dict.singleton "a" "1" } )
+        -- users token
+      , ( "hash: Matches users token"
+        , config
+        , { path = [ "users", "abc" ], query = newQuery }
+        , UsersToken "abc"
         )
-      , ( "Matches not found"
-        , "/posts"
-        , ( NotFound, { path = [ "posts" ], query = newQuery } )
+        -- one user token
+      , ( "hash: Matches one user token"
+        , config
+        , { path = [ "users", "3", "abc" ], query = newQuery }
+        , UserToken 3 "abc"
+        )
+        -- user posts
+      , ( "hash: Matches user posts"
+        , config
+        , { path = [ "users", "4", "posts" ], query = newQuery }
+        , UserPosts 4 (Posts)
+        )
+        -- one user post
+      , ( "hash: Matches one user post"
+        , config
+        , { path = [ "users", "4", "posts", "2" ], query = newQuery }
+        , UserPosts 4 (Post 2)
+        )
+        -- one user post with query
+      , ( "hash: Matches one user post with query"
+        , config
+        , { path = [ "users", "4", "posts", "2" ], query = Dict.singleton "a" "1" }
+        , UserPosts 4 (Post 2)
+        )
+      , ( "path: Matches one user post with query"
+        , configWithPath
+        , { path = [ "users", "4", "posts", "2" ], query = Dict.singleton "a" "1" }
+        , UserPosts 4 (Post 2)
+        )
+        -- not found
+      , ( "hash: Matches not found"
+        , config
+        , { path = [ "posts" ], query = newQuery }
+        , NotFound
         )
       ]
 
-    run ( testCase, input, expected ) =
+    run ( testCase, cfg, input, expected ) =
       let
         actual =
-          matchLocation topLevelRoutes NotFound input
+          matchLocation cfg input
 
         result =
           assertEqual expected actual

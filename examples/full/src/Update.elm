@@ -1,33 +1,37 @@
 module Update (..) where
 
-import Effects exposing (Effects, Never)
-import Routing
+import Debug
+import Effects exposing (Effects)
+import Hop.Navigate exposing (navigateTo, setQuery)
 import Actions exposing (..)
 import Models exposing (..)
+import Routing.Config
 import Languages.Update
 
 
 update : Action -> AppModel -> ( AppModel, Effects Action )
 update action model =
-  case action of
-    RoutingAction subAction ->
-      let
-        ( updatedRouting, fx ) =
-          Routing.update subAction model.routing
-
-        updatedModel =
-          { model | routing = updatedRouting }
-      in
-        ( updatedModel, Effects.map RoutingAction fx )
-
+  case Debug.log "action" action of
     LanguagesAction subAction ->
       let
         updateModel =
           { languages = model.languages
-          , location = model.routing.location
+          , location = model.location
           }
 
-        ( languages, fx ) =
+        ( updatedModel, fx ) =
           Languages.Update.update subAction updateModel
       in
-        ( { model | languages = languages }, Effects.map LanguagesAction fx )
+        ( { model | languages = updatedModel.languages }, Effects.map LanguagesAction fx )
+
+    NavigateTo path ->
+      ( model, Effects.map HopAction (navigateTo Routing.Config.config path) )
+
+    ApplyRoute ( route, location ) ->
+      ( { model | route = route, location = location }, Effects.none )
+
+    SetQuery query ->
+      ( model, Effects.map HopAction (setQuery Routing.Config.config query model.location) )
+
+    HopAction () ->
+      ( model, Effects.none )

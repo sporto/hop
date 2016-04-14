@@ -12,10 +12,14 @@ Functions for building matchers and matching paths
 
 import String
 import Hop.Types exposing (..)
-import Hop.Location
 import Combine exposing (Parser, parse)
 import Combine.Num
 import Combine.Infix exposing ((<$>), (<$), (<*), (*>), (<*>), (<|>))
+
+
+---------------------------------------
+-- Matchers
+---------------------------------------
 
 
 parserWithBeginningAndEnd : Parser a -> Parser a
@@ -216,20 +220,23 @@ str =
 
 ---------------------------------------
 -- MATCHING
+---------------------------------------
 
 
-{-|
-Matches a path e.g. "/users/1/comments/2".
+{-| @priv
+Matches a path (without basePath).
+e.g. "/users/1/comments/2".
+
 Returns the matching route.
 
-    matchPath matchers NotFound "/users/1/comments/2"
+    matchPathWithPathList matchers NotFound "/users/1/comments/2"
 
     ==
 
     User 1 (Comment 2)
 -}
-matchPath : List (PathMatcher route) -> route -> String -> route
-matchPath routeParsers notFoundAction path =
+matchPathWithPathList : List (PathMatcher route) -> route -> String -> route
+matchPathWithPathList routeParsers notFoundAction path =
   case routeParsers of
     [] ->
       notFoundAction
@@ -248,38 +255,50 @@ matchPath routeParsers notFoundAction path =
           res
 
         ( Err _, context ) ->
-          matchPath rest notFoundAction path
+          matchPathWithPathList rest notFoundAction path
 
 
 {-|
-Matches a complete location including path and query e.g. "/users/1/post?a=1".
-Returns a tuple e.g. (route, location).
+Matches a path.
+BasePath should already be removed.
+e.g. "/users/1/comments/2".
 
-    matchLocation matchers NotFound "/users/1?a=1"
+Returns the matched route.
+
+    matchPath config "/users/1/comments/2"
 
     ==
 
-    (User 1, location)
+    User 1 (Comment 2)
 -}
-matchLocation : List (PathMatcher route) -> route -> String -> ( route, Location )
-matchLocation routeParsers notFoundAction pathWithQuery =
-  let
-    location =
-      Hop.Location.parse pathWithQuery
-
-    path =
-      "/" ++ (String.join "/" location.path)
-
-    matchedAction =
-      matchPath routeParsers notFoundAction path
-  in
-    ( matchedAction, location )
+matchPath : Config route -> String -> route
+matchPath config path =
+  matchPathWithPathList config.matchers config.notFound path
 
 
 {-|
-Generates a path from a matcher.
-The second parameters should be a list of strings.
-You need to pass one string for each dynamic parameter that this route takes.
+Matches a location record.
+Returns the matched route.
+
+    matchLocation config { path = ["users", "1"], query = [] }
+
+    ==
+
+    (User 1)
+-}
+matchLocation : Config route -> Location -> route
+matchLocation config location =
+  let
+    pathString =
+      String.join "/" ("" :: location.path)
+  in
+    matchPath config pathString
+
+
+{-|
+Generates a path from a matcher. Use this for reverse routing.
+
+The last parameters is a list of strings. You need to pass one string for each dynamic parameter that this route takes.
 
     matcherToPath bookReviewMatcher ["1", "2"]
 
@@ -295,6 +314,9 @@ matcherToPath matcher inputs =
 
     makeSegment segment input =
       segment ++ input
+
+    path =
+      List.map2 makeSegment matcher.segments inputs'
+        |> String.join ""
   in
-    List.map2 makeSegment matcher.segments inputs'
-      |> String.join ""
+    path

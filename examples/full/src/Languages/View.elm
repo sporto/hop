@@ -2,9 +2,9 @@ module Languages.View (..) where
 
 import Html exposing (..)
 import Html.Attributes exposing (href, style)
-import Languages.Models exposing (LanguageId, Language)
+import Hop.Types exposing (Location)
+import Languages.Models exposing (LanguageId, Language, Route, Route(..))
 import Languages.Actions exposing (..)
-import Languages.Routing
 import Languages.Filter
 import Languages.List
 import Languages.Show
@@ -13,7 +13,8 @@ import Languages.Edit
 
 type alias ViewModel =
   { languages : List Language
-  , routing : Languages.Routing.Model
+  , location : Location
+  , route : Route
   }
 
 
@@ -29,16 +30,16 @@ view : Signal.Address Action -> ViewModel -> Html
 view address model =
   div
     [ containerStyle ]
-    [ Languages.Filter.view address model
-    , Languages.List.view address model
+    [ Languages.Filter.view address {}
+    , Languages.List.view address { languages = model.languages, location = model.location }
     , subView address model
     ]
 
 
 subView : Signal.Address Action -> ViewModel -> Html
 subView address model =
-  case model.routing.route of
-    Languages.Routing.LanguageRoute languageId ->
+  case model.route of
+    LanguageRoute languageId ->
       let
         maybeLanguage =
           getLanguage model.languages languageId
@@ -50,7 +51,7 @@ subView address model =
           Nothing ->
             notFoundView address model
 
-    Languages.Routing.LanguageEditRoute languageId ->
+    LanguageEditRoute languageId ->
       let
         maybeLanguage =
           getLanguage model.languages languageId
@@ -62,10 +63,10 @@ subView address model =
           _ ->
             notFoundView address model
 
-    Languages.Routing.LanguagesRoute ->
+    LanguagesRoute ->
       emptyView
 
-    Languages.Routing.NotFoundRoute ->
+    NotFoundRoute ->
       notFoundView address model
 
 

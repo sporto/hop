@@ -1,19 +1,28 @@
 module Models (..) where
 
-import Routing
+import Hop.Types exposing (Location, newLocation)
 import Languages.Models exposing (Language, languages)
 
 
+type Route
+  = HomeRoute
+  | AboutRoute
+  | LanguagesRoutes Languages.Models.Route
+  | NotFoundRoute
+
+
 type alias AppModel =
-  { routing : Routing.Model
-  , languages : List Language
+  { languages : List Language
+  , location : Location
+  , route : Route
   , selectedLanguage : Maybe Language
   }
 
 
 newAppModel : AppModel
 newAppModel =
-  { routing = Routing.newModel
-  , languages = languages
+  { languages = languages
+  , location = newLocation
+  , route = AboutRoute
   , selectedLanguage = Maybe.Nothing
   }

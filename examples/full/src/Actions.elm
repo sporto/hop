@@ -1,9 +1,13 @@
 module Actions (..) where
 
-import Routing
+import Hop.Types exposing (Location, Query)
 import Languages.Actions
+import Models exposing (Route)
 
 
 type Action
-  = RoutingAction Routing.Action
+  = HopAction ()
+  | ApplyRoute ( Route, Location )
+  | NavigateTo String
+  | SetQuery Query
   | LanguagesAction Languages.Actions.Action

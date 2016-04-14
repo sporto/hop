@@ -4,11 +4,13 @@ import Html exposing (..)
 import StartApp
 import Effects exposing (Effects, Never)
 import Task exposing (Task)
-import Routing
+import Hop
+import Hop.Types exposing (Router)
 import Actions exposing (..)
 import Models exposing (..)
 import Update exposing (..)
 import View exposing (..)
+import Routing.Config
 
 
 init : ( AppModel, Effects Action )
@@ -16,9 +18,14 @@ init =
   ( newAppModel, Effects.none )
 
 
+router : Router Route
+router =
+  Hop.new Routing.Config.config
+
+
 routerSignal : Signal Action
 routerSignal =
-  Signal.map RoutingAction Routing.signal
+  Signal.map ApplyRoute router.signal
 
 
 app : StartApp.App AppModel
@@ -43,4 +50,4 @@ port tasks =
 
 port routeRunTask : Task () ()
 port routeRunTask =
-  Routing.run
+  router.run

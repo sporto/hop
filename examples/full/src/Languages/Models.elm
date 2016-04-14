@@ -13,6 +13,17 @@ type alias Language =
   }
 
 
+
+-- ROUTING
+
+
+type Route
+  = LanguagesRoute
+  | LanguageRoute LanguageId
+  | LanguageEditRoute LanguageId
+  | NotFoundRoute
+
+
 languages : List Language
 languages =
   [ { id = 1

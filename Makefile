@@ -1,48 +1,40 @@
-test-up:
-	cd ./src/Test && elm reactor
-
+# Start basic application example locally
 basic-up:
 	cd ./examples/basic && elm reactor
 
 full-up:
-	cd ./examples/full && elm reactor
+	cd ./examples/full && npm run dev
 
+# Generate diagramas using PlantUML
 flow:
 	java -jar /usr/local/bin/plantuml.jar -ttxt assets/flow.pu
 
+# Generate documentation for preview
 docs:
 	elm make --docs=documentation.json
 
-test-lib:
-	cd ./test && npm test
+### TEST LOCALLY
 
-test-basic:
-	cd ./examples/basic && elm make Main.elm
+# Run unit tests locally
+test-unit:
+	cd ./test/unit && npm test
 
-test-full:
-	cd ./examples/full && elm make src/Main.elm && rm index.html
+### TESTS IN DOCKER
 
-ci-prepare:
-	node --version
-	npm --version
-	npm install -g elm
+# Run unit test in docker
+test-unit-docker:
+	docker-compose run --rm test_unit
+	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
-	@echo "============================"
-	@echo "Installing deps for test"
-	cd ./test && npm install
-	cd ./test && elm package install -y
+# Run basic app test inside a docker container
+# Run integration tests
+test-basic-int-docker:
+	docker-compose run --rm --service-ports test_example_basic
+	docker-compose stop
+	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
-	@echo "============================"
-	@echo "Installing deps for basic app"
-	cd ./examples/basic && elm package install -y
-
-	@echo "============================"
-	@echo "Installing deps for full app"
-	cd ./examples/full && elm package install -y
-
-test:
-	make test-lib
-	make test-basic
-	make test-full
+test-full-int-docker:
+	docker-compose run --rm --service-ports test_example_full
+	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
 .PHONY: docs test

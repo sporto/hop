@@ -2,15 +2,12 @@ module View (..) where
 
 import Html exposing (..)
 import Html.Events exposing (onClick)
-import Html.Attributes exposing (class, href, style)
+import Html.Attributes exposing (id, class, href, style)
 import Models exposing (..)
 import Actions exposing (..)
-import Routing
+import Routing.Utils exposing (reverse)
 import Languages.View
-import Languages.Routing
-
-
--- TODO use reverse routing
+import Languages.Models
 
 
 view : Signal.Address Action -> AppModel -> Html
@@ -28,66 +25,64 @@ menu address model =
     [ class "p2 white bg-black" ]
     [ div
         []
-        [ menuLink address Routing.HomeRoute "Home"
+        [ menuLink address HomeRoute "btnHome" "Home"
         , text "|"
-        , menuLink address (Routing.LanguagesRoutes Languages.Routing.LanguagesRoute) "Languages"
+        , menuLink address (LanguagesRoutes Languages.Models.LanguagesRoute) "btnLanguages" "Languages"
         , text "|"
-        , menuLink address Routing.AboutRoute "About"
+        , menuLink address AboutRoute "btnAbout" "About"
         ]
     ]
 
 
-menuBtn : Signal.Address Action -> Action -> String -> Html
-menuBtn address action label =
-  button
-    [ Html.Events.onClick address action ]
-    [ text label
-    ]
-
-
-menuLink : Signal.Address Action -> Routing.Route -> String -> Html
-menuLink address route label =
+menuLink : Signal.Address Action -> Route -> String -> String -> Html
+menuLink address route viewId label =
   let
     path =
-      Routing.reverse route
+      reverse route
 
     action =
-      RoutingAction (Routing.NavigateTo path)
+      NavigateTo path
   in
     a
-      [ href "//:javascript"
-      , class "white px2"
+      [ id viewId
+      , href "javascript://"
       , onClick address action
+      , class "white px2"
       ]
       [ text label ]
 
 
 pageView : Signal.Address Action -> AppModel -> Html
 pageView address model =
-  case model.routing.route of
-    Routing.HomeRoute ->
+  case model.route of
+    HomeRoute ->
       div
-        []
-        [ h2 [] [ text "Home" ]
+        [ class "p2" ]
+        [ h1 [ id "title", class "m0" ] [ text "Home" ]
         , div [] [ text "Click on Languages to start routing" ]
         ]
 
-    Routing.AboutRoute ->
+    AboutRoute ->
       div
-        []
-        [ h2 [] [ text "About" ]
+        [ class "p2" ]
+        [ h1 [ id "title", class "m0" ] [ text "About" ]
         ]
 
-    Routing.LanguagesRoutes languagesRoute ->
+    LanguagesRoutes languagesRoute ->
       let
         viewModel =
           { languages = model.languages
-          , routing = model.routing.languagesRouting
+          , route = languagesRoute
+          , location = model.location
           }
       in
-        Languages.View.view (Signal.forwardTo address LanguagesAction) viewModel
+        div
+          [ class "p2" ]
+          [ h1 [ id "title", class "m0" ] [ text "Languages" ]
+          , Languages.View.view (Signal.forwardTo address LanguagesAction) viewModel
+          ]
 
-    Routing.NotFoundRoute ->
+    NotFoundRoute ->
       notFoundView address model
 
 
