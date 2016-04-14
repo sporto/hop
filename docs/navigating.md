@@ -29,7 +29,7 @@ update action model =
     ...
     
     NavigateTo path ->
-      ( model, Effects.map HopAction (navigateTo path) )
+      ( model, Effects.map HopAction (navigateTo config path) )
 
     HopAction () ->
       ( model, Effects.none )
@@ -58,13 +58,13 @@ update action model =
     ...
 
     AddQuery query ->
-      (model, Effects.map HopAction (addQuery query model.location))
+      (model, Effects.map HopAction (addQuery config query model.location))
 
     SetQuery query ->
-      (model, Effects.map HopAction (setQuery query model.location))
+      (model, Effects.map HopAction (setQuery config query model.location))
 
     ClearQuery ->
-      (model, Effects.map HopAction (clearQuery model.location))
+      (model, Effects.map HopAction (clearQuery config model.location))
 ```
 
 You need to pass the current `location` record to these functions. Hop will use that record to generate the new path.
