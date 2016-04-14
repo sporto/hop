@@ -15,11 +15,15 @@ import Hop.Types exposing (..)
 
   navigateTo will append "#/" if necessary
 
+    navigateTo config "/users"
+
+  Example use in update:
+
     update action model =
       case action of
         ...
         NavigateTo path ->
-          (model, Effects.map HopAction (navigateTo path))
+          (model, Effects.map HopAction (navigateTo config path))
 -}
 navigateTo : Config route -> String -> Effects ()
 navigateTo config route =
@@ -46,13 +50,21 @@ navigateToLocation config location =
 
 {-| Add query string values (patches any existing values)
 
+    addQuery config query location
+
+- config is the router Config record
+- query is a dictionary with keys to add
+- location is a record representing the current location
+
+Example use in update:
+
     update action model =
       case action of
         ...
         AddQuery query ->
-          (model, Effects.map HopAction (Hop.addQuery query model.location))
+          (model, Effects.map HopAction (addQuery config query model.location))
 
-  To remove a value set the value to ""
+To remove a value set the value to ""
 -}
 addQuery : Config route -> Query -> Location -> Effects ()
 addQuery config query currentLocation =
@@ -63,11 +75,15 @@ addQuery config query currentLocation =
 
 {-| Set query string values (removes existing values)
 
+    setQuery config query location
+
+Example use in update:
+
     update action model =
       case action of
         ...
         SetQuery query ->
-          (model, Effects.map HopAction (Hop.setQuery query model.location))
+          (model, Effects.map HopAction (setQuery config query model.location))
 -}
 setQuery : Config route -> Query -> Location -> Effects ()
 setQuery config query currentLocation =
@@ -78,11 +94,15 @@ setQuery config query currentLocation =
 
 {-| Remove one query string value
 
+    removeQuery config query location
+
+Example use in update:
+
     update action model =
       case action of
         ...
         RemoveQuery query ->
-          (model, Effects.map HopAction (Hop.removeQuery key model.location))
+          (model, Effects.map HopAction (removeQuery config key model.location))
 -}
 removeQuery : Config route -> String -> Location -> Effects ()
 removeQuery config key currentLocation =
@@ -93,11 +113,15 @@ removeQuery config key currentLocation =
 
 {-| Clear all query string values
 
+    clearQuery config location
+
+Example use in update:
+
     update action model =
       case action of
         ...
         ClearQuery ->
-          (model, Effects.map HopAction (Hop.clearQuery model.location))
+          (model, Effects.map HopAction (clearQuery config model.location))
 -}
 clearQuery : Config route -> Location -> Effects ()
 clearQuery config currentLocation =

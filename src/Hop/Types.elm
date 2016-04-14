@@ -45,6 +45,12 @@ type alias PathMatcher action =
 
 
 {-| Configuration input for Hop.new
+
+- basePath: Only for pushState routing (not hash). e.g. "/app". All routing and matching is done after this basepath.
+- hash: True for hash routing, False for pushState routing.
+- matchers: A List of route matchers.
+- notFound: Route that will match when a location is not found.
+
 -}
 type alias Config route =
   { basePath : String
