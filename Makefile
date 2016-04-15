@@ -37,4 +37,11 @@ test-full-int-docker:
 	docker-compose run --rm --service-ports test_example_full
 	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
+upgrade-deps:
+	cd ./support/upgrade_deps && mix escript.build
+	./support/upgrade_deps/upgrade_deps --dir ${PWD}
+	./support/upgrade_deps/upgrade_deps --dir ${PWD}/test/unit
+	./support/upgrade_deps/upgrade_deps --dir ${PWD}/examples/basic
+	./support/upgrade_deps/upgrade_deps --dir ${PWD}/examples/full
+
 .PHONY: docs test
