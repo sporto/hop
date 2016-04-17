@@ -85,7 +85,7 @@ type Route
 Create path matchers:
 
 ```elm
-import Hop.Matchers.exposing (match2, match3, nested2, matchPath)
+import Hop.Matchers exposing (match2, match3, nested2, matchPath)
 
 -- Matchers for services
 
