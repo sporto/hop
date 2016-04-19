@@ -37,10 +37,17 @@ Change the location using a Location record
 -}
 navigateToLocation : Config route -> Location -> Effects ()
 navigateToLocation config location =
-  location
-    |> Location.locationToFullPath config
-    |> History.setPath
-    |> Effects.task
+  let
+    fullPath =
+      Location.locationToFullPath config location
+
+    path =
+      if fullPath == "" then
+        "."
+      else
+        fullPath
+  in
+    History.setPath path |> Effects.task
 
 
 
