@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.1
+
+Fix https://github.com/sporto/hop/issues/20
+
 ## 4.0.0
 
 - Support setState (No hashes)
