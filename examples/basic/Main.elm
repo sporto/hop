@@ -32,7 +32,7 @@ matchers =
 routerConfig : Config Route
 routerConfig =
   { hash = True
-  , basePath = ""
+  , basePath = "/"
   , matchers = matchers
   , notFound = NotFoundRoute
   }

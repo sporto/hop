@@ -35,8 +35,11 @@ locationToFullPath config location =
         "#/"
       else
         ""
+
+    dedupSlash =
+      Regex.replace Regex.All (Regex.regex "/+") (\_ -> "/")
   in
-    prefix ++ joined ++ query
+    dedupSlash <| prefix ++ joined ++ query
 
 
 locationFromUser : String -> Location
