@@ -29,7 +29,7 @@ defmodule BFullTest do
   end
 
   test "it works" do
-    navigate_to("/")
+    navigate_to("/app")
     wait_for_app()
 
     str = visible_page_text()
@@ -43,28 +43,28 @@ defmodule BFullTest do
   end
 
   test "it shows home" do
-    navigate_to("/")
+    navigate_to("/app")
     wait_for_app()
 
     assert_title("Home")
   end
 
   test "it shows languages" do
-    navigate_to("/languages")
+    navigate_to("/app/languages")
     wait_for_app()
 
     assert_title("Languages")
   end
 
   test "it shows about" do
-    navigate_to("/about")
+    navigate_to("/app/about")
     wait_for_app()
 
     assert_title("About")
   end
 
   test "it shows a language" do
-    navigate_to("/languages/1")
+    navigate_to("/app/languages/1")
     wait_for_app()
 
     ele = find_element(:id, "titleLanguage")
@@ -72,12 +72,12 @@ defmodule BFullTest do
   end
 
   test "it shows the query" do
-    navigate_to("/languages/1?typed=dynamic")
+    navigate_to("/app/languages/1?typed=dynamic")
     # TODO
   end
 
   test "it changes the path" do
-    navigate_to("/")
+    navigate_to("/app")
     wait_for_app()
 
     assert_title("Home")
@@ -86,11 +86,11 @@ defmodule BFullTest do
     wait()
 
     actual = execute_script("return window.location.pathname")
-    assert actual == "/languages"
+    assert actual == "/app/languages"
   end
 
   test "it changes the query" do
-    navigate_to("/languages")
+    navigate_to("/app/languages")
     wait_for_app()
 
     assert_title("Languages")
