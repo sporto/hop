@@ -69,7 +69,7 @@ topLevelRoutes =
 
 config =
   { hash = True
-  , basePath = ""
+  , basePath = "/"
   , matchers = topLevelRoutes
   , notFound = NotFound
   }

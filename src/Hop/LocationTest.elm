@@ -12,7 +12,7 @@ type Route
 
 config =
   { hash = True
-  , basePath = ""
+  , basePath = "/"
   , matchers = []
   , notFound = NotFound
   }
@@ -96,7 +96,7 @@ parseTest =
 locationToFullPathTest =
   let
     config =
-      { basePath = ""
+      { basePath = "/"
       , hash = True
       , matchers = []
       , notFound = NotFound
@@ -117,10 +117,10 @@ locationToFullPathTest =
         , empty
         , "#/"
         )
-      , ( "path: it is empty when empty with path"
+      , ( "path: it is the basePath when empty with path"
         , configWithPath
         , empty
-        , ""
+        , "/"
         )
       , ( "path: it has the basepath"
         , configPathAndBasePath
@@ -152,7 +152,7 @@ locationToFullPathTest =
       , ( "path: it adds the query"
         , configWithPath
         , { empty | query = Dict.singleton "k" "1" }
-        , "?k=1"
+        , "/?k=1"
         )
       , ( "path: it adds the basepath query"
         , configPathAndBasePath
