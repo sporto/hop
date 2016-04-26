@@ -43,7 +43,7 @@ navigateToLocation config location =
 
     path =
       if fullPath == "" then
-        "."
+        "/"
       else
         fullPath
   in
