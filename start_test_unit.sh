@@ -1,5 +1,5 @@
 #!/bin/bash
 
 cd test/unit
-elm package install -y
+./install-packages.sh
 elm-test TestRunner.elm
