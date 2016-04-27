@@ -76,8 +76,4 @@ routerSignal config =
 
 locationSignal : Config route -> Signal Location
 locationSignal config =
-  let
-    loggedSignal =
-      Signal.map (Debug.log "href") History.href
-  in
-    Signal.map (hrefToLocation config) loggedSignal
+  Signal.map (hrefToLocation config) History.href
