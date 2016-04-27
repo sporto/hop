@@ -28,7 +28,7 @@ defmodule BasicTest do
     # take_screenshot("./tmp/not-found.png")
     element_id = find_element(:class, "title")
 
-    assert inner_html(element_id) == "Not found"
+    assert inner_html(element_id) == "Main"
   end
 
   test "shows main when route is main" do
