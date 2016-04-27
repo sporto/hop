@@ -29,7 +29,12 @@ configWithPathAndBase =
 hrefToLocationTest =
   let
     inputs =
-      [ ( "it parses a hash"
+      [ ( "it parses an empty hash"
+        , config
+        , "http://localhost:3000/basepath"
+        , { path = [], query = Dict.empty }
+        )
+      , ( "it parses a hash"
         , config
         , "http://localhost:3000/basepath#/users/1"
         , { path = [ "users", "1" ], query = Dict.empty }

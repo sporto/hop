@@ -117,7 +117,7 @@ hrefToLocationString config href =
     if config.hash then
       withoutDomain
         |> String.split "#"
-        |> List.reverse
+        |> List.drop 1
         |> List.head
         |> Maybe.withDefault ""
     else
