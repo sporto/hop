@@ -1,5 +1,10 @@
 # Changelog
 
+
+### 4.0.3
+
+Fix issue where root path wouldn't match when using hash routing.
+
 ### 4.0.2
 
 Futher fix for navigating to root path, use / instead of .
