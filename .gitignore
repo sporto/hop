@@ -5,3 +5,4 @@ elm.js
 documentation.json
 .vscode/tasks.json
 npm-debug.log
+.envrc
