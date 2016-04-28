@@ -1,0 +1,22 @@
+{
+  "name": "full",
+  "version": "1.0.0",
+  "description": "",
+  "main": "elm.js",
+  "scripts": {
+    "dev": "node dev_server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ace-css": "^1.0.1",
+    "css-loader": "^0.23.1",
+    "elm-webpack-loader": "^2.0.1",
+    "express": "^4.13.4",
+    "file-loader": "^0.8.5",
+    "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.12.14",
+    "webpack-dev-middleware": "^1.5.1"
+  }
+}
