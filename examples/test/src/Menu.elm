@@ -3,6 +3,7 @@ module Menu (..) where
 import Html exposing (..)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (id, class, href, style)
+import Dict
 import Models exposing (..)
 import Actions exposing (..)
 import Routing.Utils exposing (reverse)
@@ -24,6 +25,8 @@ view address model =
         , menuLink address (UsersRoutes (Users.Models.UserRoute 1)) "btnUser1" "User 1"
         , text "|"
         , menuLink address (UsersRoutes (Users.Models.UserStatusRoute 1)) "btnUserStatus1" "User Status 1"
+        , text "|"
+        , queryLink address (SetQuery (Dict.singleton "keyword" "elm")) "btnSetQuery" "Set query"
         ]
     ]
 
@@ -44,3 +47,13 @@ menuLink address route viewId label =
       , class "white px2"
       ]
       [ text label ]
+
+
+queryLink : Signal.Address Action -> Action -> String -> String -> Html
+queryLink address action viewId label =
+  a
+    [ id viewId
+    , href "javascript://"
+    , onClick address action
+    ]
+    [ text label ]
