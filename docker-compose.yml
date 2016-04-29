@@ -39,8 +39,9 @@ example_full:
 webdriver:
   image: selenium/standalone-chrome
   links:
-    - example_basic
-    - example_full
+    - test_app_hash
+    - test_app_path
+    - test_app_basepath
   ports:
     - "4444:4444"
 

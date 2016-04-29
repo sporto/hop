@@ -34,4 +34,11 @@ until nc -z $WEBDRIVER_HOST $WEBDRIVER_PORT; do
 done
 echo "Found $WEBDRIVER_HOST"
 
-mix test test/$TEST_DIR
+echo "=== Testing hash routing ==="
+APP_HOST=test_app_hash APP_PORT=9000 ROUTER_HASH=1 mix test
+
+echo "=== Testing path routing ==="
+APP_HOST=test_app_path APP_PORT=9001 ROUTER_HASH=0 mix test
+
+echo "=== Testing path and basepath routing ==="
+APP_HOST=test_app_basepath APP_PORT=9002 ROUTER_HASH=0 ROUTER_BASEPATH=/app mix test

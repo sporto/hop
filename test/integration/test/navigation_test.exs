@@ -4,19 +4,9 @@ defmodule NavigationTest do
 	use ExUnit.Case
 
 	use Hound.Helpers
+	import TestHelpers
 
 	hound_session
-
-	defp assert_title(title) do
-		element = find_element(:tag, "h1")
-		assert inner_html(element) == title
-	end
-
-	defp click_on(id) do
-		btn = find_element(:id, id) 
-		click(btn)
-		:timer.sleep(500)
-	end
 
 	test "navigates to about" do
 		:timer.sleep(200)

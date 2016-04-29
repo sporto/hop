@@ -42,7 +42,6 @@ test-full-build-docker:
 # Run integration tests
 test-int-docker:
 	docker-compose run --rm --service-ports test_app_integration
-	docker-compose stop
 	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
 upgrade-deps:
