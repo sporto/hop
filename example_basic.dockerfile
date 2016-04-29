@@ -8,8 +8,3 @@ ENV UPDATED_ON 2016-04-08
 ADD . /usr/src
 WORKDIR /usr/src/examples/basic
 RUN ./install-packages.sh
-
-# Make sure it compiles
-RUN elm make Main.elm
-
-CMD elm reactor

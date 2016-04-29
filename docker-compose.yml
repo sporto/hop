@@ -1,14 +1,18 @@
-example_basic:
+app:
   build: .
   dockerfile: example_basic.dockerfile
   ports:
    - "8000:8000"
 
+example_basic:
+  build: .
+  dockerfile: example_basic.dockerfile
+  command: elm make Main.elm
+
 example_full:
   build: .
   dockerfile: example_full.dockerfile
-  ports:
-    - "3000:3000"
+  command: elm make ./src/Main.elm
 
 webdriver:
   image: selenium/standalone-chrome

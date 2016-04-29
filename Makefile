@@ -29,16 +29,25 @@ test-unit-docker:
 	docker-compose run --rm test_unit
 	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
-# Run basic app test inside a docker container
-# Run integration tests
-test-basic-int-docker:
-	docker-compose run --rm --service-ports test_example_basic
-	docker-compose stop
+# Run basic app build in docker
+test-basic-build-docker:
+	docker-compose run --rm example_basic
 	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
-test-full-int-docker:
-	docker-compose run --rm --service-ports test_example_full
+test-full-build-docker:
+	docker-compose run --rm example_full
 	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
+
+# Run basic app test inside a docker container
+# Run integration tests
+# test-basic-int-docker:
+# 	docker-compose run --rm --service-ports test_example_basic
+# 	docker-compose stop
+# 	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
+
+# test-full-int-docker:
+# 	docker-compose run --rm --service-ports test_example_full
+# 	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
 upgrade-deps:
 	cd ./support/upgrade_deps && mix escript.build
