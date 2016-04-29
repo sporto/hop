@@ -1,16 +1,8 @@
 module Users.Routing.Utils (..) where
 
 import Hop.Matchers exposing (..)
-import Hop.Types exposing (Config)
-import Models
 import Users.Models exposing (..)
-import Routing.Config
 import Users.Routing.Config exposing (..)
-
-
-config : Config Models.Route
-config =
-  Routing.Config.config
 
 
 toS : a -> String

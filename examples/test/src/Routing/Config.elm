@@ -29,10 +29,10 @@ matchers =
   ]
 
 
-config : Config Route
-config =
-  { basePath = ""
-  , hash = True
+getConfig : String -> Bool -> Config Route
+getConfig basePath hash =
+  { basePath = basePath
+  , hash = hash
   , matchers = matchers
   , notFound = NotFoundRoute
   }

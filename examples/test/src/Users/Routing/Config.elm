@@ -1,6 +1,6 @@
 module Users.Routing.Config (..) where
 
-import Hop.Types exposing (Config, Location, Query, Router, PathMatcher, newLocation)
+import Hop.Types exposing (PathMatcher)
 import Hop.Matchers exposing (..)
 import Users.Models exposing (..)
 

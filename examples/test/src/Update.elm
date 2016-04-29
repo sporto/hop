@@ -5,7 +5,6 @@ import Effects exposing (Effects)
 import Hop.Navigate exposing (navigateTo, setQuery)
 import Actions exposing (..)
 import Models exposing (..)
-import Routing.Config
 import Users.Update
 
 
@@ -17,6 +16,7 @@ update action model =
         updateModel =
           { users = model.users
           , location = model.location
+          , routerConfig = model.routerConfig
           }
 
         ( updatedModel, fx ) =
@@ -25,13 +25,13 @@ update action model =
         ( { model | users = updatedModel.users }, Effects.map UsersAction fx )
 
     NavigateTo path ->
-      ( model, Effects.map HopAction (navigateTo Routing.Config.config path) )
+      ( model, Effects.map HopAction (navigateTo model.routerConfig path) )
 
     ApplyRoute ( route, location ) ->
       ( { model | route = route, location = location }, Effects.none )
 
     SetQuery query ->
-      ( model, Effects.map HopAction (setQuery Routing.Config.config query model.location) )
+      ( model, Effects.map HopAction (setQuery model.routerConfig query model.location) )
 
     HopAction () ->
       ( model, Effects.none )

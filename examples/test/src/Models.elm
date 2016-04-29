@@ -1,6 +1,6 @@
 module Models (..) where
 
-import Hop.Types exposing (Location, newLocation)
+import Hop.Types exposing (Config, Location, newLocation)
 import Users.Models exposing (User)
 
 
@@ -12,15 +12,17 @@ type Route
 
 
 type alias AppModel =
-  { location : Location
+  { routerConfig : Config Route
+  , location : Location
   , route : Route
   , users : List User
   }
 
 
-newAppModel : AppModel
-newAppModel =
-  { location = newLocation
+newAppModel : Config Route -> AppModel
+newAppModel routerConfig =
+  { routerConfig = routerConfig
+  , location = newLocation
   , route = AboutRoute
   , users = []
   }

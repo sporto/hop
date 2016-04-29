@@ -5,7 +5,7 @@ import StartApp
 import Effects exposing (Effects, Never)
 import Task exposing (Task)
 import Hop
-import Hop.Types exposing (Router)
+import Hop.Types exposing (Config, Router)
 import Actions exposing (..)
 import Models exposing (..)
 import Update exposing (..)
@@ -13,14 +13,19 @@ import View exposing (..)
 import Routing.Config
 
 
+getRouterConfig : Config Route
+getRouterConfig =
+  Routing.Config.getConfig "" hash
+
+
 init : ( AppModel, Effects Action )
 init =
-  ( newAppModel, Effects.none )
+  ( newAppModel getRouterConfig, Effects.none )
 
 
 router : Router Route
 router =
-  Hop.new Routing.Config.config
+  Hop.new getRouterConfig
 
 
 routerSignal : Signal Action
@@ -51,3 +56,6 @@ port tasks =
 port routeRunTask : Task () ()
 port routeRunTask =
   router.run
+
+
+port hash : Bool
