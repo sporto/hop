@@ -15,7 +15,7 @@ import Routing.Config
 
 getRouterConfig : Config Route
 getRouterConfig =
-  Routing.Config.getConfig "" hash
+  Routing.Config.getConfig config.basePath config.hash
 
 
 init : ( AppModel, Effects Action )
@@ -58,4 +58,4 @@ port routeRunTask =
   router.run
 
 
-port hash : Bool
+port config : AppConfig

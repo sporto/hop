@@ -18,6 +18,10 @@ type alias AppModel =
   , users : List User
   }
 
+type alias AppConfig = 
+  { basePath: String
+  , hash: Bool
+  }
 
 newAppModel : Config Route -> AppModel
 newAppModel routerConfig =
