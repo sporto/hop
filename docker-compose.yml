@@ -24,7 +24,7 @@ test_app_basepath:
   environment:
     APP_PORT: 9002
     CONFIG_HASH: 0
-    CONFIG_BASEPATH: app
+    CONFIG_BASEPATH: '/app'
 
 example_basic:
   build: .

@@ -8,14 +8,18 @@ var compiler  = webpack(config);
 var host      = 'localhost';
 var port      = process.env.APP_PORT || 9000;
 var basePath  = process.env.CONFIG_BASEPATH || '';
-var hash      = process.env.CONFIG_HASH || false;
+var hash      = process.env.CONFIG_HASH || '0';
 
-if (hash === 1) hash = true
+hash = !!+hash;
+
+console.log('Staring dev server');
+console.log('hash', hash);
+console.log('basePath', basePath);
 
 var appConfig = {
 	basePath: basePath,
 	hash: hash,
-} 
+}
 
 app.use(require('webpack-dev-middleware')(compiler, {
 	// contentBase: 'src',
@@ -33,16 +37,18 @@ function respondWithIndex(req, res) {
 	res.render('index.ejs', { config: appConfig});
 }
 
-app.get('/' + basePath, respondWithIndex);
-
 if (basePath === '') {
+	app.get('/', respondWithIndex);
 	app.get('/*', respondWithIndex);
 } else {
-	app.get('/' + basePath + '/*', respondWithIndex);
+	if (basePath[0] !== "/") throw new Error("Expect basePath to start with /")
+
+	app.get(basePath, respondWithIndex);
+	app.get(basePath + '/*', respondWithIndex);
 
 	// When hitting / redirect to basePath
 	app.get('/', function(req, res) {
-		res.redirect('/' + basePath);
+		res.redirect(basePath);
 	});
 }
 

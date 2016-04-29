@@ -8,8 +8,8 @@ defmodule LocationTest do
   hound_session
 
   defp assert_title(title) do
-    element = find_element(:tag, "h1")
-    assert inner_html(element) == title
+	element = find_element(:tag, "h1")
+	assert inner_html(element) == title
   end
 
   # defp assert_query do
@@ -19,40 +19,40 @@ defmodule LocationTest do
   # end
 
   test "shows initial view" do
-    :timer.sleep(200)
-    navigate_to("/")
-    assert_title("Home")
+	:timer.sleep(200)
+	navigate_to("/")
+	assert_title("Home")
   end
 
   test "shows about" do
-    :timer.sleep(200)
-    navigate_to("/about")
-    assert_title("About")
+	:timer.sleep(200)
+	navigate_to("/about")
+	assert_title("About")
   end
 
   test "shows user list" do
-    :timer.sleep(200)
-    # navigate_to("/Main.elm#/about")
-    navigate_to("/users")
-    assert_title("Users.List")
+	:timer.sleep(200)
+	# navigate_to("/Main.elm#/about")
+	navigate_to("/users")
+	assert_title("Users.List")
   end
 
   test "shows user" do
-    :timer.sleep(200)
-    navigate_to("/users/1")
-    assert_title("Users.Show 1")
+	:timer.sleep(200)
+	navigate_to("/users/1")
+	assert_title("Users.Show 1")
   end
 
   test "shows user" do
-    :timer.sleep(200)
-    navigate_to("/users/2")
-    assert_title("Users.Show 2")
+	:timer.sleep(200)
+	navigate_to("/users/2")
+	assert_title("Users.Show 2")
   end
 
   test "shows user status" do
-    :timer.sleep(200)
-    navigate_to("/users/1/status")
-    assert_title("Users.Status 1")
+	:timer.sleep(200)
+	navigate_to("/users/1/status")
+	assert_title("Users.Status 1")
   end
 
   # test "shows to query string" do
