@@ -1,13 +1,14 @@
-var path    = require('path');
-var express = require('express');
-var http    = require('http');
-var webpack = require('webpack');
-var config  = require('./webpack.config');
-
+var path     = require('path');
+var express  = require('express');
+var http     = require('http');
+var webpack  = require('webpack');
+var config   = require('./webpack.config');
 var app      = express();
 var compiler = webpack(config);
 var host     = 'localhost';
-var port     = 3000;
+var port     = 9000;
+var hash     = process.env.CONFIG_HASH || false;
+var basePath = process.env.CONFIG_BASEPATH || '';
 
 app.use(require('webpack-dev-middleware')(compiler, {
 	// contentBase: 'src',
@@ -17,20 +18,24 @@ app.use(require('webpack-dev-middleware')(compiler, {
 	stats: { colors: true },
 }))
 
-app.get('/app', function(req, res) {
+function respondWithIndex(req, res) {
 	res.sendFile(path.join(__dirname, 'public/index.html'));
-});
+}
 
-app.get('/app/*', function(req, res) {
-	res.sendFile(path.join(__dirname, 'public/index.html'));
-});
+app.get('/' + basePath, respondWithIndex);
 
-// When hitting / redirect to app
-app.get('/', function(req, res) {
-	res.redirect('/app');
-});
+if (basePath === '') {
+	app.get('/*', respondWithIndex);
+} else {
+	app.get('/' + basePath + '/*', respondWithIndex);
 
-// Server images
+	// When hitting / redirect to basePath
+	app.get('/', function(req, res) {
+		res.redirect('/' + basePath);
+	});
+}
+
+// Serve images
 app.use(express.static('public'));
 
 var server = http.createServer(app);
