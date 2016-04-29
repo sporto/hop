@@ -17,7 +17,7 @@ matcherUser =
 
 matcherUserStatus : PathMatcher Route
 matcherUserStatus =
-  match3 UserStatusRoute "/" int "/edit"
+  match3 UserStatusRoute "/" int "/status"
 
 
 matchers : List (PathMatcher Route)

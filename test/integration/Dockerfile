@@ -10,4 +10,3 @@ RUN apt-get install -y \
 
 RUN mix do local.rebar --force
 RUN mix local.hex --force
-

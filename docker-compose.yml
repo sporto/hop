@@ -1,8 +1,30 @@
-app:
+test_app_hash:
   build: .
-  dockerfile: example_basic.dockerfile
+  dockerfile: test_app.dockerfile
   ports:
-   - "8000:8000"
+   - "9000:9000"
+  environment:
+    APP_PORT: 9000
+    CONFIG_HASH: 1
+
+test_app_path:
+  build: .
+  dockerfile: test_app.dockerfile
+  ports:
+   - "9001:9001"
+  environment:
+    APP_PORT: 9001
+    CONFIG_HASH: 0
+
+test_app_basepath:
+  build: .
+  dockerfile: test_app.dockerfile
+  ports:
+   - "9002:9002"
+  environment:
+    APP_PORT: 9002
+    CONFIG_HASH: 0
+    CONFIG_BASEPATH: app
 
 example_basic:
   build: .
@@ -29,34 +51,17 @@ test_unit:
   working_dir: /usr/src
   command: ./start_test_unit.sh
 
-test_example_basic:
-  build: ./test/integration/examples/both
+test_app_integration:
+  build: ./test/integration
   links:
-    - example_basic
+    - test_app_hash
+    - test_app_path
+    - test_app_basepath
     - webdriver
   volumes:
-    - ./test/integration/examples/both:/usr/src
+    - ./test/integration:/usr/src
   working_dir: /usr/src
-  command: ./run.sh
+  command: ./run_tests.sh
   environment:
-    APP_HOST: example_basic
-    APP_PORT: 8000
     WEBDRIVER_HOST: webdriver
     WEBDRIVER_PORT: 4444
-    TEST_DIR: basic
-
-test_example_full:
-  build: ./test/integration/examples/both
-  links:
-    - example_full
-    - webdriver
-  volumes:
-    - ./test/integration/examples/both:/usr/src
-  working_dir: /usr/src
-  command: ./run.sh
-  environment:
-    APP_HOST: example_full
-    APP_PORT: 3000
-    WEBDRIVER_HOST: webdriver
-    WEBDRIVER_PORT: 4444
-    TEST_DIR: full

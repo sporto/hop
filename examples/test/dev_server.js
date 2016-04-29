@@ -6,9 +6,12 @@ var config    = require('./webpack.config');
 var app       = express();
 var compiler  = webpack(config);
 var host      = 'localhost';
-var port      = 9000;
+var port      = process.env.APP_PORT || 9000;
 var basePath  = process.env.CONFIG_BASEPATH || '';
 var hash      = process.env.CONFIG_HASH || false;
+
+if (hash === 1) hash = true
+
 var appConfig = {
 	basePath: basePath,
 	hash: hash,
