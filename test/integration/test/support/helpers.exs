@@ -39,7 +39,8 @@ defmodule TestHelpers do
 			end
 		end
 
-		# IO.puts("url #{url2}")
+		# IO.puts("goto #{url2}")
+
 		navigate_to(url2)
 		:timer.sleep(100)
 	end
@@ -56,8 +57,6 @@ defmodule TestHelpers do
 	end
 
 	def assert_location(location) do
-		# IO.puts("assert_location #{location}")
-		# IO.puts("using_bashpath #{using_bashpath}")
 		expected_location = if using_hash do
 			"/##{location}"
 		else

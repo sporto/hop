@@ -66,3 +66,4 @@ test_app_integration:
   environment:
     WEBDRIVER_HOST: webdriver
     WEBDRIVER_PORT: 4444
+    WEBDRIVER_BROWSER: chrome
