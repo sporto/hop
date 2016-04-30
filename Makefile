@@ -21,6 +21,13 @@ docs:
 # Run unit tests locally
 test-unit:
 	cd ./test/unit && npm test
+	
+# Run integration test locally
+# You need to have a webdriver and app running for this e.g.
+# - make test-up
+# - selenium-server -p 4444
+test-int:
+	cd ./test/integration && APP_HOST=localhost APP_PORT=9000 ROUTER_HASH=1 WEBDRIVER_BROWSER=chrome mix test ./test/location_test.exs:18
 
 ### TESTS IN DOCKER
 

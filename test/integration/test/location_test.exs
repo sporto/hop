@@ -17,7 +17,7 @@ defmodule LocationTest do
 	test "shows initial view" do
 		goto("/")
 		# IO.puts(current_url())
-		# take_screenshot("initial.png")
+		# take_screenshot("home.png")
 		assert_title("Home")
 	end
 
