@@ -27,6 +27,8 @@ view address model =
         , menuLink address (UsersRoutes (Users.Models.UserStatusRoute 1)) "btnUserStatus1" "User Status 1"
         , text "|"
         , queryLink address (SetQuery (Dict.singleton "keyword" "elm")) "btnSetQuery" "Set query"
+        , text "|"
+        , queryLink address ClearQuery "btnClearQuery" "Clear query"
         ]
     ]
 

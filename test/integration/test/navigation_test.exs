@@ -49,4 +49,18 @@ defmodule NavigationTest do
 		assert_location("/users/1/status")
 	end
 
+	test "sets the query string" do
+		goto("/")
+		click_on("btnSetQuery")
+		assert_query("[(\"keyword\",\"elm\")]")
+		assert_location("/?keyword=elm")
+	end
+
+	test "goes back to root after removing query" do
+		goto("/?keyword=elm")
+		click_on("btnClearQuery")
+		assert_location("/")
+		assert_title("Home")
+	end
+
 end

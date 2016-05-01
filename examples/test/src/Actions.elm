@@ -10,4 +10,5 @@ type Action
   | ApplyRoute ( Route, Location )
   | NavigateTo String
   | SetQuery Query
+  | ClearQuery
   | UsersAction Users.Actions.Action

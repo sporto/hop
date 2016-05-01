@@ -2,7 +2,7 @@ module Update (..) where
 
 import Debug
 import Effects exposing (Effects)
-import Hop.Navigate exposing (navigateTo, setQuery)
+import Hop.Navigate exposing (navigateTo, setQuery, clearQuery)
 import Actions exposing (..)
 import Models exposing (..)
 import Users.Update
@@ -32,6 +32,9 @@ update action model =
 
     SetQuery query ->
       ( model, Effects.map HopAction (setQuery model.routerConfig query model.location) )
+
+    ClearQuery ->
+      ( model, Effects.map HopAction (clearQuery model.routerConfig model.location) )
 
     HopAction () ->
       ( model, Effects.none )
