@@ -72,6 +72,7 @@ This is done for aesthetics and so the router is fully controlled by the hash fr
 ### [Upgrade guide 2.1 to 3.0](https://github.com/sporto/hop/blob/master/docs/upgrade-2-to-3.md)
 ### [Version 3 documentation](https://github.com/sporto/hop/tree/v3)
 ### [Version 2 documentation](https://github.com/sporto/hop/tree/v2)
+### [Testing](https://github.com/sporto/hop/blob/master/docs/testing.md)
 ### [Changelog](./docs/changelog.md)
 
 ## Examples
@@ -81,15 +82,6 @@ See `example-basic` and `example-full` folders. To run the example apps:
 - Clone this repo
 - Go to example folder
 - Follow the readme in that folder
-
-## Testing
-
-```bash
-cd ./test
-elm package install -y
-npm i
-npm test
-```
 
 ## TODO:
 
