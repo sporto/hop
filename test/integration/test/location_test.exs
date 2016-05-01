@@ -8,12 +8,6 @@ defmodule LocationTest do
 
 	hound_session
 
-	# defp assert_query do
-	#   ele = find_element(:class, "labelQuery")
-
-	#   assert inner_html(ele) == "Dict.fromList [(\"keyword\",\"elm\")]"
-	# end
-
 	test "shows initial view" do
 		goto("/")
 		# IO.puts(current_url())
@@ -47,12 +41,10 @@ defmodule LocationTest do
 		assert_title("Users.Status 1")
 	end
 
-	# test "shows to query string" do
-	#   :timer.sleep(500)
-
-	#   navigate_to("/Main.elm#/?keyword=elm")
-	#   assert_query()
-	# end
+	test "shows to query string" do
+		goto("/users?keyword=elm")
+		assert_query("[(\"keyword\",\"elm\")]")
+	end
 
 	# test "switches to main view" do
 	#   :timer.sleep(500)

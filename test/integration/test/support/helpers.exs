@@ -56,6 +56,11 @@ defmodule TestHelpers do
 		assert inner_html(element) == title
 	end
 
+	def assert_query(query) do
+		ele = find_element(:id, "locationQuery")
+		assert inner_text(ele) == query
+	end
+
 	def assert_location(location) do
 		expected_location = if using_hash do
 			"/##{location}"

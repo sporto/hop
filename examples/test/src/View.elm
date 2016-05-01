@@ -4,6 +4,7 @@ import Html exposing (..)
 import Models exposing (..)
 import Actions exposing (..)
 import Menu
+import State
 import Users.View
 
 
@@ -13,6 +14,7 @@ view address model =
     []
     [ Menu.view address model
     , pageView address model
+    , State.view address model
     ]
 
 
