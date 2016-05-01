@@ -55,7 +55,7 @@ defmodule TestHelpers do
 		# IO.puts("goto #{url2}")
 
 		navigate_to(url2)
-		:timer.sleep(100)
+		:timer.sleep(200)
 	end
 
 	def click_on(id) do
