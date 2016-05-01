@@ -87,10 +87,20 @@ defmodule TestHelpers do
 				location
 
 			:basepath ->
-				if location == "/" do
-					"#{basepath}"
-				else
-					"#{basepath}#{location}"
+				cond do
+					# When asserting root path e.g. "/"
+					# basepath will not include / e.g. /app
+					location == "/" ->
+						"#{basepath}"
+
+					# When asserting query string e.g./?key=1
+					# basepath will not include / e.g. app?key=1
+					# so it needs to be remove
+					String.starts_with?(location, "/?") ->
+						String.replace("#{basepath}#{location}", "/?", "?")
+
+					true ->
+						"#{basepath}#{location}"
 				end
 		end
 
