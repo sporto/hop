@@ -1,18 +1,23 @@
 FROM sporto/elm-node-webpack
 
 ENV UPDATED_ON 2016-04-08
+ENV SRC_DIR /usr/src
 
-ADD . /usr/src
-WORKDIR /usr/src/examples/test
+WORKDIR $SRC_DIR/examples/test
+COPY ./examples/test/elm-package.json $SRC_DIR/examples/test
+COPY ./examples/test/package.json $SRC_DIR/examples/test
+COPY ./examples/test/install-packages.sh $SRC_DIR/examples/test
+
+# Install npm stuff
+RUN npm i
 
 # Install elm packages
 RUN ./install-packages.sh
 
+ADD . $SRC_DIR
+
 # Make sure Elm app builds
 RUN elm make ./src/Main.elm
-
-# Install npm stuff
-RUN npm i
 
 # Make sure webpack bundle builds
 RUN webpack

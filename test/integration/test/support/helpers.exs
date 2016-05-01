@@ -20,23 +20,36 @@ defmodule TestHelpers do
 		basepath && basepath != ""
 	end
 
+	def scenario do
+		if using_hash do
+			:hash
+		else
+			if using_bashpath do
+				:basepath
+			else
+				:path
+			end
+		end
+	end
+
 	def wait(ms) do
 		:timer.sleep(ms)
 	end
 
 	def goto(url) do
-		url2 = if using_hash do
-			if url == "" || url == "/" do
+		url2 = case scenario() do
+			:hash ->
+				if url == "" || url == "/" do
+					url
+				else
+					"/##{url}"
+				end
+
+			:path ->
 				url
-			else
-				"/##{url}"
-			end
-		else
-			if !using_bashpath do
-				url
-			else
+
+			:basepath ->
 				"#{basepath}#{url}"
-			end
 		end
 
 		# IO.puts("goto #{url2}")
@@ -62,15 +75,23 @@ defmodule TestHelpers do
 	end
 
 	def assert_location(location) do
-		expected_location = if using_hash do
-			"/##{location}"
-		else
-			# if there is a basepath the / is not added
-			if using_bashpath && location == "/" do
-				"#{basepath}"
-			else
-				"#{basepath}#{location}"
-			end
+		# When query only:
+		# /?k=a
+		# /app?k=1
+		# /#?k=1
+		expected_location = case scenario() do
+			:hash ->
+				"/##{location}"
+
+			:path ->
+				location
+
+			:basepath ->
+				if location == "/" do
+					"#{basepath}"
+				else
+					"#{basepath}#{location}"
+				end
 		end
 
 		expected_location = "#{app_url}#{expected_location}"

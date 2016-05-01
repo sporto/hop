@@ -47,6 +47,11 @@ test-full-build-docker:
 	docker-compose run --rm example_full
 	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
 
+build-test-apps:
+	docker-compose build test_app_hash
+	docker-compose build test_app_path
+	docker-compose build test_app_basepath
+
 # Run integration tests
 test-int-docker:
 	docker-compose run --rm --service-ports test_app_integration

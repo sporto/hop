@@ -12,9 +12,12 @@ var hash      = process.env.CONFIG_HASH || '0';
 
 hash = !!+hash;
 
-console.log('Staring dev server');
-console.log('hash', hash);
-console.log('basePath', basePath);
+console.log('--- Staring dev server ---');
+console.log('host: ', host);
+console.log('port: ', port);
+console.log('hash: ', hash);
+console.log('basePath: ', basePath);
+console.log('--------------------------')
 
 var appConfig = {
 	basePath: basePath,

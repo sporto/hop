@@ -46,49 +46,4 @@ defmodule LocationTest do
 		assert_query("[(\"keyword\",\"elm\")]")
 	end
 
-	# test "switches to main view" do
-	#   :timer.sleep(500)
-
-	#   navigate_to("/Main.elm")
-
-	#   btn = find_element(:class, "btnMain") 
-	#   click(btn)
-	#   :timer.sleep(500)
-
-	#   title = find_title()
-	#   # take_screenshot("./tmp/main-2.png")
-
-	#   assert inner_html(title) == "Main"
-	# end
-
-	# test "switches to about view" do
-	#   :timer.sleep(500)
-
-	#   navigate_to("/Main.elm")
-
-	#   btn = find_element(:class, "btnAbout") 
-	#   click(btn)
-	#   :timer.sleep(500)
-
-	#   title = find_title()
-	#   # take_screenshot("./tmp/main-2.png")
-
-	#   assert inner_html(title) == "About"
-	# end
-
-
-	# test "switches to query string" do
-	#   :timer.sleep(500)
-
-	#   navigate_to("/Main.elm")
-
-	#   btn = find_element(:class, "btnQuery") 
-	#   click(btn)
-
-	#   :timer.sleep(500)
-
-	#   assert_query()
-	# end
-
-
 end

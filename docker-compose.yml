@@ -2,27 +2,27 @@ test_app_hash:
   build: .
   dockerfile: test_app.dockerfile
   ports:
-   - "9000:9000"
+   - "9001:9001"
   environment:
-    APP_PORT: 9000
+    APP_PORT: 9001
     CONFIG_HASH: 1
 
 test_app_path:
   build: .
   dockerfile: test_app.dockerfile
   ports:
-   - "9001:9001"
+   - "9002:9002"
   environment:
-    APP_PORT: 9001
+    APP_PORT: 9002
     CONFIG_HASH: 0
 
 test_app_basepath:
   build: .
   dockerfile: test_app.dockerfile
   ports:
-   - "9002:9002"
+   - "9003:9003"
   environment:
-    APP_PORT: 9002
+    APP_PORT: 9003
     CONFIG_HASH: 0
     CONFIG_BASEPATH: '/app'
 
