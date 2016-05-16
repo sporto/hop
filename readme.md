@@ -4,6 +4,8 @@
 
 ![alt Hop](https://raw.githubusercontent.com/sporto/hop/master/assets/logo.png)
 
+__Hop is not yet Elm 0.17 compatible.__
+
 ## How this works
 
 ### Matching routes
