@@ -1,7 +1,6 @@
-module Hop.MatchersTest (..) where
+module Hop.MatchersTest exposing (..)
 
 import Dict
-import Hop
 import Hop.Matchers exposing (..)
 import Hop.Location as Location
 import Hop.Types exposing (..)

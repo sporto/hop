@@ -1,4 +1,4 @@
-module Hop (new) where
+module Hop exposing (new)
 
 {-| A router for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 

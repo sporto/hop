@@ -1,4 +1,4 @@
-module Hop.Matchers (match1, match2, match3, match4, nested1, nested2, int, str, matchPath, matchLocation, matcherToPath) where
+module Hop.Matchers exposing (match1, match2, match3, match4, nested1, nested2, int, str, matchPath, matchLocation, matcherToPath)
 
 {-|
 Functions for building matchers and matching paths

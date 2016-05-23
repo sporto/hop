@@ -1,4 +1,4 @@
-module Hop.Navigate (navigateTo, addQuery, setQuery, removeQuery, clearQuery) where
+module Hop.Navigate exposing (navigateTo, addQuery, setQuery, removeQuery, clearQuery)
 
 {-| Functions for changing the browser location
 

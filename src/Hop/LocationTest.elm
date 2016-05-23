@@ -1,4 +1,4 @@
-module Hop.LocationTest (..) where
+module Hop.LocationTest exposing (..)
 
 import Dict
 import Hop.Types as Types

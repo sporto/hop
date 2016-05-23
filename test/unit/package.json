@@ -4,11 +4,11 @@
   "description": "",
   "main": "elm.js",
   "scripts": {
-    "test": "elm-test TestRunner.elm "
+    "test": "elm-make TestRunner.elm --output tests.js && node tests.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "elm-test": "^0.16.0"
+    "elm-test": "^0.16.1-alpha2"
   }
 }

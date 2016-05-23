@@ -1,4 +1,4 @@
-module Hop.Types (Config, Router, PathMatcher, Query, Location, newLocation, newQuery) where
+module Hop.Types exposing (Config, Router, PathMatcher, Query, Location, newLocation, newQuery)
 
 {-|
 
@@ -62,12 +62,15 @@ type alias Config route =
 
 {-| Router record created by Hop.new
 -}
-type alias Router route =
+type alias Router =
   { run : Task () ()
-  , signal : Signal ( route, Location )
   }
 
 
+-- type alias Router route =
+--   { run : Task () ()
+--   , signal : Signal ( route, Location )
+--   }
 
 ---------------------------------------
 

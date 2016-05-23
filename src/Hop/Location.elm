@@ -1,4 +1,4 @@
-module Hop.Location (..) where
+module Hop.Location exposing (..)
 
 import Dict
 import String

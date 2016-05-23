@@ -1,9 +1,8 @@
-module Tests (..) where
+module Tests exposing (..)
 
 import ElmTest exposing (..)
 import Hop.LocationTest
 import Hop.MatchersTest
-
 
 all : Test
 all =
