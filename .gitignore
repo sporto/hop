@@ -6,3 +6,4 @@ documentation.json
 .vscode/tasks.json
 npm-debug.log
 .envrc
+tests.js
