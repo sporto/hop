@@ -223,11 +223,11 @@ str =
 -- MATCHING
 ---------------------------------------
 
-matchUrl : Config route -> {a | href : String} -> (route, Hop.Types.Location)
+matchUrl : Config route -> String -> (route, Hop.Types.Location)
 matchUrl config url =
   let
     location =
-      Hop.Location.hrefToLocation config url.href
+      Hop.Location.hrefToLocation config url
   in
     (matchLocation config location, location)
 

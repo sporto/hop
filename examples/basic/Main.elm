@@ -9,20 +9,24 @@ import Task exposing (Task)
 import Navigation
 import Hop exposing (getUrl)
 import Hop.Matchers exposing (..)
-import Hop.Types exposing (Config, Query, Location, PathMatcher, Router, newLocation)
+import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
+
 
 -- ROUTES
+
 
 type Route
   = AboutRoute
   | MainRoute
   | NotFoundRoute
 
+
 matchers : List (PathMatcher Route)
 matchers =
   [ match1 MainRoute ""
   , match1 AboutRoute "/about"
   ]
+
 
 routerConfig : Config Route
 routerConfig =
@@ -33,23 +37,13 @@ routerConfig =
   }
 
 
--- urlParser : Navigation.Parser (String, Navigation.Location)
--- urlParser =
---   Navigation.makeParser (\l -> ("foo", l))
-
-
 urlParser : Navigation.Parser (Route, Hop.Types.Location)
 urlParser =
-  Navigation.makeParser (matchUrl routerConfig)
+  Navigation.makeParser (.href >> matchUrl routerConfig)
+
 
 -- MESSAGES
 
-
--- type Msg
---   = HopMsg ()
---   | ApplyRoute ( Route, Location )
---   | NavigateTo String
---   | SetQuery Query
 
 type Msg
   = NoOp
@@ -77,11 +71,6 @@ update msg model =
 
     SetQuery query ->
       (model, Cmd.none)
-
-    --   -- ( model, Cmd.map HopAction (setQuery routerConfig query model.location) )
-
-    -- ApplyRoute ( route, location ) ->
-    --   ( { model | route = route, location = location }, Cmd.none )
 
 
 urlUpdate : (Route, Hop.Types.Location) -> Model -> (Model, Cmd Msg)
