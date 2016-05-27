@@ -1,33 +1,28 @@
-module Main (..) where
+module Main exposing (..)
 
-import Effects exposing (Effects, Never)
 import Html exposing (..)
+import Html.App
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
-import StartApp
 import Dict
 import Task exposing (Task)
-import Hop
+import Navigation
+import Hop exposing (getUrl)
 import Hop.Matchers exposing (..)
-import Hop.Navigate exposing (navigateTo, setQuery)
 import Hop.Types exposing (Config, Query, Location, PathMatcher, Router, newLocation)
 
-
 -- ROUTES
-
 
 type Route
   = AboutRoute
   | MainRoute
   | NotFoundRoute
 
-
 matchers : List (PathMatcher Route)
 matchers =
   [ match1 MainRoute ""
   , match1 AboutRoute "/about"
   ]
-
 
 routerConfig : Config Route
 routerConfig =
@@ -37,22 +32,29 @@ routerConfig =
   , notFound = NotFoundRoute
   }
 
-
-router : Router Route
-router =
-  Hop.new routerConfig
-
+-- router : Router Route
+-- router =
+--   Hop.new routerConfig
 
 
--- ACTIONS
+urlParser : Navigation.Parser (String, Navigation.Location)
+urlParser =
+  Navigation.makeParser (\l -> ("foo", l))
 
 
-type Action
-  = HopAction ()
-  | ApplyRoute ( Route, Location )
+-- MESSAGES
+
+
+-- type Msg
+--   = HopMsg ()
+--   | ApplyRoute ( Route, Location )
+--   | NavigateTo String
+--   | SetQuery Query
+
+type Msg
+  = NoOp
   | NavigateTo String
   | SetQuery Query
-
 
 
 -- MODEL
@@ -71,54 +73,66 @@ newModel =
   }
 
 
-update : Action -> Model -> ( Model, Effects Action )
-update action model =
-  case (Debug.log "action" action) of
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+  case (Debug.log "msg" msg) of
+    NoOp ->
+      (model, Cmd.none)
+
     NavigateTo path ->
-      ( model, Effects.map HopAction (navigateTo routerConfig path) )
+      (model, Navigation.modifyUrl (getUrl routerConfig path))
 
     SetQuery query ->
-      ( model, Effects.map HopAction (setQuery routerConfig query model.location) )
+      (model, Cmd.none)
 
-    ApplyRoute ( route, location ) ->
-      ( { model | route = route, location = location }, Effects.none )
+    --   -- ( model, Cmd.map HopAction (setQuery routerConfig query model.location) )
 
-    HopAction () ->
-      ( model, Effects.none )
+    -- ApplyRoute ( route, location ) ->
+    --   ( { model | route = route, location = location }, Cmd.none )
 
+    -- HopAction () ->
+    --   ( model, Cmd.none )
+
+
+urlUpdate : (String, Navigation.Location) -> Model -> (Model, Cmd Msg)
+urlUpdate (result, location) model =
+  let
+    _ = Debug.log "location" location
+  in
+     (model, Cmd.none)
 
 
 -- VIEW
 
 
-view : Signal.Address Action -> Model -> Html
-view address model =
+view : Model -> Html Msg
+view model =
   div
     []
-    [ menu address model
-    , pageView address model
+    [ menu model
+    , pageView model
     ]
 
 
-menu : Signal.Address Action -> Model -> Html
-menu address model =
+menu : Model -> Html Msg
+menu model =
   div
     []
     [ div
         []
         [ button
             [ class "btnMain"
-            , onClick address (NavigateTo "")
+            , onClick (NavigateTo "")
             ]
             [ text "Main" ]
         , button
             [ class "btnAbout"
-            , onClick address (NavigateTo "about")
+            , onClick (NavigateTo "about")
             ]
             [ text "About" ]
         , button
             [ class "btnQuery"
-            , onClick address (SetQuery (Dict.singleton "keyword" "elm"))
+            , onClick (SetQuery (Dict.singleton "keyword" "elm"))
             ]
             [ text "Set query string" ]
         , currentQuery model
@@ -126,7 +140,7 @@ menu address model =
     ]
 
 
-currentQuery : Model -> Html
+currentQuery : Model -> Html msg
 currentQuery model =
   let
     query =
@@ -137,12 +151,8 @@ currentQuery model =
       [ text query ]
 
 
-
--- TODO add query here
-
-
-pageView : Signal.Address Action -> Model -> Html
-pageView address model =
+pageView : Model -> Html msg
+pageView model =
   case model.route of
     MainRoute ->
       div [] [ h2 [ class "title" ] [ text "Main" ] ]
@@ -154,40 +164,24 @@ pageView address model =
       div [] [ h2 [ class "title" ] [ text "Not found" ] ]
 
 
-
 -- APP
 
 
-init : ( Model, Effects Action )
-init =
-  ( newModel, Effects.none )
+init : (String, Navigation.Location) -> ( Model, Cmd Msg )
+init resultAndLoc =
+  ( newModel, Cmd.none )
 
 
-taggedRouterSignal : Signal Action
-taggedRouterSignal =
-  Signal.map ApplyRoute router.signal
+-- taggedRouterSignal : Signal Action
+-- taggedRouterSignal =
+--   Signal.map ApplyRoute router.signal
 
 
-app : StartApp.App Model
-app =
-  StartApp.start
-    { init = init
-    , update = update
-    , view = view
-    , inputs = [ taggedRouterSignal ]
-    }
-
-
-main : Signal Html
 main =
-  app.html
-
-
-port tasks : Signal (Task.Task Never ())
-port tasks =
-  app.tasks
-
-
-port routeRunTask : Task () ()
-port routeRunTask =
-  router.run
+  Navigation.program urlParser
+    { init = init
+    , view = view
+    , update = update
+    , urlUpdate = urlUpdate
+    , subscriptions = (always Sub.none)
+    }
