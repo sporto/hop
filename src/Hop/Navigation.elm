@@ -7,54 +7,9 @@ module Hop.Navigation exposing (getUrl)
 @docs navigateTo, addQuery, removeQuery, setQuery, clearQuery
 -}
 
-
-
-
-
-
-
--- {-| Changes the location (hash and query)
-
---   navigateTo will append "#/" if necessary
-
---     navigateTo config "/users"
-
---   Example use in update:
-
---     update action model =
---       case action of
---         ...
---         NavigateTo path ->
---           (model, Effects.map HopAction (navigateTo config path))
--- -}
--- navigateTo : Config route -> String -> Cmd ()
--- navigateTo config route =
---   route
---     |> Location.locationFromUser
---     |> navigateToLocation config
-
-
--- {-| @private
--- Change the location using a Location record
--- -}
--- navigateToLocation : Config route -> Location -> Cmd ()
--- navigateToLocation config location =
---   let
---     fullPath =
---       Location.locationToFullPath config location
-
---     path =
---       if fullPath == "" then
---         "/"
---       else
---         fullPath
---   in
---     History.setPath path |> Effects.task
-
-
-
 -------------------------------------------------------------------------------
 -- QUERY
+-------------------------------------------------------------------------------
 
 
 -- {-| Add query string values (patches any existing values)

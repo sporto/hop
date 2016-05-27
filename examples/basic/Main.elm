@@ -32,15 +32,15 @@ routerConfig =
   , notFound = NotFoundRoute
   }
 
--- router : Router Route
--- router =
---   Hop.new routerConfig
+
+-- urlParser : Navigation.Parser (String, Navigation.Location)
+-- urlParser =
+--   Navigation.makeParser (\l -> ("foo", l))
 
 
-urlParser : Navigation.Parser (String, Navigation.Location)
+urlParser : Navigation.Parser (Route, Hop.Types.Location)
 urlParser =
-  Navigation.makeParser (\l -> ("foo", l))
-
+  Navigation.makeParser (matchUrl routerConfig)
 
 -- MESSAGES
 
@@ -66,13 +66,6 @@ type alias Model =
   }
 
 
-newModel : Model
-newModel =
-  { location = newLocation
-  , route = MainRoute
-  }
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case (Debug.log "msg" msg) of
@@ -90,16 +83,13 @@ update msg model =
     -- ApplyRoute ( route, location ) ->
     --   ( { model | route = route, location = location }, Cmd.none )
 
-    -- HopAction () ->
-    --   ( model, Cmd.none )
 
-
-urlUpdate : (String, Navigation.Location) -> Model -> (Model, Cmd Msg)
-urlUpdate (result, location) model =
+urlUpdate : (Route, Hop.Types.Location) -> Model -> (Model, Cmd Msg)
+urlUpdate (route, location) model =
   let
     _ = Debug.log "location" location
   in
-     (model, Cmd.none)
+     ({model | route = route, location = location}, Cmd.none)
 
 
 -- VIEW
@@ -167,14 +157,9 @@ pageView model =
 -- APP
 
 
-init : (String, Navigation.Location) -> ( Model, Cmd Msg )
-init resultAndLoc =
-  ( newModel, Cmd.none )
-
-
--- taggedRouterSignal : Signal Action
--- taggedRouterSignal =
---   Signal.map ApplyRoute router.signal
+init : (Route, Hop.Types.Location) -> ( Model, Cmd Msg )
+init (route, location) =
+  ( Model location route, Cmd.none )
 
 
 main =

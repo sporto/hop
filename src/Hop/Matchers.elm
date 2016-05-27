@@ -1,4 +1,4 @@
-module Hop.Matchers exposing (match1, match2, match3, match4, nested1, nested2, int, str, matchPath, matchLocation, matcherToPath)
+module Hop.Matchers exposing (match1, match2, match3, match4, nested1, nested2, int, str, matchUrl, matcherToPath)
 
 {-|
 Functions for building matchers and matching paths
@@ -12,6 +12,7 @@ Functions for building matchers and matching paths
 
 import String
 import Hop.Types exposing (..)
+import Hop.Location
 import Combine exposing (Parser, parse)
 import Combine.Num
 import Combine.Infix exposing ((<$>), (<$), (<*), (*>), (<*>), (<|>))
@@ -222,6 +223,13 @@ str =
 -- MATCHING
 ---------------------------------------
 
+matchUrl : Config route -> {a | href : String} -> (route, Hop.Types.Location)
+matchUrl config url =
+  let
+    location =
+      Hop.Location.hrefToLocation config url.href
+  in
+    (matchLocation config location, location)
 
 {-| @priv
 Matches a path (without basePath).
@@ -258,7 +266,7 @@ matchPathWithPathList routeParsers notFoundAction path =
           matchPathWithPathList rest notFoundAction path
 
 
-{-|
+{-| @priv
 Matches a path.
 BasePath should already be removed.
 e.g. "/users/1/comments/2".
@@ -276,7 +284,7 @@ matchPath config path =
   matchPathWithPathList config.matchers config.notFound path
 
 
-{-|
+{-| @priv
 Matches a location record.
 Returns the matched route.
 
