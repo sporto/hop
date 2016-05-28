@@ -7,7 +7,7 @@ import Html.Events exposing (onClick)
 import Dict
 import Task exposing (Task)
 import Navigation
-import Hop exposing (..)
+import Hop exposing (makeUrl, matchUrl)
 import Hop.Matchers exposing (..)
 import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
 
@@ -67,7 +67,7 @@ update msg model =
       (model, Cmd.none)
 
     NavigateTo path ->
-      (model, Navigation.modifyUrl (getUrl routerConfig path))
+      (model, Navigation.modifyUrl (makeUrl routerConfig path))
 
     SetQuery query ->
       (model, Cmd.none)

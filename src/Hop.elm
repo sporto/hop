@@ -1,9 +1,9 @@
-module Hop exposing (matchUrl, matcherToPath, getUrl)
+module Hop exposing (matchUrl, matcherToPath, makeUrl)
 
 {-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
 # Create URLs
-@docs getUrl
+@docs makeUrl
 
 # Match current URL
 @docs matchUrl
@@ -79,18 +79,18 @@ matcherToPath matcher inputs =
         NavigateTo path ->
           (model, Effects.map HopAction (navigateTo config path))
 -}
-getUrl : Config route -> String -> String
-getUrl config route =
+makeUrl : Config route -> String -> String
+makeUrl config route =
     route
         |> Hop.Location.locationFromUser
-        |> getUrlFromLocation config
+        |> makeUrlFromLocation config
 
 
 {-| @private
 Create an url from a location
 -}
-getUrlFromLocation : Config route -> Location -> String
-getUrlFromLocation config location =
+makeUrlFromLocation : Config route -> Location -> String
+makeUrlFromLocation config location =
     let
         fullPath =
             Hop.Location.locationToFullPath config location
