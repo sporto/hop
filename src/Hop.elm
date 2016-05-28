@@ -1,9 +1,9 @@
-module Hop exposing (matchUrl, matcherToPath, makeUrl)
+module Hop exposing (matchUrl, matcherToPath, makeUrl, addQuery, setQuery, removeQuery, clearQuery)
 
 {-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
 # Create URLs
-@docs makeUrl
+@docs makeUrl, addQuery, setQuery, removeQuery, clearQuery
 
 # Match current URL
 @docs matchUrl
@@ -12,7 +12,6 @@ module Hop exposing (matchUrl, matcherToPath, makeUrl)
 @docs matcherToPath
 
 -}
-
 
 import String
 import Hop.Types exposing (..)
@@ -24,13 +23,14 @@ import Hop.Matching exposing (..)
 -- MATCHING
 ---------------------------------------
 
-matchUrl : Config route -> String -> (route, Hop.Types.Location)
+
+matchUrl : Config route -> String -> ( route, Hop.Types.Location )
 matchUrl config url =
-  let
-    location =
-      Hop.Location.fromUrl config url
-  in
-    (matchLocation config location, location)
+    let
+        location =
+            Hop.Location.fromUrl config url
+    in
+        ( matchLocation config location, location )
 
 
 {-|
@@ -46,22 +46,23 @@ The last parameters is a list of strings. You need to pass one string for each d
 -}
 matcherToPath : PathMatcher a -> List String -> String
 matcherToPath matcher inputs =
-  let
-    inputs' =
-      List.append inputs [ "" ]
+    let
+        inputs' =
+            List.append inputs [ "" ]
 
-    makeSegment segment input =
-      segment ++ input
+        makeSegment segment input =
+            segment ++ input
 
-    path =
-      List.map2 makeSegment matcher.segments inputs'
-        |> String.join ""
-  in
-    path
+        path =
+            List.map2 makeSegment matcher.segments inputs'
+                |> String.join ""
+    in
+        path
+
 
 
 ---------------------------------------
--- UTILS
+-- CREATE URLs
 ---------------------------------------
 
 
@@ -102,3 +103,90 @@ makeUrlFromLocation config location =
                 fullPath
     in
         path
+
+
+-------------------------------------------------------------------------------
+-- QUERY
+-------------------------------------------------------------------------------
+
+
+{-| Add query string values (patches any existing values)
+
+    addQuery config query location
+
+- config is the router Config record
+- query is a dictionary with keys to add
+- location is a record representing the current location
+
+Example use in update:
+
+    update action model =
+      case action of
+        ...
+        AddQuery query ->
+          (model, Effects.map HopAction (addQuery config query model.location))
+
+To remove a value set the value to ""
+-}
+addQuery : Config route -> Query -> Location -> String
+addQuery config query location =
+  location
+    |> Hop.Location.addQuery query
+    |> Hop.Location.locationToFullPath config
+
+
+{-| Set query string values (removes existing values)
+
+    setQuery config query location
+
+Example use in update:
+
+    update action model =
+      case action of
+        ...
+        SetQuery query ->
+          (model, Effects.map HopAction (setQuery config query model.location))
+-}
+setQuery : Config route -> Query -> Location -> String
+setQuery config query location =
+  location
+    |> Hop.Location.setQuery query
+    |> Hop.Location.locationToFullPath config
+
+
+{-| Remove one query string value
+
+    removeQuery config query location
+
+Example use in update:
+
+    update action model =
+      case action of
+        ...
+        RemoveQuery query ->
+          (model, Effects.map HopAction (removeQuery config key model.location))
+-}
+removeQuery : Config route -> String -> Location -> String
+removeQuery config key location =
+  location
+    |> Hop.Location.removeQuery key
+    |> Hop.Location.locationToFullPath config
+
+
+{-| Clear all query string values
+
+    clearQuery config location
+
+Example use in update:
+
+    update action model =
+      case action of
+        ...
+        ClearQuery ->
+          (model, Effects.map HopAction (clearQuery config model.location))
+-}
+clearQuery : Config route -> Location -> String
+clearQuery config location =
+  location
+    |> Hop.Location.clearQuery
+    |> Hop.Location.locationToFullPath config
