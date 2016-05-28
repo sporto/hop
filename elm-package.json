@@ -10,7 +10,6 @@
     "exposed-modules": [
         "Hop",
         "Hop.Matchers",
-        "Hop.Navigate",
         "Hop.Types"
     ],
     "dependencies": {

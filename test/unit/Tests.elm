@@ -2,12 +2,12 @@ module Tests exposing (..)
 
 import ElmTest exposing (..)
 import Hop.LocationTest
-import Hop.MatchersTest
+import HopTest
 
 all : Test
 all =
   suite
     "Tests"
     [ Hop.LocationTest.all
-    , Hop.MatchersTest.all
+    , HopTest.all
     ]
