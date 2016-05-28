@@ -1,10 +1,10 @@
-module Languages.View (..) where
+module Languages.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (href, style)
 import Hop.Types exposing (Location)
 import Languages.Models exposing (LanguageId, Language, Route, Route(..))
-import Languages.Actions exposing (..)
+import Languages.Messages exposing (..)
 import Languages.Filter
 import Languages.List
 import Languages.Show
@@ -12,79 +12,77 @@ import Languages.Edit
 
 
 type alias ViewModel =
-  { languages : List Language
-  , location : Location
-  , route : Route
-  }
+    { languages : List Language
+    , location : Location
+    , route : Route
+    }
 
 
-containerStyle : Html.Attribute
+containerStyle : Html.Attribute a
 containerStyle =
-  style
-    [ ( "margin-bottom", "5rem" )
-    , ( "overflow", "auto" )
-    ]
+    style
+        [ ( "margin-bottom", "5rem" )
+        , ( "overflow", "auto" )
+        ]
 
 
-view : Signal.Address Action -> ViewModel -> Html
-view address model =
-  div
-    [ containerStyle ]
-    [ Languages.Filter.view address {}
-    , Languages.List.view address { languages = model.languages, location = model.location }
-    , subView address model
-    ]
+view : ViewModel -> Html Msg
+view model =
+    div [ containerStyle ]
+        [ Languages.Filter.view {}
+        , Languages.List.view { languages = model.languages, location = model.location }
+        , subView model
+        ]
 
 
-subView : Signal.Address Action -> ViewModel -> Html
-subView address model =
-  case model.route of
-    LanguageRoute languageId ->
-      let
-        maybeLanguage =
-          getLanguage model.languages languageId
-      in
-        case maybeLanguage of
-          Just language ->
-            Languages.Show.view address language
+subView : ViewModel -> Html Msg
+subView model =
+    case model.route of
+        LanguageRoute languageId ->
+            let
+                maybeLanguage =
+                    getLanguage model.languages languageId
+            in
+                case maybeLanguage of
+                    Just language ->
+                        Languages.Show.view language
 
-          Nothing ->
-            notFoundView address model
+                    Nothing ->
+                        notFoundView model
 
-    LanguageEditRoute languageId ->
-      let
-        maybeLanguage =
-          getLanguage model.languages languageId
-      in
-        case maybeLanguage of
-          Just language ->
-            Languages.Edit.view address language
+        LanguageEditRoute languageId ->
+            let
+                maybeLanguage =
+                    getLanguage model.languages languageId
+            in
+                case maybeLanguage of
+                    Just language ->
+                        Languages.Edit.view language
 
-          _ ->
-            notFoundView address model
+                    _ ->
+                        notFoundView model
 
-    LanguagesRoute ->
-      emptyView
+        LanguagesRoute ->
+            emptyView
 
-    NotFoundRoute ->
-      notFoundView address model
+        NotFoundRoute ->
+            notFoundView model
 
 
-emptyView : Html
+emptyView : Html msg
 emptyView =
-  span [] []
+    span [] []
 
 
-notFoundView : Signal.Address Action -> ViewModel -> Html
-notFoundView address model =
-  div
-    []
-    [ text "Not Found"
-    ]
+notFoundView : ViewModel -> Html msg
+notFoundView model =
+    div []
+        [ text "Not Found"
+        ]
 
 
 getLanguage : List Language -> LanguageId -> Maybe Language
 getLanguage languages id =
-  languages
-    |> List.filter (\lang -> lang.id == id)
-    |> List.head
+    languages
+        |> List.filter (\lang -> lang.id == id)
+        |> List.head

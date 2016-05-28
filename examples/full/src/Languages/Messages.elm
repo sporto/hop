@@ -19,5 +19,3 @@ type Msg
     | Update LanguageId Prop Value
     | AddQuery (Dict.Dict String String)
     | SetQuery (Dict.Dict String String)
-    | NavigateTo String
-    | HopAction ()

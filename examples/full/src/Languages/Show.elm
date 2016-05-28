@@ -13,22 +13,22 @@ styles =
         ]
 
 
-view : Signal.Address Action -> Language -> Html
-view address language =
+view : Language -> Html Msg
+view language =
     div [ styles ]
         [ h2 [ id "titleLanguage" ] [ text language.name ]
         , img [ src ("/images/" ++ language.image ++ ".png") ] []
-        , tags address language
+        , tags language
         ]
 
 
-tags : Signal.Address Action -> Language -> Html
-tags address language =
-    div [] (List.map (tag address) language.tags)
+tags : Language -> Html Msg
+tags language =
+    div [] (List.map tag language.tags)
 
 
-tag : Signal.Address Action -> String -> Html
-tag address tagName =
+tag : String -> Html Msg
+tag tagName =
     span []
         [ text (tagName ++ ", ")
         ]

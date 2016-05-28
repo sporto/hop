@@ -8,9 +8,7 @@ Functions for building matchers
 
 -}
 
-import String
 import Hop.Types exposing (..)
-import Hop.Location
 import Combine exposing (Parser)
 import Combine.Num
 import Combine.Infix exposing ((<$>), (<$), (<*), (*>), (<*>), (<|>))

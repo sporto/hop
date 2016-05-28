@@ -1,37 +1,60 @@
-module Update (..) where
+module Update exposing (..)
 
 import Debug
-import Effects exposing (Effects)
-import Hop.Navigate exposing (navigateTo, setQuery)
-import Actions exposing (..)
+import Navigation
+import Hop exposing (makeUrl, setQuery)
+import Messages exposing (..)
 import Models exposing (..)
 import Routing.Config
+import Routing.Utils
 import Languages.Update
+import Languages.Models
 
 
-update : Action -> AppModel -> ( AppModel, Effects Action )
-update action model =
-  case Debug.log "action" action of
-    LanguagesAction subAction ->
-      let
-        updateModel =
-          { languages = model.languages
-          , location = model.location
-          }
+navigationCmd : String -> Cmd a
+navigationCmd path =
+    Navigation.modifyUrl (makeUrl Routing.Config.config path)
 
-        ( updatedModel, fx ) =
-          Languages.Update.update subAction updateModel
-      in
-        ( { model | languages = updatedModel.languages }, Effects.map LanguagesAction fx )
 
-    NavigateTo path ->
-      ( model, Effects.map HopAction (navigateTo Routing.Config.config path) )
+update : Msg -> AppModel -> ( AppModel, Cmd Msg )
+update message model =
+    case Debug.log "message" message of
+        LanguagesMsg subMessage ->
+            let
+                updateModel =
+                    { languages = model.languages
+                    , location = model.location
+                    }
 
-    ApplyRoute ( route, location ) ->
-      ( { model | route = route, location = location }, Effects.none )
+                ( updatedModel, cmd ) =
+                    Languages.Update.update subMessage updateModel
+            in
+                ( { model | languages = updatedModel.languages }, Cmd.map LanguagesMsg cmd )
 
-    SetQuery query ->
-      ( model, Effects.map HopAction (setQuery Routing.Config.config query model.location) )
+        SetQuery query ->
+            let
+                path =
+                    setQuery Routing.Config.config query model.location
+            in
+                ( model, navigationCmd path )
 
-    HopAction () ->
-      ( model, Effects.none )
+        ShowHome ->
+            let
+                path =
+                    Routing.Utils.reverse HomeRoute
+            in
+                ( model, navigationCmd path )
+
+        ShowLanguages ->
+            let
+                path =
+                    Routing.Utils.reverse (LanguagesRoutes Languages.Models.LanguagesRoute)
+            in
+                ( model, navigationCmd path )
+
+        ShowAbout ->
+            let
+                path =
+                    Routing.Utils.reverse AboutRoute
+            in
+                ( model, navigationCmd path )

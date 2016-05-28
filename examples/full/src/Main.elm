@@ -1,53 +1,39 @@
-module Main (..) where
+module Main exposing (..)
 
-import Html exposing (..)
-import StartApp
-import Effects exposing (Effects, Never)
-import Task exposing (Task)
-import Hop
+import Navigation
+import Hop exposing (matchUrl)
 import Hop.Types exposing (Router)
-import Actions exposing (..)
+import Messages exposing (..)
 import Models exposing (..)
 import Update exposing (..)
 import View exposing (..)
 import Routing.Config
 
 
-init : ( AppModel, Effects Action )
-init =
-  ( newAppModel, Effects.none )
+urlParser : Navigation.Parser ( Route, Hop.Types.Location )
+urlParser =
+    Navigation.makeParser (.href >> matchUrl Routing.Config.config)
 
 
-router : Router Route
-router =
-  Hop.new Routing.Config.config
+urlUpdate : ( Route, Hop.Types.Location ) -> AppModel -> ( AppModel, Cmd Msg )
+urlUpdate ( route, location ) model =
+    let
+        _ =
+            Debug.log "location" location
+    in
+        ( { model | route = route, location = location }, Cmd.none )
 
 
-routerSignal : Signal Action
-routerSignal =
-  Signal.map ApplyRoute router.signal
+init : ( Route, Hop.Types.Location ) -> ( AppModel, Cmd Msg )
+init ( route, location ) =
+    ( newAppModel route location, Cmd.none )
 
 
-app : StartApp.App AppModel
-app =
-  StartApp.start
-    { init = init
-    , update = update
-    , view = view
-    , inputs = [ routerSignal ]
-    }
-
-
-main : Signal Html
 main =
-  app.html
-
-
-port tasks : Signal (Task.Task Never ())
-port tasks =
-  app.tasks
-
-
-port routeRunTask : Task () ()
-port routeRunTask =
-  router.run
+    Navigation.program urlParser
+        { init = init
+        , view = view
+        , update = update
+        , urlUpdate = urlUpdate
+        , subscriptions = (always Sub.none)
+        }

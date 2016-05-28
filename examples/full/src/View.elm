@@ -1,94 +1,79 @@
-module View (..) where
+module View exposing (..)
 
 import Html exposing (..)
+import Html.App
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (id, class, href, style)
 import Models exposing (..)
-import Actions exposing (..)
-import Routing.Utils exposing (reverse)
+import Messages exposing (..)
 import Languages.View
-import Languages.Models
 
 
-view : Signal.Address Action -> AppModel -> Html
-view address model =
-  div
-    []
-    [ menu address model
-    , pageView address model
-    ]
-
-
-menu : Signal.Address Action -> AppModel -> Html
-menu address model =
-  div
-    [ class "p2 white bg-black" ]
-    [ div
-        []
-        [ menuLink address HomeRoute "btnHome" "Home"
-        , text "|"
-        , menuLink address (LanguagesRoutes Languages.Models.LanguagesRoute) "btnLanguages" "Languages"
-        , text "|"
-        , menuLink address AboutRoute "btnAbout" "About"
+view : AppModel -> Html Msg
+view model =
+    div []
+        [ menu model
+        , pageView model
         ]
-    ]
 
 
-menuLink : Signal.Address Action -> Route -> String -> String -> Html
-menuLink address route viewId label =
-  let
-    path =
-      reverse route
+menu : AppModel -> Html Msg
+menu model =
+    div [ class "p2 white bg-black" ]
+        [ div []
+            [ menuLink ShowHome "btnHome" "Home"
+            , text "|"
+            , menuLink ShowLanguages "btnLanguages" "Languages"
+            , text "|"
+            , menuLink ShowAbout "btnAbout" "About"
+            ]
+        ]
 
-    action =
-      NavigateTo path
-  in
+
+menuLink : Msg -> String -> String -> Html Msg
+menuLink message viewId label =
     a
-      [ id viewId
-      , href "javascript://"
-      , onClick address action
-      , class "white px2"
-      ]
-      [ text label ]
-
-
-pageView : Signal.Address Action -> AppModel -> Html
-pageView address model =
-  case model.route of
-    HomeRoute ->
-      div
-        [ class "p2" ]
-        [ h1 [ id "title", class "m0" ] [ text "Home" ]
-        , div [] [ text "Click on Languages to start routing" ]
+        [ id viewId
+        , href "javascript://"
+        , onClick message
+        , class "white px2"
         ]
+        [ text label ]
 
-    AboutRoute ->
-      div
-        [ class "p2" ]
-        [ h1 [ id "title", class "m0" ] [ text "About" ]
+
+pageView : AppModel -> Html Msg
+pageView model =
+    case model.route of
+        HomeRoute ->
+            div [ class "p2" ]
+                [ h1 [ id "title", class "m0" ] [ text "Home" ]
+                , div [] [ text "Click on Languages to start routing" ]
+                ]
+
+        AboutRoute ->
+            div [ class "p2" ]
+                [ h1 [ id "title", class "m0" ] [ text "About" ]
+                ]
+
+        LanguagesRoutes languagesRoute ->
+            let
+                viewModel =
+                    { languages = model.languages
+                    , route = languagesRoute
+                    , location = model.location
+                    }
+            in
+                div [ class "p2" ]
+                    [ h1 [ id "title", class "m0" ] [ text "Languages" ]
+                    , Html.App.map LanguagesMsg (Languages.View.view viewModel)
+                    ]
+
+        NotFoundRoute ->
+            notFoundView model
+
+
+notFoundView : AppModel -> Html msg
+notFoundView model =
+    div []
+        [ text "Not Found"
         ]
-
-    LanguagesRoutes languagesRoute ->
-      let
-        viewModel =
-          { languages = model.languages
-          , route = languagesRoute
-          , location = model.location
-          }
-      in
-        div
-          [ class "p2" ]
-          [ h1 [ id "title", class "m0" ] [ text "Languages" ]
-          , Languages.View.view (Signal.forwardTo address LanguagesAction) viewModel
-          ]
-
-    NotFoundRoute ->
-      notFoundView address model
-
-
-notFoundView : Signal.Address Action -> AppModel -> Html
-notFoundView address model =
-  div
-    []
-    [ text "Not Found"
-    ]
