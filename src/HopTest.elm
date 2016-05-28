@@ -101,7 +101,7 @@ matchUrlTest =
         -- users
       , ( "hash: Matches users"
         , config
-        , "http://example.com#/users"
+        , "http://example.com/#/users"
         , Users
         )
       , ( "path: Matches users"
@@ -112,7 +112,7 @@ matchUrlTest =
         -- one user
       , ( "hash: Matches one user"
         , config
-        , "http://example.com#/users/1"
+        , "http://example.com/#/users/1"
         , User 1
         )
       , ( "path: Matches one user"
@@ -123,7 +123,7 @@ matchUrlTest =
         -- user status
       , ( "hash: Matches user status"
         , config
-        , "http://example.com#/users/2/status"
+        , "http://example.com/#/users/2/status"
         , UserStatus 2
         )
       , ( "path: Matches user status"
@@ -134,7 +134,7 @@ matchUrlTest =
         -- users token
       , ( "hash: Matches users token"
         , config
-        , "http://example.com#/users/abc"
+        , "http://example.com/#/users/abc"
         , UsersToken "abc"
         )
       , ( "path: Matches users token"
@@ -145,7 +145,7 @@ matchUrlTest =
         -- one user token
       , ( "hash: Matches one user token"
         , config
-        , "http://example.com#/users/3/abc"
+        , "http://example.com/#/users/3/abc"
         , UserToken 3 "abc"
         )
       , ( "path: Matches one user token"
@@ -156,18 +156,18 @@ matchUrlTest =
         -- user posts
       , ( "hash: Matches user posts"
         , config
-        , "http://example.com#/users/4/posts"
+        , "http://example.com/#/users/4/posts"
         , UserPosts 4 (Posts)
         )
       , ( "hash: Matches one user post"
         , config
-        , "http://example.com/users/4/posts/2"
+        , "http://example.com/#/users/4/posts/2"
         , UserPosts 4 (Post 2)
         )
         -- not found
       , ( "hash: Matches not found"
         , config
-        , "http://example.com#/posts"
+        , "http://example.com/#/posts"
         , NotFound
         )
       , ( "path: Matches not found"
