@@ -1,36 +1,34 @@
-module Languages.Show (..) where
+module Languages.Show exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (id, href, style, src)
 import Languages.Models exposing (..)
-import Languages.Actions exposing (..)
+import Languages.Messages exposing (..)
 
 
-styles : Html.Attribute
+styles : Html.Attribute a
 styles =
-  style
-    [ ( "float", "left" )
-    ]
+    style
+        [ ( "float", "left" )
+        ]
 
 
 view : Signal.Address Action -> Language -> Html
 view address language =
-  div
-    [ styles ]
-    [ h2 [ id "titleLanguage" ] [ text language.name ]
-    , img [ src ("/images/" ++ language.image ++ ".png") ] []
-    , tags address language
-    ]
+    div [ styles ]
+        [ h2 [ id "titleLanguage" ] [ text language.name ]
+        , img [ src ("/images/" ++ language.image ++ ".png") ] []
+        , tags address language
+        ]
 
 
 tags : Signal.Address Action -> Language -> Html
 tags address language =
-  div [] (List.map (tag address) language.tags)
+    div [] (List.map (tag address) language.tags)
 
 
 tag : Signal.Address Action -> String -> Html
 tag address tagName =
-  span
-    []
-    [ text (tagName ++ ", ")
-    ]
+    span []
+        [ text (tagName ++ ", ")
+        ]

@@ -18,7 +18,7 @@ import Combine.Infix exposing ((<$>), (<$), (<*), (*>), (<*>), (<|>))
 
 parserWithBeginningAndEnd : Parser a -> Parser a
 parserWithBeginningAndEnd parser =
-  parser <* Combine.end
+    parser <* Combine.end
 
 
 {-|
@@ -34,19 +34,19 @@ This will match exactly
 -}
 match1 : route -> String -> PathMatcher route
 match1 constructor segment1 =
-  let
-    parser =
-      Combine.string segment1
-        |> Combine.skip
-        |> parserWithBeginningAndEnd
-        |> Combine.map constructor'
+    let
+        parser =
+            Combine.string segment1
+                |> Combine.skip
+                |> parserWithBeginningAndEnd
+                |> Combine.map constructor'
 
-    constructor' =
-      (\() -> constructor)
-  in
-    { parser = parser
-    , segments = [ segment1 ]
-    }
+        constructor' =
+            (\() -> constructor)
+    in
+        { parser = parser
+        , segments = [ segment1 ]
+        }
 
 
 {-|
@@ -62,16 +62,16 @@ This will match a path like
 -}
 match2 : (param1 -> route) -> String -> Parser param1 -> PathMatcher route
 match2 constructor segment1 parser1 =
-  let
-    parser =
-      Combine.string segment1
-        *> parser1
-        |> parserWithBeginningAndEnd
-        |> Combine.map constructor
-  in
-    { parser = parser
-    , segments = [ segment1 ]
-    }
+    let
+        parser =
+            Combine.string segment1
+                *> parser1
+                |> parserWithBeginningAndEnd
+                |> Combine.map constructor
+    in
+        { parser = parser
+        , segments = [ segment1 ]
+        }
 
 
 {-| Create a matcher with three segments.
@@ -86,17 +86,17 @@ This will match a path like
 -}
 match3 : (param1 -> route) -> String -> Parser param1 -> String -> PathMatcher route
 match3 constructor segment1 parser1 segment2 =
-  let
-    parser =
-      Combine.string segment1
-        *> parser1
-        <* Combine.string segment2
-        |> parserWithBeginningAndEnd
-        |> Combine.map constructor
-  in
-    { parser = parser
-    , segments = [ segment1, segment2 ]
-    }
+    let
+        parser =
+            Combine.string segment1
+                *> parser1
+                <* Combine.string segment2
+                |> parserWithBeginningAndEnd
+                |> Combine.map constructor
+    in
+        { parser = parser
+        , segments = [ segment1, segment2 ]
+        }
 
 
 {-| Create a matcher with four segments.
@@ -112,20 +112,20 @@ This will match a path like
 -}
 match4 : (param1 -> param2 -> route) -> String -> Parser param1 -> String -> Parser param2 -> PathMatcher route
 match4 constructor segment1 parser1 segment2 parser2 =
-  let
-    constructor' ( a, b ) =
-      constructor a b
+    let
+        constructor' ( a, b ) =
+            constructor a b
 
-    parser =
-      Combine.string segment1
-        *> parser1
-        `Combine.andThen` (\r -> Combine.map (\x -> ( r, x )) (Combine.string segment2 *> parser2))
-        |> parserWithBeginningAndEnd
-        |> Combine.map constructor'
-  in
-    { parser = parser
-    , segments = [ segment1, segment2 ]
-    }
+        parser =
+            Combine.string segment1
+                *> parser1
+                `Combine.andThen` (\r -> Combine.map (\x -> ( r, x )) (Combine.string segment2 *> parser2))
+                |> parserWithBeginningAndEnd
+                |> Combine.map constructor'
+    in
+        { parser = parser
+        , segments = [ segment1, segment2 ]
+        }
 
 
 {-| Create a matcher with two segments and nested routes
@@ -144,19 +144,19 @@ This could match paths like (depending on the nested routes)
 -}
 nested1 : (subRoute -> route) -> String -> List (PathMatcher subRoute) -> PathMatcher route
 nested1 constructor segment1 children =
-  let
-    childrenParsers =
-      List.map .parser children
+    let
+        childrenParsers =
+            List.map .parser children
 
-    parser =
-      Combine.string segment1
-        `Combine.andThen` (\x -> (Combine.choice childrenParsers))
-        |> parserWithBeginningAndEnd
-        |> Combine.map constructor
-  in
-    { parser = parser
-    , segments = [ segment1 ]
-    }
+        parser =
+            Combine.string segment1
+                `Combine.andThen` (\x -> (Combine.choice childrenParsers))
+                |> parserWithBeginningAndEnd
+                |> Combine.map constructor
+    in
+        { parser = parser
+        , segments = [ segment1 ]
+        }
 
 
 {-| Create a matcher with two segments and nested routes
@@ -174,23 +174,23 @@ This could match paths like (depending on the nested routes)
 -}
 nested2 : (param1 -> subRoute -> route) -> String -> Parser param1 -> List (PathMatcher subRoute) -> PathMatcher route
 nested2 constructor segment1 parser1 children =
-  let
-    childrenParsers =
-      List.map .parser children
+    let
+        childrenParsers =
+            List.map .parser children
 
-    constructor' ( a, b ) =
-      constructor a b
+        constructor' ( a, b ) =
+            constructor a b
 
-    parser =
-      Combine.string segment1
-        *> parser1
-        `Combine.andThen` (\r -> Combine.map (\x -> ( r, x )) (Combine.choice childrenParsers))
-        |> parserWithBeginningAndEnd
-        |> Combine.map constructor'
-  in
-    { parser = parser
-    , segments = [ segment1 ]
-    }
+        parser =
+            Combine.string segment1
+                *> parser1
+                `Combine.andThen` (\r -> Combine.map (\x -> ( r, x )) (Combine.choice childrenParsers))
+                |> parserWithBeginningAndEnd
+                |> Combine.map constructor'
+    in
+        { parser = parser
+        , segments = [ segment1 ]
+        }
 
 
 {-| Parameter matcher that matches an integer
@@ -199,7 +199,7 @@ nested2 constructor segment1 parser1 children =
 -}
 int : Parser Int
 int =
-  Combine.Num.int
+    Combine.Num.int
 
 
 {-| Parameter matcher that matches a string, except /
@@ -208,4 +208,4 @@ int =
 -}
 str : Parser String
 str =
-  Combine.regex "[^/]+"
+    Combine.regex "[^/]+"

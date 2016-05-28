@@ -1,31 +1,30 @@
-module Languages.Edit (..) where
+module Languages.Edit exposing (..)
 
 import Html exposing (..)
-import Html.Events
+import Html.Events exposing (on, targetValue)
 import Html.Attributes exposing (href, style, src, value, name)
+import Json.Decode as Json
 import Languages.Models exposing (..)
-import Languages.Actions exposing (..)
+import Languages.Messages exposing (..)
 
 
-styles : Html.Attribute
+styles : Html.Attribute a
 styles =
-  style
-    [ ( "float", "left" )
-    ]
-
-
-view : Signal.Address Action -> Language -> Html
-view address language =
-  div
-    [ styles ]
-    [ h2 [] [ text language.name ]
-    , form
-        []
-        [ input
-            [ value language.name
-            , name "name"
-            , Html.Events.on "input" Html.Events.targetValue (Signal.message address << Update language.id "name")
-            ]
-            []
+    style
+        [ ( "float", "left" )
         ]
-    ]
+
+
+view : Language -> Html Msg
+view language =
+    div [ styles ]
+        [ h2 [] [ text language.name ]
+        , form []
+            [ input
+                [ value language.name
+                , name "name"
+                , on "input" (Json.map (Update language.id "name") targetValue)
+                ]
+                []
+            ]
+        ]

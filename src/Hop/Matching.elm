@@ -1,6 +1,5 @@
 module Hop.Matching exposing (..)
 
-
 import String
 import Hop.Types exposing (..)
 import Combine exposing (parse)
@@ -20,25 +19,25 @@ Returns the matching route.
 -}
 matchPathWithPathList : List (PathMatcher route) -> route -> String -> route
 matchPathWithPathList routeParsers notFoundAction path =
-  case routeParsers of
-    [] ->
-      notFoundAction
+    case routeParsers of
+        [] ->
+            notFoundAction
 
-    [ routeParser ] ->
-      case parse routeParser.parser path of
-        ( Ok res, context ) ->
-          res
+        [ routeParser ] ->
+            case parse routeParser.parser path of
+                ( Ok res, context ) ->
+                    res
 
-        ( Err _, context ) ->
-          notFoundAction
+                ( Err _, context ) ->
+                    notFoundAction
 
-    routeParser :: rest ->
-      case parse routeParser.parser path of
-        ( Ok res, context ) ->
-          res
+        routeParser :: rest ->
+            case parse routeParser.parser path of
+                ( Ok res, context ) ->
+                    res
 
-        ( Err _, context ) ->
-          matchPathWithPathList rest notFoundAction path
+                ( Err _, context ) ->
+                    matchPathWithPathList rest notFoundAction path
 
 
 {-| @priv
@@ -56,7 +55,7 @@ Returns the matched route.
 -}
 matchPath : Config route -> String -> route
 matchPath config path =
-  matchPathWithPathList config.matchers config.notFound path
+    matchPathWithPathList config.matchers config.notFound path
 
 
 {-| @priv
@@ -71,9 +70,8 @@ Returns the matched route.
 -}
 matchLocation : Config route -> Location -> route
 matchLocation config location =
-  let
-    pathString =
-      String.join "/" ("" :: location.path)
-  in
-    matchPath config pathString
-
+    let
+        pathString =
+            String.join "/" ("" :: location.path)
+    in
+        matchPath config pathString
