@@ -1,73 +1,68 @@
-module Hop exposing (getUrl)
+module Hop exposing (matchUrl, matcherToPath, getUrl)
 
-{-| A router for single page applications. See [readme](https://github.com/sporto/hop) for usage.
+{-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
-# Setup
+# Create URLs
 @docs getUrl
+
+# Match current URL
+@docs matchUrl
+
+# Reverse Routing
+@docs matcherToPath
 
 -}
 
---import Task exposing (Task)
---import Hop.Matchers as Matchers
 
+import String
 import Hop.Types exposing (..)
 import Hop.Location
+import Hop.Matching exposing (..)
 
 
 ---------------------------------------
--- SETUP
+-- MATCHING
 ---------------------------------------
--- {-|
--- Create a Router
---     config =
---       { basePath = "/app"
---       , hash = False
---       , matchers = matchers
---       , notFound = NotFound
---       }
---     router =
---       Hop.new config
--- -}
--- program : Config routeTag -> Router routeTag
--- program config =
---     Navigation.program urlParser
---       { init = init
---       , view = view
---       , update = update
---       , urlUpdate = urlUpdate
---       , subscriptions = subscriptions
---       }
--- { run = run config
--- , signal = routerSignal config
--- }
+
+matchUrl : Config route -> String -> (route, Hop.Types.Location)
+matchUrl config url =
+  let
+    location =
+      Hop.Location.fromUrl config url
+  in
+    (matchLocation config location, location)
+
+
+{-|
+Generates a path from a matcher. Use this for reverse routing.
+
+The last parameters is a list of strings. You need to pass one string for each dynamic parameter that this route takes.
+
+    matcherToPath bookReviewMatcher ["1", "2"]
+
+    ==
+
+    "/books/1/reviews/2"
+-}
+matcherToPath : PathMatcher a -> List String -> String
+matcherToPath matcher inputs =
+  let
+    inputs' =
+      List.append inputs [ "" ]
+
+    makeSegment segment input =
+      segment ++ input
+
+    path =
+      List.map2 makeSegment matcher.segments inputs'
+        |> String.join ""
+  in
+    path
+
+
 ---------------------------------------
 -- UTILS
 ---------------------------------------
--- {-| @priv
--- Initial task to match the initial route
--- -}
--- run : Config route -> Task error ()
--- run config =
---   History.replacePath ""
--- {-| @priv
--- -}
--- resolveLocation : Config route -> Location -> ( route, Location )
--- resolveLocation config location =
---   ( Matchers.matchLocation config location, location )
--- {-| @priv
--- Each time the location is changed get a signal (route, location)
--- We pass this signal to the main application
--- -}
--- routerSignal : Config routeTag -> Signal ( routeTag, Location )
--- routerSignal config =
---   let
---     signal =
---       locationSignal config
---   in
---     Signal.map (resolveLocation config) signal
--- locationSignal : Config route -> Signal Location
--- locationSignal config =
---   Signal.map (hrefToLocation config) History.href
 
 
 {-| Create a url from ...

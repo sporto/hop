@@ -26,7 +26,7 @@ configWithPathAndBase =
   { configWithPath | basePath = "/app/v1" }
 
 
-hrefToLocationTest =
+fromUrlTest =
   let
     inputs =
       [ ( "it parses an empty hash"
@@ -69,14 +69,14 @@ hrefToLocationTest =
     run ( testCase, config, href, expected ) =
       let
         actual =
-          Location.hrefToLocation config href
+          Location.fromUrl config href
 
         result =
           assertEqual expected actual
       in
         test testCase result
   in
-    suite "hrefToLocation" (List.map run inputs)
+    suite "fromUrl" (List.map run inputs)
 
 
 parseTest =
@@ -199,7 +199,7 @@ all : Test
 all =
   suite
     "Location"
-    [ hrefToLocationTest
+    [ fromUrlTest
     , parseTest
     , locationToFullPathTest
     ]

@@ -1,26 +1,19 @@
-module Hop.Matchers exposing (match1, match2, match3, match4, nested1, nested2, int, str, matchUrl, matcherToPath)
+module Hop.Matchers exposing (match1, match2, match3, match4, nested1, nested2, int, str)
 
 {-|
-Functions for building matchers and matching paths
+Functions for building matchers
 
 # Building matchers
 @docs match1, match2, match3, match4, nested1, nested2, int, str
 
-# Using matchers
-@docs matchPath, matchLocation, matcherToPath
 -}
 
 import String
 import Hop.Types exposing (..)
 import Hop.Location
-import Combine exposing (Parser, parse)
+import Combine exposing (Parser)
 import Combine.Num
 import Combine.Infix exposing ((<$>), (<$), (<*), (*>), (<*>), (<|>))
-
-
----------------------------------------
--- Matchers
----------------------------------------
 
 
 parserWithBeginningAndEnd : Parser a -> Parser a
@@ -216,115 +209,3 @@ int =
 str : Parser String
 str =
   Combine.regex "[^/]+"
-
-
-
----------------------------------------
--- MATCHING
----------------------------------------
-
-matchUrl : Config route -> String -> (route, Hop.Types.Location)
-matchUrl config url =
-  let
-    location =
-      Hop.Location.hrefToLocation config url
-  in
-    (matchLocation config location, location)
-
-{-| @priv
-Matches a path (without basePath).
-e.g. "/users/1/comments/2".
-
-Returns the matching route.
-
-    matchPathWithPathList matchers NotFound "/users/1/comments/2"
-
-    ==
-
-    User 1 (Comment 2)
--}
-matchPathWithPathList : List (PathMatcher route) -> route -> String -> route
-matchPathWithPathList routeParsers notFoundAction path =
-  case routeParsers of
-    [] ->
-      notFoundAction
-
-    [ routeParser ] ->
-      case parse routeParser.parser path of
-        ( Ok res, context ) ->
-          res
-
-        ( Err _, context ) ->
-          notFoundAction
-
-    routeParser :: rest ->
-      case parse routeParser.parser path of
-        ( Ok res, context ) ->
-          res
-
-        ( Err _, context ) ->
-          matchPathWithPathList rest notFoundAction path
-
-
-{-| @priv
-Matches a path.
-BasePath should already be removed.
-e.g. "/users/1/comments/2".
-
-Returns the matched route.
-
-    matchPath config "/users/1/comments/2"
-
-    ==
-
-    User 1 (Comment 2)
--}
-matchPath : Config route -> String -> route
-matchPath config path =
-  matchPathWithPathList config.matchers config.notFound path
-
-
-{-| @priv
-Matches a location record.
-Returns the matched route.
-
-    matchLocation config { path = ["users", "1"], query = [] }
-
-    ==
-
-    (User 1)
--}
-matchLocation : Config route -> Location -> route
-matchLocation config location =
-  let
-    pathString =
-      String.join "/" ("" :: location.path)
-  in
-    matchPath config pathString
-
-
-{-|
-Generates a path from a matcher. Use this for reverse routing.
-
-The last parameters is a list of strings. You need to pass one string for each dynamic parameter that this route takes.
-
-    matcherToPath bookReviewMatcher ["1", "2"]
-
-    ==
-
-    "/books/1/reviews/2"
--}
-matcherToPath : PathMatcher a -> List String -> String
-matcherToPath matcher inputs =
-  let
-    inputs' =
-      List.append inputs [ "" ]
-
-    makeSegment segment input =
-      segment ++ input
-
-    path =
-      List.map2 makeSegment matcher.segments inputs'
-        |> String.join ""
-  in
-    path

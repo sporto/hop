@@ -7,7 +7,7 @@ import Html.Events exposing (onClick)
 import Dict
 import Task exposing (Task)
 import Navigation
-import Hop exposing (getUrl)
+import Hop exposing (..)
 import Hop.Matchers exposing (..)
 import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
 

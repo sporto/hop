@@ -96,8 +96,8 @@ Return only the relevant part of a location string
 
     http://localhost:3000/app/languages --> /app/languages
 -}
-hrefToLocationString : Config route -> String -> String
-hrefToLocationString config href =
+fromUrlString : Config route -> String -> String
+fromUrlString config href =
   let
     withoutProtocol =
       href
@@ -135,11 +135,11 @@ Convert a full url to a location
 
     http://localhost:3000/app/languages --> { path = ..., query = .... }
 -}
-hrefToLocation : Config route -> String -> Location
-hrefToLocation config href =
+fromUrl : Config route -> String -> Location
+fromUrl config href =
   let
     relevantLocationString =
-      hrefToLocationString config href
+      fromUrlString config href
   in
     if config.hash then
       parse relevantLocationString
