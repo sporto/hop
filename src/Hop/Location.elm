@@ -10,6 +10,7 @@ import Hop.Types exposing (..)
 -------------------------------------------------------------------------------
 
 
+dedupSlash : String -> String
 dedupSlash =
     Regex.replace Regex.All (Regex.regex "/+") (\_ -> "/")
 
@@ -218,37 +219,3 @@ queryKVtoTuple kv =
             Http.uriDecode second
     in
         ( firstDecoded, secondDecoded )
-
-
-
--------------------------------------------------------------------------------
--- QUERY MUTATION
--------------------------------------------------------------------------------
-
-
-addQuery : Query -> Location -> Location
-addQuery query location =
-    let
-        updatedQuery =
-            Dict.union query location.query
-    in
-        { location | query = updatedQuery }
-
-
-setQuery : Query -> Location -> Location
-setQuery query location =
-    { location | query = query }
-
-
-removeQuery : String -> Location -> Location
-removeQuery key location =
-    let
-        updatedQuery =
-            Dict.remove key location.query
-    in
-        { location | query = updatedQuery }
-
-
-clearQuery : Location -> Location
-clearQuery location =
-    { location | query = Dict.empty }

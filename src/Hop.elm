@@ -1,9 +1,12 @@
-module Hop exposing (matchUrl, matcherToPath, makeUrl, addQuery, setQuery, removeQuery, clearQuery)
+module Hop exposing (matchUrl, matcherToPath, makeUrl, makeUrlFromLocation, addQuery, setQuery, removeQuery, clearQuery)
 
 {-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
 # Create URLs
-@docs makeUrl, addQuery, setQuery, removeQuery, clearQuery
+@docs makeUrl, makeUrlFromLocation
+
+# Change query string
+@docs addQuery, setQuery, removeQuery, clearQuery
 
 # Match current URL
 @docs matchUrl
@@ -14,6 +17,7 @@ module Hop exposing (matchUrl, matcherToPath, makeUrl, addQuery, setQuery, remov
 -}
 
 import String
+import Dict
 import Hop.Types exposing (..)
 import Hop.Location
 import Hop.Matching exposing (..)
@@ -24,6 +28,9 @@ import Hop.Matching exposing (..)
 ---------------------------------------
 
 
+{-|
+matchUrl
+-}
 matchUrl : Config route -> String -> ( route, Hop.Types.Location )
 matchUrl config url =
     let
@@ -87,7 +94,7 @@ makeUrl config route =
         |> makeUrlFromLocation config
 
 
-{-| @private
+{-|
 Create an url from a location
 -}
 makeUrlFromLocation : Config route -> Location -> String
@@ -129,11 +136,21 @@ Example use in update:
 
 To remove a value set the value to ""
 -}
-addQuery : Config route -> Query -> Location -> String
-addQuery config query location =
-    location
-        |> Hop.Location.addQuery query
-        |> Hop.Location.locationToFullPath config
+
+
+
+-------------------------------------------------------------------------------
+-- QUERY MUTATION
+-------------------------------------------------------------------------------
+
+
+addQuery : Query -> Location -> Location
+addQuery query location =
+    let
+        updatedQuery =
+            Dict.union query location.query
+    in
+        { location | query = updatedQuery }
 
 
 {-| Set query string values (removes existing values)
@@ -148,11 +165,9 @@ Example use in update:
         SetQuery query ->
           (model, Effects.map HopAction (setQuery config query model.location))
 -}
-setQuery : Config route -> Query -> Location -> String
-setQuery config query location =
-    location
-        |> Hop.Location.setQuery query
-        |> Hop.Location.locationToFullPath config
+setQuery : Query -> Location -> Location
+setQuery query location =
+    { location | query = query }
 
 
 {-| Remove one query string value
@@ -167,11 +182,13 @@ Example use in update:
         RemoveQuery query ->
           (model, Effects.map HopAction (removeQuery config key model.location))
 -}
-removeQuery : Config route -> String -> Location -> String
-removeQuery config key location =
-    location
-        |> Hop.Location.removeQuery key
-        |> Hop.Location.locationToFullPath config
+removeQuery : String -> Location -> Location
+removeQuery key location =
+    let
+        updatedQuery =
+            Dict.remove key location.query
+    in
+        { location | query = updatedQuery }
 
 
 {-| Clear all query string values
@@ -186,8 +203,6 @@ Example use in update:
         ClearQuery ->
           (model, Effects.map HopAction (clearQuery config model.location))
 -}
-clearQuery : Config route -> Location -> String
-clearQuery config location =
-    location
-        |> Hop.Location.clearQuery
-        |> Hop.Location.locationToFullPath config
+clearQuery : Location -> Location
+clearQuery location =
+    { location | query = Dict.empty }

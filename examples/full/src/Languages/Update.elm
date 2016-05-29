@@ -2,7 +2,7 @@ module Languages.Update exposing (..)
 
 import Debug
 import Navigation
-import Hop exposing (makeUrl, addQuery, setQuery)
+import Hop exposing (makeUrl, makeUrlFromLocation, addQuery, setQuery)
 import Hop.Types exposing (Config, Location)
 import Routing.Config
 import Models
@@ -53,20 +53,23 @@ update message model =
 
         AddQuery query ->
             let
-                path =
-                    addQuery routerConfig query model.location
+                command =
+                    model.location
+                        |> addQuery query
+                        |> makeUrlFromLocation routerConfig
+                        |> Navigation.modifyUrl
             in
-                ( model, Navigation.modifyUrl path )
+                ( model, command )
 
         SetQuery query ->
             let
-                path =
-                    setQuery routerConfig query model.location
-
-                _ =
-                    Debug.log "path" path
+                command =
+                    model.location
+                        |> setQuery query
+                        |> makeUrlFromLocation routerConfig
+                        |> Navigation.modifyUrl
             in
-                ( model, Navigation.modifyUrl path )
+                ( model, command )
 
 
 updateWithId : LanguageId -> String -> String -> Language -> Language
