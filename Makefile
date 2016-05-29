@@ -8,7 +8,7 @@ full-up:
 test-up:
 	cd ./examples/test && npm run dev
 
-# Generate diagramas using PlantUML
+# Generate diagrams using PlantUML
 flow:
 	java -jar /usr/local/bin/plantuml.jar -ttxt assets/flow.pu
 
