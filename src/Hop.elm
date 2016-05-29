@@ -13,7 +13,6 @@ module Hop exposing (matchUrl, matcherToPath, makeUrl, addQuery, setQuery, remov
 
 -}
 
-
 import String
 import Hop.Types exposing (..)
 import Hop.Location
@@ -106,6 +105,7 @@ makeUrlFromLocation config location =
         path
 
 
+
 -------------------------------------------------------------------------------
 -- QUERY
 -------------------------------------------------------------------------------
@@ -131,9 +131,9 @@ To remove a value set the value to ""
 -}
 addQuery : Config route -> Query -> Location -> String
 addQuery config query location =
-  location
-    |> Hop.Location.addQuery query
-    |> Hop.Location.locationToFullPath config
+    location
+        |> Hop.Location.addQuery query
+        |> Hop.Location.locationToFullPath config
 
 
 {-| Set query string values (removes existing values)
@@ -150,9 +150,9 @@ Example use in update:
 -}
 setQuery : Config route -> Query -> Location -> String
 setQuery config query location =
-  location
-    |> Hop.Location.setQuery query
-    |> Hop.Location.locationToFullPath config
+    location
+        |> Hop.Location.setQuery query
+        |> Hop.Location.locationToFullPath config
 
 
 {-| Remove one query string value
@@ -169,9 +169,9 @@ Example use in update:
 -}
 removeQuery : Config route -> String -> Location -> String
 removeQuery config key location =
-  location
-    |> Hop.Location.removeQuery key
-    |> Hop.Location.locationToFullPath config
+    location
+        |> Hop.Location.removeQuery key
+        |> Hop.Location.locationToFullPath config
 
 
 {-| Clear all query string values
@@ -188,6 +188,6 @@ Example use in update:
 -}
 clearQuery : Config route -> Location -> String
 clearQuery config location =
-  location
-    |> Hop.Location.clearQuery
-    |> Hop.Location.locationToFullPath config
+    location
+        |> Hop.Location.clearQuery
+        |> Hop.Location.locationToFullPath config

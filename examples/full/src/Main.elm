@@ -29,6 +29,7 @@ init ( route, location ) =
     ( newAppModel route location, Cmd.none )
 
 
+main : Program Never
 main =
     Navigation.program urlParser
         { init = init

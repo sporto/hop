@@ -2,7 +2,6 @@ module HopTest exposing (..)
 
 import Dict
 import ElmTest exposing (..)
-
 import Hop exposing (..)
 import Hop.Location as Location
 import Hop.Types exposing (..)
@@ -10,74 +9,78 @@ import Hop.Matchers exposing (..)
 
 
 type TopLevelRoutes
-  = Users
-  | User Int
-  | UserStatus Int
-  | UsersToken String
-  | UserToken Int String
-  | UserPosts Int (PostNestedRoutes)
-  | NotFound
+    = Users
+    | User Int
+    | UserStatus Int
+    | UsersToken String
+    | UserToken Int String
+    | UserPosts Int (PostNestedRoutes)
+    | NotFound
 
 
 type PostNestedRoutes
-  = Posts
-  | Post Int
+    = Posts
+    | Post Int
 
 
 postsRoute =
-  match1 Posts "/posts"
+    match1 Posts "/posts"
 
 
 postRoute =
-  match2 Post "/posts/" int
+    match2 Post "/posts/" int
 
 
 postRoutes =
-  [ postsRoute, postRoute ]
+    [ postsRoute, postRoute ]
 
 
 rootRoute =
-  match1 Users ""
+    match1 Users ""
 
 
 usersRoute =
-  match1 Users "/users"
+    match1 Users "/users"
 
 
 userRoute =
-  match2 User "/users/" int
+    match2 User "/users/" int
 
 
 userStatusRoute =
-  match3 UserStatus "/users/" int "/status"
+    match3 UserStatus "/users/" int "/status"
 
 
 usersTokenRoute =
-  match2 UsersToken "/users/" str
+    match2 UsersToken "/users/" str
 
 
 userTokenRoute =
-  match4 UserToken "/users/" int "/" str
+    match4 UserToken "/users/" int "/" str
 
 
 userPostRoute =
-  nested2 UserPosts "/users/" int postRoutes
+    nested2 UserPosts "/users/" int postRoutes
 
 
 topLevelRoutes =
-  [ rootRoute, usersRoute, userRoute, userStatusRoute, usersTokenRoute, userPostRoute, userTokenRoute ]
+    [ rootRoute, usersRoute, userRoute, userStatusRoute, usersTokenRoute, userPostRoute, userTokenRoute ]
 
 
 config =
-  { hash = True
-  , basePath = ""
-  , matchers = topLevelRoutes
-  , notFound = NotFound
-  }
+    { hash = True
+    , basePath = ""
+    , matchers = topLevelRoutes
+    , notFound = NotFound
+    }
 
 
 configWithPath =
-  { config | hash = False }
+    { config | hash = False }
+
+
+configWithBasePath =
+    { configWithPath | basePath = "app" }
 
 
 
@@ -86,139 +89,198 @@ configWithPath =
 
 matchUrlTest : Test
 matchUrlTest =
-  let
-    inputs =
-      [ ( "hash: Matches users"
-        , config
-        , "http://example.com"
-        , Users
-        )
-      , ( "path: Matches users"
-        , configWithPath
-        , "http://example.com"
-        , Users
-        )
-        -- users
-      , ( "hash: Matches users"
-        , config
-        , "http://example.com/#/users"
-        , Users
-        )
-      , ( "path: Matches users"
-        , configWithPath
-        , "http://example.com/users"
-        , Users
-        )
-        -- one user
-      , ( "hash: Matches one user"
-        , config
-        , "http://example.com/#/users/1"
-        , User 1
-        )
-      , ( "path: Matches one user"
-        , configWithPath
-        , "http://example.com/users/1"
-        , User 1
-        )
-        -- user status
-      , ( "hash: Matches user status"
-        , config
-        , "http://example.com/#/users/2/status"
-        , UserStatus 2
-        )
-      , ( "path: Matches user status"
-        , configWithPath
-        , "http://example.com/users/2/status"
-        , UserStatus 2
-        )
-        -- users token
-      , ( "hash: Matches users token"
-        , config
-        , "http://example.com/#/users/abc"
-        , UsersToken "abc"
-        )
-      , ( "path: Matches users token"
-        , configWithPath
-        , "http://example.com/users/abc"
-        , UsersToken "abc"
-        )
-        -- one user token
-      , ( "hash: Matches one user token"
-        , config
-        , "http://example.com/#/users/3/abc"
-        , UserToken 3 "abc"
-        )
-      , ( "path: Matches one user token"
-        , configWithPath
-        , "http://example.com/users/3/abc"
-        , UserToken 3 "abc"
-        )
-        -- user posts
-      , ( "hash: Matches user posts"
-        , config
-        , "http://example.com/#/users/4/posts"
-        , UserPosts 4 (Posts)
-        )
-      , ( "hash: Matches one user post"
-        , config
-        , "http://example.com/#/users/4/posts/2"
-        , UserPosts 4 (Post 2)
-        )
-        -- not found
-      , ( "hash: Matches not found"
-        , config
-        , "http://example.com/#/posts"
-        , NotFound
-        )
-      , ( "path: Matches not found"
-        , configWithPath
-        , "http://example.com/app/users"
-        , NotFound
-        )
-      ]
+    let
+        inputs =
+            [ ( "hash: Matches users"
+              , config
+              , "http://example.com"
+              , ( Users, { path = [], query = Dict.empty } )
+              )
+            , ( "path: Matches users"
+              , configWithPath
+              , "http://example.com"
+              , ( Users, { path = [], query = Dict.empty } )
+              )
+            , ( "basePath: Matches users"
+              , configWithBasePath
+              , "http://example.com"
+              , ( Users, { path = [], query = Dict.empty } )
+              )
+              -- users
+            , ( "hash: Matches users"
+              , config
+              , "http://example.com/#/users"
+              , ( Users, { path = [ "users" ], query = Dict.empty } )
+              )
+            , ( "path: Matches users"
+              , configWithPath
+              , "http://example.com/users"
+              , ( Users, { path = [ "users" ], query = Dict.empty } )
+              )
+            , ( "basePath: Matches users"
+              , configWithBasePath
+              , "http://example.com/app/users"
+              , ( Users, { path = [ "users" ], query = Dict.empty } )
+              )
+              -- one user
+            , ( "hash: Matches one user"
+              , config
+              , "http://example.com/#/users/1"
+              , ( User 1, { path = [ "users", "1" ], query = Dict.empty } )
+              )
+            , ( "path: Matches one user"
+              , configWithPath
+              , "http://example.com/users/1"
+              , ( User 1, { path = [ "users", "1" ], query = Dict.empty } )
+              )
+            , ( "basePath: Matches one user"
+              , configWithBasePath
+              , "http://example.com/app/users/1"
+              , ( User 1, { path = [ "users", "1" ], query = Dict.empty } )
+              )
+              -- user status
+            , ( "hash: Matches user status"
+              , config
+              , "http://example.com/#/users/2/status"
+              , ( UserStatus 2, { path = [ "users", "2", "status" ], query = Dict.empty } )
+              )
+            , ( "path: Matches user status"
+              , configWithPath
+              , "http://example.com/users/2/status"
+              , ( UserStatus 2, { path = [ "users", "2", "status" ], query = Dict.empty } )
+              )
+            , ( "basePath: Matches user status"
+              , configWithBasePath
+              , "http://example.com/app/users/2/status"
+              , ( UserStatus 2, { path = [ "users", "2", "status" ], query = Dict.empty } )
+              )
+              -- users token
+            , ( "hash: Matches users token"
+              , config
+              , "http://example.com/#/users/abc"
+              , ( UsersToken "abc", { path = [ "users", "abc" ], query = Dict.empty } )
+              )
+            , ( "path: Matches users token"
+              , configWithPath
+              , "http://example.com/users/abc"
+              , ( UsersToken "abc", { path = [ "users", "abc" ], query = Dict.empty } )
+              )
+              -- one user token
+            , ( "hash: Matches one user token"
+              , config
+              , "http://example.com/#/users/3/abc"
+              , ( UserToken 3 "abc", { path = [ "users", "3", "abc" ], query = Dict.empty } )
+              )
+            , ( "path: Matches one user token"
+              , configWithPath
+              , "http://example.com/users/3/abc"
+              , ( UserToken 3 "abc", { path = [ "users", "3", "abc" ], query = Dict.empty } )
+              )
+              -- user posts
+            , ( "hash: Matches user posts"
+              , config
+              , "http://example.com/#/users/4/posts"
+              , ( UserPosts 4 (Posts), { path = [ "users", "4", "posts" ], query = Dict.empty } )
+              )
+            , ( "hash: Matches one user post"
+              , config
+              , "http://example.com/#/users/4/posts/2"
+              , ( UserPosts 4 (Post 2), { path = [ "users", "4", "posts", "2" ], query = Dict.empty } )
+              )
+              -- not found
+            , ( "hash: Matches not found"
+              , config
+              , "http://example.com/#/posts"
+              , ( NotFound, { path = [ "posts" ], query = Dict.empty } )
+              )
+            , ( "path: Matches not found"
+              , configWithPath
+              , "http://example.com/app/users"
+              , ( NotFound, { path = [ "app", "users" ], query = Dict.empty } )
+              )
+            ]
 
-    run ( testCase, cfg, input, expected ) =
-      let
-        (actual, location) =
-          matchUrl cfg input
+        run ( testCase, cfg, input, expected ) =
+            let
+                actual =
+                    matchUrl cfg input
 
-        result =
-          assertEqual expected actual
-      in
-        test testCase result
-  in
-    suite "matchUrl" (List.map run inputs)
+                result =
+                    assertEqual expected actual
+            in
+                test testCase result
+    in
+        suite "matchUrl" (List.map run inputs)
 
 
 matcherToPathTest : Test
 matcherToPathTest =
-  let
-    inputs =
-      [ ( "Users", usersRoute, [], "/users" )
-      , ( "One user", userRoute, [ "2" ], "/users/2" )
-      , ( "Too many inputs", userRoute, [ "2", "3" ], "/users/2" )
-      , ( "User status", userStatusRoute, [ "3" ], "/users/3/status" )
-      ]
+    let
+        inputs =
+            [ ( "Users", usersRoute, [], "/users" )
+            , ( "One user", userRoute, [ "2" ], "/users/2" )
+            , ( "Too many inputs", userRoute, [ "2", "3" ], "/users/2" )
+            , ( "User status", userStatusRoute, [ "3" ], "/users/3/status" )
+            ]
 
-    run ( testCase, route, params, expected ) =
-      let
-        actual =
-          matcherToPath route params
+        run ( testCase, route, params, expected ) =
+            let
+                actual =
+                    matcherToPath route params
 
-        result =
-          assertEqual expected actual
-      in
-        test testCase result
-  in
-    suite "matcherToPath" (List.map run inputs)
+                result =
+                    assertEqual expected actual
+            in
+                test testCase result
+    in
+        suite "matcherToPath" (List.map run inputs)
+
+
+setQueryTest : Test
+setQueryTest =
+    let
+        currentLocation =
+            { path = [ "users" ], query = Dict.empty }
+
+        inputs =
+            [ ( "hash: Sets the query"
+              , config
+              , Dict.singleton "k" "1"
+              , currentLocation
+              , "#/users?k=1"
+              )
+            , ( "path: Sets the query"
+              , configWithPath
+              , Dict.singleton "k" "1"
+              , currentLocation
+              , "/users?k=1"
+              )
+            , ( "basePath: Sets the query"
+              , configWithBasePath
+              , Dict.singleton "k" "1"
+              , currentLocation
+              , "/app/users?k=1"
+              )
+            ]
+
+        run ( testCase, config, query, location, expected ) =
+            let
+                actual =
+                    setQuery config query location
+
+                result =
+                    assertEqual expected actual
+            in
+                test testCase result
+    in
+        suite "setQuery" (List.map run inputs)
 
 
 allTest : List Test
 allTest =
-  [ matchUrlTest, matcherToPathTest ]
+    [ matchUrlTest, matcherToPathTest, setQueryTest ]
 
 
 all : Test
 all =
-  suite "MatcherTest" allTest
-
+    suite "MatcherTest" allTest
