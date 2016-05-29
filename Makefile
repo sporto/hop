@@ -8,10 +8,6 @@ full-up:
 test-up:
 	cd ./examples/test && npm run dev
 
-# Generate diagrams using PlantUML
-flow:
-	java -jar /usr/local/bin/plantuml.jar -ttxt assets/flow.pu
-
 # Generate documentation for preview
 docs:
 	elm make --docs=documentation.json
