@@ -1,12 +1,22 @@
 # Getting Started
 
-## Import Hop modules
+## Packages
+
+You will need Navigation and Hop
+
+```
+elm package install elm-lang/navigation
+elm package install sporto/hop
+```
+
+## Import modules
 
 ```elm
-import Hop
-import Hop.Matchers exposing (int, str, match1, match2)
-import Hop.Navigate exposing (navigateTo)
-import Hop.Types exposing (Config, Router, PathMatcher, Location)
+import Navigation
+import Hop exposing (makeUrl, makeUrlFromLocation, matchUrl, setQuery)
+import Hop.Matchers exposing (..)
+import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
+
 ```
 
 ## Define your routes as union types
@@ -38,9 +48,9 @@ matchers =
   ]
 ```
 
-- `int` is a matcher that matches only integers for a string use `str`
+- `int` is a matcher that matches only integers, for a string use `str`
 
-## Create a config record
+## Create a Hop config record
 
 ```elm
 routerConfig : Config Route
@@ -60,79 +70,19 @@ The `basePath` is only used for path routing. This is useful if you application 
 - `matchers` is your list of matchers defined above.
 - `notFound` is a route that will be returned when the path doesn't match any known route.
 
-## Create the router
-
-```elm
-router : Router Route
-router =
-  Hop.new routerConfig
-```
-
-`Hop.new` will give you back a `Hop.Router` record:
-
-```elm
-{
-  run,
-  signal
-}
-```
-
-- `signal` is the signal that will carry changes when the browser location changes. This signal has the type `(Route, Location)`.
-
-- `run` is a task to match the initial route, this needs to be send to a port, more details later.
-
-## Main actions
-
-In your main application actions define an extra action:
-
-```elm
-type Action
-  = ...
-  | ApplyRoute ( Route, Location )
-```
-
-- `ApplyRoute` will be called when a path matches. `ApplyRoute` will be called with a tuple `(Route, Location)`.
-
-## Map the router signal
-
-The router signal carries `(Route, Location)`. Map this signal to an application action:
-
-```elm
-type Action
-  ...
-  | ApplyRoute ( Route, Location )
-
-taggedRouterSignal : Signal Action
-taggedRouterSignal =
-  Signal.map ApplyRoute router.signal
-```
-
-## Add the router signal to StartApp inputs
-
-Your start app configuration should include the router signal:
-
-```elm
-app =
-  StartApp.start {
-    init = init,
-    update = update,
-    view = view,
-    inputs = [taggedRouterSignal]
-  }
-```
-
-This will allow the router to send signal to your application when the location changes.
-
-## Add fields to your model
+## Add route and location to your model
 
 Your model needs to store the current location and route. 
 
 ```elm
-type alias Model {
-  location: Location,
-  route: Route
-}
+type alias Model =
+    { location : Location
+    , route : Route
+    }
 ```
+
+- `Location` is a `Hop.Types.Location` record (not Navigation.Location)
+- `Route` is your Route union type
 
 This is needed because:
 
@@ -140,25 +90,29 @@ This is needed because:
 - Your views will need information about the current route.
 - Your views might need information about the current query string.
 
-See more details about `Hop.Types.Location` below.
-
-## Add update actions
-
-Add entries to `update` for actions related to routing:
+## Create a URL Parser for Navigation
 
 ```elm
-update action model =
-  case action of
-    ...
-
-    ApplyRoute ( route, location ) ->
-      ( { model | route = route, location = location }, Effects.none )
+urlParser : Navigation.Parser ( Route, Hop.Types.Location )
+urlParser =
+    Navigation.makeParser (.href >> matchUrl routerConfig)
 ```
 
-`ApplyRoute` will be called when the browser location changes (manually or using `navigateTo`). This action has the route that matches the path and a `Location` record. Set both values on your model.
+Here we have a parser that take `.href` from `Navigation.location`. Then it send this `.href` to `Hop.matchUrl`.
+
+`matchUrl` returns a tuple: (matched route, Hop location record).
+
+## Create a URL update handler
+
+```elm
+urlUpdate : ( Route, Hop.Types.Location ) -> Model -> ( Model, Cmd Msg )
+urlUpdate ( route, location ) model =
+   ( { model | route = route, location = location }, Cmd.none )
+```
+
+`Navigation` will call this function when the browser location changes. Here we simply store the current `route` and `location`.
 
 It is important that you update the `location`, this is needed for matching a query string.
-
 
 ## Wire up your views
 
@@ -174,19 +128,35 @@ view address model =
     ...
 ```
 
-## Run the router
+## Create an init function
 
-In order to match the initial route when the application is loaded you will need to create a port specifically for this.
+Your init function will receive an initial payload from Navigation, this payload is the initial matched location.
+
+```
+init : ( Route, Hop.Types.Location ) -> ( Model, Cmd Msg )
+init ( route, location ) =
+    ( Model location route, Cmd.none )
+```
+
+Here we store the `route` and `location` in our model.
+
+## Wire everything using Navigation
 
 ```elm
-port routeRunTask : Task () ()
-port routeRunTask =
-  router.run
+main : Program Never
+main =
+    Navigation.program urlParser
+        { init = init
+        , view = view
+        , update = update
+        , urlUpdate = urlUpdate
+        , subscriptions = (always Sub.none)
+        }
 ```
 
 ## About `Hop.Types.Location`
 
-`router.signal` has a type of `(Route, Location)`. Location is a record that has:
+`matchUrl` gives you back `(Route, Location)`. Location is a record that has:
 
 ```elm
 {
@@ -199,62 +169,6 @@ port routeRunTask =
 
 `query` Is dictionary of String String. You can access this information in your views to show the content.
 
-## Navigation
+---
 
-You have two way to navigate:
-
-### 1. Using plain `a` tags
-
-```elm
-  a [ href "#/users/1" ] [ text "User" ]
-```
-
-- If you are using hash routing you must add the `#`.
-- If you are using path routing don't use plain a tags as this will trigger a page refresh.
-
-### 2. Using effects
-
-This is the preferred way and works with push state.
-
-__Add two application actions__
-
-```elm
-type Action
-  = ...
-  | ApplyRoute ( Route, Location )
-  | HopAction ()
-  | NavigateTo String
-```
-
-- `HopAction` will be used when a location change happens, this action doesn't have any significance but needs to be accounted for.
-
-- `NavigateTo` will be used for navigating to a location.
-
-__Call the action from your view__
-
-```elm
-button [ onClick address (NavigateTo "/users/1") ] [ text "User" ]
-```
-
-You don't need to add `#` in this case. Hop also provides reverse routing helpers so you don't need to manually write the path.
-
-__Respond to the action in `update`__
-
-```elm
-update action model =
-  case action of
-    ...
-    
-    NavigateTo path ->
-      ( model, Effects.map HopAction (navigateTo routerConfig path) )
-
-    HopAction () ->
-      ( model, Effects.none )
-```
-
-`NavigateTo` sends a selected path to `Hop.Navigate.navigateTo`. `navigateTo` will return an effect that needs to be run by your application. When this effect is run the path / hash will change. 
-
-After that your application will receive a location change signal as described before. Tag this effect with an action of your own e.g. `HopAction`.
-
-`HopAction` will be called after the `navigateTo` effect is run. This effect doesn't return anything significant, thus `()`.
-
+See `examples/basic/Main.elm` for a heavily commented working version.
