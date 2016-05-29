@@ -236,49 +236,9 @@ matcherToPathTest =
         suite "matcherToPath" (List.map run inputs)
 
 
-setQueryTest : Test
-setQueryTest =
-    let
-        currentLocation =
-            { path = [ "users" ], query = Dict.empty }
-
-        inputs =
-            [ ( "hash: Sets the query"
-              , config
-              , Dict.singleton "k" "1"
-              , currentLocation
-              , "#/users?k=1"
-              )
-            , ( "path: Sets the query"
-              , configWithPath
-              , Dict.singleton "k" "1"
-              , currentLocation
-              , "/users?k=1"
-              )
-            , ( "basePath: Sets the query"
-              , configWithBasePath
-              , Dict.singleton "k" "1"
-              , currentLocation
-              , "/app/users?k=1"
-              )
-            ]
-
-        run ( testCase, config, query, location, expected ) =
-            let
-                actual =
-                    setQuery config query location
-
-                result =
-                    assertEqual expected actual
-            in
-                test testCase result
-    in
-        suite "setQuery" (List.map run inputs)
-
-
 allTest : List Test
 allTest =
-    [ matchUrlTest, matcherToPathTest, setQueryTest ]
+    [ matchUrlTest, matcherToPathTest ]
 
 
 all : Test
