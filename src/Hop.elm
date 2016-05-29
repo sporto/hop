@@ -29,7 +29,18 @@ import Hop.Matching exposing (..)
 
 
 {-|
-matchUrl
+Match a URL
+
+This function returns a tuple with the first element being the matched route and the second a location record.
+
+- config is the router Config record
+
+    matchUrl config "/users/1"
+
+    ==
+
+    (User 1, <location record>)
+
 -}
 matchUrl : Config route -> String -> ( route, Hop.Types.Location )
 matchUrl config url =
@@ -73,19 +84,14 @@ matcherToPath matcher inputs =
 ---------------------------------------
 
 
-{-| Create a url from ...
+{-|
+Make a URL from a string, this will add # or the base path as necessary.
 
-  navigateTo will append "#/" if necessary
+    makeUrl config "/users"
 
-    navigateTo config "/users"
+    ==
 
-  Example use in update:
-
-    update action model =
-      case action of
-        ...
-        NavigateTo path ->
-          (model, Effects.map HopAction (navigateTo config path))
+    "#/users"
 -}
 makeUrl : Config route -> String -> String
 makeUrl config route =
@@ -95,7 +101,14 @@ makeUrl config route =
 
 
 {-|
-Create an url from a location
+Make a URL from a location record.
+
+    makeUrlFromLocation config { path = ["users", "1"], query = Dict.empty }
+
+    ==
+
+    "#/users/1"
+
 -}
 makeUrlFromLocation : Config route -> Location -> String
 makeUrlFromLocation config location =
@@ -114,36 +127,20 @@ makeUrlFromLocation config location =
 
 
 -------------------------------------------------------------------------------
--- QUERY
--------------------------------------------------------------------------------
-
-
-{-| Add query string values (patches any existing values)
-
-    addQuery config query location
-
-- config is the router Config record
-- query is a dictionary with keys to add
-- location is a record representing the current location
-
-Example use in update:
-
-    update action model =
-      case action of
-        ...
-        AddQuery query ->
-          (model, Effects.map HopAction (addQuery config query model.location))
-
-To remove a value set the value to ""
--}
-
-
-
--------------------------------------------------------------------------------
 -- QUERY MUTATION
 -------------------------------------------------------------------------------
 
 
+{-|
+Add query string values (patches any existing values) to a location record.
+
+    addQuery query location
+
+- query is a dictionary with keys to add
+- location is a record representing the current location
+
+To remove a value set the value to ""
+-}
 addQuery : Query -> Location -> Location
 addQuery query location =
     let
@@ -153,34 +150,20 @@ addQuery query location =
         { location | query = updatedQuery }
 
 
-{-| Set query string values (removes existing values)
+{-|
+Set query string values (removes existing values).
 
-    setQuery config query location
-
-Example use in update:
-
-    update action model =
-      case action of
-        ...
-        SetQuery query ->
-          (model, Effects.map HopAction (setQuery config query model.location))
+    setQuery query location
 -}
 setQuery : Query -> Location -> Location
 setQuery query location =
     { location | query = query }
 
 
-{-| Remove one query string value
+{-|
+Remove one key from the query string
 
-    removeQuery config query location
-
-Example use in update:
-
-    update action model =
-      case action of
-        ...
-        RemoveQuery query ->
-          (model, Effects.map HopAction (removeQuery config key model.location))
+    removeQuery key location
 -}
 removeQuery : String -> Location -> Location
 removeQuery key location =
@@ -193,15 +176,7 @@ removeQuery key location =
 
 {-| Clear all query string values
 
-    clearQuery config location
-
-Example use in update:
-
-    update action model =
-      case action of
-        ...
-        ClearQuery ->
-          (model, Effects.map HopAction (clearQuery config model.location))
+    clearQuery location
 -}
 clearQuery : Location -> Location
 clearQuery location =

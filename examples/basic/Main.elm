@@ -1,13 +1,11 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.App
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Dict
-import Task exposing (Task)
 import Navigation
-import Hop exposing (makeUrl, matchUrl, setQuery)
+import Hop exposing (makeUrl, makeUrlFromLocation, matchUrl, setQuery)
 import Hop.Matchers exposing (..)
 import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
 
@@ -72,7 +70,14 @@ update msg model =
             ( model, Navigation.modifyUrl (makeUrl routerConfig path) )
 
         SetQuery query ->
-            ( model, Navigation.modifyUrl (setQuery routerConfig query model.location) )
+            let
+                command =
+                    model.location
+                        |> setQuery query
+                        |> makeUrlFromLocation routerConfig
+                        |> Navigation.modifyUrl
+            in
+                ( model, command )
 
 
 urlUpdate : ( Route, Hop.Types.Location ) -> Model -> ( Model, Cmd Msg )
@@ -152,6 +157,7 @@ init ( route, location ) =
     ( Model location route, Cmd.none )
 
 
+main : Program Never
 main =
     Navigation.program urlParser
         { init = init
