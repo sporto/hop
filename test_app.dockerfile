@@ -1,4 +1,4 @@
-FROM codesimple/elm:0.16
+FROM codesimple/elm:0.17
 
 ENV UPDATED_ON 2016-05-29
 
