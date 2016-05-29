@@ -56,14 +56,17 @@ update message model =
                 path =
                     addQuery routerConfig query model.location
             in
-                ( model, navigationCmd path )
+                ( model, Navigation.modifyUrl path )
 
         SetQuery query ->
             let
                 path =
                     setQuery routerConfig query model.location
+
+                _ =
+                    Debug.log "path" path
             in
-                ( model, navigationCmd path )
+                ( model, Navigation.modifyUrl path )
 
 
 updateWithId : LanguageId -> String -> String -> Language -> Language

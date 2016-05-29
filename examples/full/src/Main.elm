@@ -19,7 +19,7 @@ urlUpdate : ( Route, Hop.Types.Location ) -> AppModel -> ( AppModel, Cmd Msg )
 urlUpdate ( route, location ) model =
     let
         _ =
-            Debug.log "location" location
+            Debug.log "urlUpdate location" location
     in
         ( { model | route = route, location = location }, Cmd.none )
 
