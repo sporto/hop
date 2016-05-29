@@ -11,18 +11,17 @@ import View exposing (..)
 import Routing.Config
 
 
--- CANNOT send flags to parser????
---makeUrlParser =
-
-
-urlParser : Navigation.Parser ( Route, Hop.Types.Location )
+urlParser : Navigation.Parser String
 urlParser =
-    Navigation.makeParser (.href >> matchUrl Routing.Config.config)
+    Navigation.makeParser .href
 
 
-urlUpdate : ( Route, Hop.Types.Location ) -> AppModel -> ( AppModel, Cmd Msg )
-urlUpdate ( route, location ) model =
+urlUpdate : String -> AppModel -> ( AppModel, Cmd Msg )
+urlUpdate href model =
     let
+        ( route, location ) =
+            matchUrl model.routerConfig href
+
         _ =
             Debug.log "urlUpdate location" location
     in
@@ -35,16 +34,19 @@ type alias Flags =
     }
 
 
-init : Flags -> ( Route, Hop.Types.Location ) -> ( AppModel, Cmd Msg )
-init flags ( route, location ) =
+init : Flags -> String -> ( AppModel, Cmd Msg )
+init flags href =
     let
         routerConfig =
             Routing.Config.getConfig flags.basePath flags.hash
+
+        ( route, location ) =
+            matchUrl routerConfig href
     in
         ( newAppModel routerConfig route location, Cmd.none )
 
 
-main : Program Never
+main : Program Flags
 main =
     Navigation.programWithFlags urlParser
         { init = init
