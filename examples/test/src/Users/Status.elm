@@ -1,11 +1,10 @@
-module Users.Status (..) where
+module Users.Status exposing (..)
 
 import Html exposing (..)
-import Users.Actions exposing (..)
+import Users.Messages exposing (..)
 
 
-view : Signal.Address Action -> Int -> Html
-view address userId =
-  div
-    []
-    [ h1 [] [ text ("Users.Status " ++ (toString userId)) ] ]
+view : Int -> Html Msg
+view userId =
+    div []
+        [ h1 [] [ text ("Users.Status " ++ (toString userId)) ] ]

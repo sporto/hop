@@ -1,6 +1,6 @@
-module Routing.Utils (..) where
+module Routing.Utils exposing (..)
 
-import Hop.Matchers exposing (..)
+import Hop exposing (matcherToPath)
 import Models exposing (..)
 import Routing.Config exposing (..)
 import Users.Routing.Utils
@@ -8,22 +8,22 @@ import Users.Routing.Utils
 
 reverse : Route -> String
 reverse route =
-  case route of
-    HomeRoute ->
-      matcherToPath matcherHome []
+    case route of
+        HomeRoute ->
+            matcherToPath matcherHome []
 
-    AboutRoute ->
-      matcherToPath matcherAbout []
+        AboutRoute ->
+            matcherToPath matcherAbout []
 
-    UsersRoutes subRoute ->
-      let
-        parentPath =
-          matcherToPath matchersUsers []
+        UsersRoutes subRoute ->
+            let
+                parentPath =
+                    matcherToPath matchersUsers []
 
-        subPath =
-          Users.Routing.Utils.reverse subRoute
-      in
-        parentPath ++ subPath
+                subPath =
+                    Users.Routing.Utils.reverse subRoute
+            in
+                parentPath ++ subPath
 
-    NotFoundRoute ->
-      ""
+        NotFoundRoute ->
+            ""

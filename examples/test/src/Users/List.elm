@@ -1,12 +1,11 @@
-module Users.List (..) where
+module Users.List exposing (..)
 
 import Html exposing (..)
 import Users.Models exposing (..)
-import Users.Actions exposing (..)
+import Users.Messages exposing (..)
 
 
-view : Signal.Address Action -> List User -> Html
-view address user =
-  div
-    []
-    [ h1 [] [ text "Users.List" ] ]
+view : List User -> Html Msg
+view user =
+    div []
+        [ h1 [] [ text "Users.List" ] ]

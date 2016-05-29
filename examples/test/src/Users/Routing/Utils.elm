@@ -1,31 +1,31 @@
-module Users.Routing.Utils (..) where
+module Users.Routing.Utils exposing (..)
 
-import Hop.Matchers exposing (..)
+import Hop exposing (matcherToPath)
 import Users.Models exposing (..)
 import Users.Routing.Config exposing (..)
 
 
 toS : a -> String
 toS =
-  toString
+    toString
 
 
 reverseWithPrefix : Route -> String
 reverseWithPrefix route =
-  "/languages" ++ (reverse route)
+    "/languages" ++ (reverse route)
 
 
 reverse : Route -> String
 reverse route =
-  case route of
-    UsersRoute ->
-      matcherToPath matcherUsers []
+    case route of
+        UsersRoute ->
+            matcherToPath matcherUsers []
 
-    UserRoute id ->
-      matcherToPath matcherUser [ toS id ]
+        UserRoute id ->
+            matcherToPath matcherUser [ toS id ]
 
-    UserStatusRoute id ->
-      matcherToPath matcherUserStatus [ toS id ]
+        UserStatusRoute id ->
+            matcherToPath matcherUserStatus [ toS id ]
 
-    NotFoundRoute ->
-      ""
+        NotFoundRoute ->
+            ""

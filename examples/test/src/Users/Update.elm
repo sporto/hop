@@ -1,64 +1,67 @@
-module Users.Update (..) where
+module Users.Update exposing (..)
 
-import Effects exposing (Effects, Never)
 import Debug
-import Task
-import Hop.Navigate exposing (navigateTo, addQuery, setQuery)
+import Navigation
+import Hop exposing (makeUrl, makeUrlFromLocation, addQuery, setQuery)
 import Hop.Types exposing (Config, Location)
 import Models
 import Users.Models exposing (..)
-import Users.Actions exposing (Action, Action(..))
+import Users.Messages exposing (Msg(..))
 import Users.Routing.Utils
 
 
 type alias UpdateModel =
-  { users : List User
-  , location : Location
-  , routerConfig : Config Models.Route
-  }
+    { users : List User
+    , location : Location
+    , routerConfig : Config Models.Route
+    }
 
 
-update : Action -> UpdateModel -> ( UpdateModel, Effects Action )
+update : Msg -> UpdateModel -> ( UpdateModel, Cmd Msg )
 update action model =
-  case Debug.log "action" action of
-    NavigateTo path ->
-      ( model, Effects.map HopAction (navigateTo model.routerConfig path) )
+    case Debug.log "action" action of
+        NavigateTo path ->
+            let
+                cmd =
+                    makeUrl model.routerConfig path
+                        |> Navigation.modifyUrl
+            in
+                ( model, cmd )
 
-    Show id ->
-      let
-        path =
-          Users.Routing.Utils.reverseWithPrefix (Users.Models.UserRoute id)
+        Show id ->
+            let
+                cmd =
+                    Users.Routing.Utils.reverseWithPrefix (Users.Models.UserRoute id)
+                        |> makeUrl model.routerConfig
+                        |> Navigation.modifyUrl
+            in
+                ( model, cmd )
 
-        fx =
-          Task.succeed (NavigateTo path)
-            |> Effects.task
-      in
-        ( model, fx )
+        ShowStatus id ->
+            let
+                cmd =
+                    Users.Routing.Utils.reverseWithPrefix (Users.Models.UserStatusRoute id)
+                        |> makeUrl model.routerConfig
+                        |> Navigation.modifyUrl
+            in
+                ( model, cmd )
 
-    ShowStatus id ->
-      let
-        path =
-          Users.Routing.Utils.reverseWithPrefix (Users.Models.UserStatusRoute id)
+        AddQuery query ->
+            let
+                cmd =
+                    model.location
+                        |> addQuery query
+                        |> makeUrlFromLocation model.routerConfig
+                        |> Navigation.modifyUrl
+            in
+                ( model, cmd )
 
-        fx =
-          Task.succeed (NavigateTo path)
-            |> Effects.task
-      in
-        ( model, fx )
-
-    AddQuery query ->
-      let
-        fx =
-          Effects.map HopAction (addQuery model.routerConfig query model.location)
-      in
-        ( model, fx )
-
-    SetQuery query ->
-      let
-        fx =
-          Effects.map HopAction (setQuery model.routerConfig query model.location)
-      in
-        ( model, fx )
-
-    HopAction () ->
-      ( model, Effects.none )
+        SetQuery query ->
+            let
+                cmd =
+                    model.location
+                        |> setQuery query
+                        |> makeUrlFromLocation model.routerConfig
+                        |> Navigation.modifyUrl
+            in
+                ( model, cmd )

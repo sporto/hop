@@ -1,45 +1,44 @@
-module Users.View (..) where
+module Users.View exposing (..)
 
 import Html exposing (..)
 import Hop.Types exposing (Location)
 import Users.Models exposing (User, Route, Route(..))
-import Users.Actions exposing (..)
+import Users.Messages exposing (..)
 import Users.List
 import Users.Show
 import Users.Status
 
 
 type alias ViewModel =
-  { location : Location
-  , route : Route
-  , users : List User
-  }
+    { location : Location
+    , route : Route
+    , users : List User
+    }
 
 
-view : Signal.Address Action -> ViewModel -> Html
-view address model =
-  case model.route of
-    UsersRoute ->
-      Users.List.view address []
+view : ViewModel -> Html Msg
+view model =
+    case model.route of
+        UsersRoute ->
+            Users.List.view []
 
-    UserRoute userId ->
-      Users.Show.view address userId
+        UserRoute userId ->
+            Users.Show.view userId
 
-    UserStatusRoute userId ->
-      Users.Status.view address userId
+        UserStatusRoute userId ->
+            Users.Status.view userId
 
-    NotFoundRoute ->
-      notFoundView address model
+        NotFoundRoute ->
+            notFoundView model
 
 
-emptyView : Html
+emptyView : Html msg
 emptyView =
-  span [] []
+    span [] []
 
 
-notFoundView : Signal.Address Action -> ViewModel -> Html
-notFoundView address model =
-  div
-    []
-    [ text "Not Found"
-    ]
+notFoundView : ViewModel -> Html msg
+notFoundView model =
+    div []
+        [ text "Not Found"
+        ]

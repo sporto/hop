@@ -1,55 +1,52 @@
-module View (..) where
+module View exposing (..)
 
 import Html exposing (..)
+import Html.App
 import Models exposing (..)
-import Actions exposing (..)
+import Messages exposing (..)
 import Menu
 import State
 import Users.View
 
 
-view : Signal.Address Action -> AppModel -> Html
-view address model =
-  div
-    []
-    [ Menu.view address model
-    , pageView address model
-    , State.view address model
-    ]
-
-
-pageView : Signal.Address Action -> AppModel -> Html
-pageView address model =
-  case model.route of
-    HomeRoute ->
-      div
-        []
-        [ h1 [] [ text "Home" ]
+view : AppModel -> Html Msg
+view model =
+    div []
+        [ Menu.view model
+        , pageView model
+        , State.view model
         ]
 
-    AboutRoute ->
-      div
-        []
-        [ h1 [] [ text "About" ]
+
+pageView : AppModel -> Html Msg
+pageView model =
+    case model.route of
+        HomeRoute ->
+            div []
+                [ h1 [] [ text "Home" ]
+                ]
+
+        AboutRoute ->
+            div []
+                [ h1 [] [ text "About" ]
+                ]
+
+        UsersRoutes usersRoute ->
+            let
+                viewModel =
+                    { users = model.users
+                    , route = usersRoute
+                    , location = model.location
+                    }
+            in
+                Html.App.map UsersAction (Users.View.view viewModel)
+
+        NotFoundRoute ->
+            notFoundView model
+
+
+notFoundView : AppModel -> Html msg
+notFoundView model =
+    div []
+        [ text "Not Found"
         ]
-
-    UsersRoutes usersRoute ->
-      let
-        viewModel =
-          { users = model.users
-          , route = usersRoute
-          , location = model.location
-          }
-      in
-        Users.View.view (Signal.forwardTo address UsersAction) viewModel
-
-    NotFoundRoute ->
-      notFoundView address model
-
-
-notFoundView : Signal.Address Action -> AppModel -> Html
-notFoundView address model =
-  div
-    []
-    [ text "Not Found"
-    ]

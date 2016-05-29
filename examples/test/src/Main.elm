@@ -1,61 +1,55 @@
-module Main (..) where
+module Main exposing (..)
 
 import Html exposing (..)
-import StartApp
-import Effects exposing (Effects, Never)
-import Task exposing (Task)
-import Hop
+import Navigation
+import Hop exposing (matchUrl)
 import Hop.Types exposing (Config, Router)
-import Actions exposing (..)
+import Messages exposing (..)
 import Models exposing (..)
 import Update exposing (..)
 import View exposing (..)
 import Routing.Config
 
 
-getRouterConfig : Config Route
-getRouterConfig =
-  Routing.Config.getConfig config.basePath config.hash
+-- CANNOT send flags to parser????
+--makeUrlParser =
 
 
-init : ( AppModel, Effects Action )
-init =
-  ( newAppModel getRouterConfig, Effects.none )
+urlParser : Navigation.Parser ( Route, Hop.Types.Location )
+urlParser =
+    Navigation.makeParser (.href >> matchUrl Routing.Config.config)
 
 
-router : Router Route
-router =
-  Hop.new getRouterConfig
+urlUpdate : ( Route, Hop.Types.Location ) -> AppModel -> ( AppModel, Cmd Msg )
+urlUpdate ( route, location ) model =
+    let
+        _ =
+            Debug.log "urlUpdate location" location
+    in
+        ( { model | route = route, location = location }, Cmd.none )
 
 
-routerSignal : Signal Action
-routerSignal =
-  Signal.map ApplyRoute router.signal
-
-
-app : StartApp.App AppModel
-app =
-  StartApp.start
-    { init = init
-    , update = update
-    , view = view
-    , inputs = [ routerSignal ]
+type alias Flags =
+    { hash : Bool
+    , basePath : String
     }
 
 
-main : Signal Html
+init : Flags -> ( Route, Hop.Types.Location ) -> ( AppModel, Cmd Msg )
+init flags ( route, location ) =
+    let
+        routerConfig =
+            Routing.Config.getConfig flags.basePath flags.hash
+    in
+        ( newAppModel routerConfig route location, Cmd.none )
+
+
+main : Program Never
 main =
-  app.html
-
-
-port tasks : Signal (Task.Task Never ())
-port tasks =
-  app.tasks
-
-
-port routeRunTask : Task () ()
-port routeRunTask =
-  router.run
-
-
-port config : AppConfig
+    Navigation.programWithFlags urlParser
+        { init = init
+        , view = view
+        , update = update
+        , urlUpdate = urlUpdate
+        , subscriptions = (always Sub.none)
+        }

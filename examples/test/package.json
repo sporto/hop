@@ -11,7 +11,7 @@
   "dependencies": {
     "css-loader": "^0.23.1",
     "ejs": "^2.4.1",
-    "elm-webpack-loader": "^2.0.1",
+    "elm-webpack-loader": "^3.0.1",
     "express": "^4.13.4",
     "file-loader": "^0.8.5",
     "style-loader": "^0.13.1",

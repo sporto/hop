@@ -1,40 +1,54 @@
-module Update (..) where
+module Update exposing (..)
 
 import Debug
-import Effects exposing (Effects)
-import Hop.Navigate exposing (navigateTo, setQuery, clearQuery)
-import Actions exposing (..)
+import Navigation
+import Hop exposing (makeUrl, makeUrlFromLocation, setQuery, clearQuery)
+import Messages exposing (..)
 import Models exposing (..)
 import Users.Update
 
 
-update : Action -> AppModel -> ( AppModel, Effects Action )
+update : Msg -> AppModel -> ( AppModel, Cmd Msg )
 update action model =
-  case Debug.log "action" action of
-    UsersAction subAction ->
-      let
-        updateModel =
-          { users = model.users
-          , location = model.location
-          , routerConfig = model.routerConfig
-          }
+    case Debug.log "action" action of
+        UsersAction subAction ->
+            let
+                updateModel =
+                    { users = model.users
+                    , location = model.location
+                    , routerConfig = model.routerConfig
+                    }
 
-        ( updatedModel, fx ) =
-          Users.Update.update subAction updateModel
-      in
-        ( { model | users = updatedModel.users }, Effects.map UsersAction fx )
+                ( updatedModel, fx ) =
+                    Users.Update.update subAction updateModel
+            in
+                ( { model | users = updatedModel.users }, Cmd.map UsersAction fx )
 
-    NavigateTo path ->
-      ( model, Effects.map HopAction (navigateTo model.routerConfig path) )
+        NavigateTo path ->
+            let
+                cmd =
+                    path
+                        |> makeUrl model.routerConfig
+                        |> Navigation.modifyUrl
+            in
+                ( model, cmd )
 
-    ApplyRoute ( route, location ) ->
-      ( { model | route = route, location = location }, Effects.none )
+        SetQuery query ->
+            let
+                cmd =
+                    model.location
+                        |> setQuery query
+                        |> makeUrlFromLocation model.routerConfig
+                        |> Navigation.modifyUrl
+            in
+                ( model, cmd )
 
-    SetQuery query ->
-      ( model, Effects.map HopAction (setQuery model.routerConfig query model.location) )
-
-    ClearQuery ->
-      ( model, Effects.map HopAction (clearQuery model.routerConfig model.location) )
-
-    HopAction () ->
-      ( model, Effects.none )
+        ClearQuery ->
+            let
+                cmd =
+                    model.location
+                        |> clearQuery
+                        |> makeUrlFromLocation model.routerConfig
+                        |> Navigation.modifyUrl
+            in
+                ( model, cmd )
