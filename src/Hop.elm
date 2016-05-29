@@ -5,14 +5,14 @@ module Hop exposing (matchUrl, matcherToPath, makeUrl, makeUrlFromLocation, addQ
 # Create URLs
 @docs makeUrl, makeUrlFromLocation
 
-# Change query string
-@docs addQuery, setQuery, removeQuery, clearQuery
-
 # Match current URL
 @docs matchUrl
 
 # Reverse Routing
 @docs matcherToPath
+
+# Change query string
+@docs addQuery, setQuery, removeQuery, clearQuery
 
 -}
 
@@ -29,17 +29,15 @@ import Hop.Matching exposing (..)
 
 
 {-|
-Match a URL
-
+Match a URL.
 This function returns a tuple with the first element being the matched route and the second a location record.
-
-- config is the router Config record
+Config is the router Config record.
 
     matchUrl config "/users/1"
 
     ==
 
-    (User 1, <location record>)
+    (User 1, { path = ["users", "1"], query = Dict.fromList [] })
 
 -}
 matchUrl : Config route -> String -> ( route, Hop.Types.Location )
@@ -135,6 +133,12 @@ makeUrlFromLocation config location =
 Add query string values (patches any existing values) to a location record.
 
     addQuery query location
+
+    addQuery (Dict.Singleton "b" "2") { path = [], query = Dict.fromList [("a", "1")] }
+
+    ==
+
+    { path = [], query = Dict.fromList [("a", "1"), ("b", "2")] }
 
 - query is a dictionary with keys to add
 - location is a record representing the current location
