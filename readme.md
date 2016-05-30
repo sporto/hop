@@ -14,12 +14,6 @@ On top of Elm Navigation Hop provides:
 - Transparent support for push or hash routing
 - Helpers for changing the query string
 
-### Hash routing
-
-A proper url should have the query before the hash e.g. `?keyword=Ja#/users/1`,
-but when using hash routing, query parameters are appended after the hash path e.g. `#/users/1?keyword=Ja`. 
-This is done for aesthetics and so the router is fully controlled by the hash fragment.
-
 ## Getting Started
 
 Please see this [example app](https://github.com/sporto/hop/blob/master/examples/basic/Main.md). It explains how to wire everything in the comments.
@@ -36,6 +30,12 @@ Please see this [example app](https://github.com/sporto/hop/blob/master/examples
 ### [Version 2 documentation](https://github.com/sporto/hop/tree/v2)
 ### [Testing Hop](https://github.com/sporto/hop/blob/master/docs/testing.md)
 ### [Changelog](./docs/changelog.md)
+
+### Hash routing
+
+A proper url should have the query before the hash e.g. `?keyword=Ja#/users/1`,
+but when using hash routing, query parameters are appended after the hash path e.g. `#/users/1?keyword=Ja`. 
+This is done for aesthetics and so the router is fully controlled by the hash fragment.
 
 ## Examples
 
