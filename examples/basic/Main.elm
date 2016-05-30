@@ -18,9 +18,8 @@ import Hop exposing (makeUrl, makeUrlFromLocation, matchUrl, setQuery)
 import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
 
 
-{-|
-Hop.Matchers exposes functions for building route matchers
--}
+--Hop.Matchers exposes functions for building route matchers
+
 import Hop.Matchers exposing (..)
 
 
