@@ -16,7 +16,7 @@ On top of Elm Navigation Hop provides:
 
 ## Getting Started
 
-Please see this [example app](https://github.com/sporto/hop/blob/master/examples/basic/Main.md). It explains how to wire everything in the comments.
+Please see this [example app](https://github.com/sporto/hop/blob/master/examples/basic/Main.elm). It explains how to wire everything in the comments.
 
 ## Docs
 

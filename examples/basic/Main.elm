@@ -73,6 +73,7 @@ This is useful if you application is not located at the root of a url e.g. `/app
 
 - `matchers` is your list of matchers defined above.
 - `notFound` is a route that will be returned when the path doesn't match any known route.
+
 -}
 routerConfig : Config Route
 routerConfig =
@@ -110,6 +111,7 @@ This is needed because:
 - Some navigation functions in Hop need this information to rebuild the current location.
 - Your views will need information about the current route.
 - Your views might need information about the current query string.
+
 -}
 type alias Model =
     { location : Location
@@ -155,6 +157,7 @@ Here we take `.href` from `Navigation.location` and send this to `Hop.matchUrl`.
 `matchUrl` returns a tuple: (matched route, Hop location record). e.g.
 
     (User 1, { path = ["users", "1"], query = Dict.empty })
+
 -}
 urlParser : Navigation.Parser ( Route, Hop.Types.Location )
 urlParser =
@@ -178,6 +181,7 @@ Location is a record that has:
 - `query` Is dictionary of String String. You can access this information in your views to show the content.
 
 Store these two things in the model. We store location because it is needed for matching a query string.
+
 -}
 urlUpdate : ( Route, Hop.Types.Location ) -> Model -> ( Model, Cmd Msg )
 urlUpdate ( route, location ) model =
