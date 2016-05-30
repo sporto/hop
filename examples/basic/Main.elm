@@ -1,12 +1,12 @@
 module Main exposing (..)
 
-{-
-   You will need Navigation and Hop
+{-|
+You will need Navigation and Hop
 
-   ```
-   elm package install elm-lang/navigation
-   elm package install sporto/hop
-   ```
+```
+elm package install elm-lang/navigation
+elm package install sporto/hop
+```
 -}
 
 import Html exposing (..)
@@ -18,8 +18,9 @@ import Hop exposing (makeUrl, makeUrlFromLocation, matchUrl, setQuery)
 import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
 
 
--- Hop.Matchers exposes functions for building route matchers
-
+{-|
+Hop.Matchers exposes functions for building route matchers
+-}
 import Hop.Matchers exposing (..)
 
 
@@ -27,10 +28,8 @@ import Hop.Matchers exposing (..)
 
 
 {-|
-
 Define your routes as union types
 You need to provide a route for when the current URL doesn't match any known route i.e. NotFoundRoute
-
 -}
 type Route
     = AboutRoute
