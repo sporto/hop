@@ -20,9 +20,12 @@ A proper url should have the query before the hash e.g. `?keyword=Ja#/users/1`,
 but when using hash routing, query parameters are appended after the hash path e.g. `#/users/1?keyword=Ja`. 
 This is done for aesthetics and so the router is fully controlled by the hash fragment.
 
+## Getting Started
+
+Please see this [example app](https://github.com/sporto/hop/blob/master/examples/basic/Main.md). It explains how to wire everything in the comments.
+
 ## Docs
 
-### [Getting Started](https://github.com/sporto/hop/blob/master/docs/getting-started.md)
 ### [Building routes](https://github.com/sporto/hop/blob/master/docs/building-routes.md)
 ### [Navigating](https://github.com/sporto/hop/blob/master/docs/navigating.md)
 ### [API](http://package.elm-lang.org/packages/sporto/hop/latest/)
