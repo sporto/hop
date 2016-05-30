@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.0.0
+
+Update for Elm 0.17
 
 ### 4.0.3
 
