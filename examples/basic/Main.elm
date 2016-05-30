@@ -7,6 +7,7 @@ You will need Navigation and Hop
 elm package install elm-lang/navigation
 elm package install sporto/hop
 ```
+
 -}
 
 import Html exposing (..)
@@ -29,6 +30,7 @@ import Hop.Matchers exposing (..)
 {-|
 Define your routes as union types
 You need to provide a route for when the current URL doesn't match any known route i.e. NotFoundRoute
+
 -}
 type Route
     = AboutRoute
@@ -54,6 +56,7 @@ Will match "/users/1" and return (UserRoute 1)
     match2 UserRoute "/users" str
 
 Would match "/users/abc"
+
 -}
 matchers : List (PathMatcher Route)
 matchers =
@@ -90,6 +93,7 @@ routerConfig =
 
 {-|
 Add messages for navigation and changing the query
+
 -}
 type Msg
     = NavigateTo String
@@ -121,6 +125,7 @@ type alias Model =
 
 {-|
 Respond to navigation messages in update i.e. NavigateTo and SetQuery
+
 -}
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -236,6 +241,7 @@ currentQuery model =
 
 {-|
 Views can decide what to show using `model.route`.
+
 -}
 pageView : Model -> Html msg
 pageView model =
@@ -257,6 +263,7 @@ pageView model =
 {-|
 Your init function will receive an initial payload from Navigation, this payload is the initial matched location.
 Here we store the `route` and `location` in our model.
+
 -}
 init : ( Route, Hop.Types.Location ) -> ( Model, Cmd Msg )
 init ( route, location ) =
@@ -264,7 +271,8 @@ init ( route, location ) =
 
 
 {-|
-Wire everything using Navigation
+Wire everything using Navigation.
+
 -}
 main : Program Never
 main =
