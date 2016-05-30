@@ -39,11 +39,16 @@ matcher =
 
 Will match "/users/1" but not "/users/abc".
 
+
+## Matching
+
+Use `Hop.matchUrl` to match a location.
+
 ```elm
-matchPath [matcher] NotFoundRoute "/users/1"
+matchUrl config "/users/1"
 --> UserRoute 1
 
-matchPath [matcher] NotFoundRoute "/users/abc"
+matchUrl config "/users/abc"
 --> NotFoundRoute
 ```
 
@@ -56,7 +61,7 @@ type Route
 matcher =
   match2 UserRoute "/users/" str
 
-matchPath [matcher] NotFoundRoute "/users/abc"
+matchUrl config "/users/abc"
 --> UserRoute "abc"
 ```
 
