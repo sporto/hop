@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 {-|
+
 You will need Navigation and Hop
 
 ```
@@ -28,6 +29,7 @@ import Hop.Matchers exposing (..)
 
 
 {-|
+
 Define your routes as union types
 You need to provide a route for when the current URL doesn't match any known route i.e. NotFoundRoute
 
@@ -39,6 +41,7 @@ type Route
 
 
 {-|
+
 Define matchers
 
 For example:
