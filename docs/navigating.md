@@ -2,37 +2,34 @@
 
 ## Changing the location
 
-Use `Hop.Navigate.navigateTo` for changing the browser location.
+Use `Hop.makeUrl` for changing the browser location.
 
-Add actions for navigation"
+Add a message:
 
 ```elm
-type Action
-  = ...
-  | HopAction ()
+type Msg
+  ...
   | NavigateTo String
 ```
 
-In your view:
+Trigger this message from you view:
 
 ```elm
-button [ onClick address (NavigateTo "/users/1") ] [ text "User" ]
+button [ onClick (NavigateTo "/users") ] [ text "Users" ]
 ```
 
-You can create the path ("/users/1") by using reverse routing, see [here](https://github.com/sporto/hop/blob/master/docs/building-routes.md#reverse-routing). 
+You can create the paths (e.g. "/users/1") by using reverse routing, see [here](https://github.com/sporto/hop/blob/master/docs/building-routes.md#reverse-routing).
 
-Then in update:
+React to this message in update:
 
 ```elm
-update action model =
-  case action of
-    ...
-    
-    NavigateTo path ->
-      ( model, Effects.map HopAction (navigateTo config path) )
-
-    HopAction () ->
-      ( model, Effects.none )
+NavigateTo path ->
+  let
+    command =
+      makeUrl routerConfig path
+        |> Navigation.modifyUrl
+  in
+    ( model, command )
 ```
 
 ## Changing the query string
@@ -40,9 +37,8 @@ update action model =
 Add actions for changing the query string:
 
 ```elm
-type Action
+type Msg
   = ...
-  | HopAction ()
   | AddQuery (Dict.Dict String String)
   | SetQuery (Dict.Dict String String)
   | ClearQuery
@@ -51,28 +47,29 @@ type Action
 Change update to respond to these actions:
 
 ```elm
-import Hop.Navigate exposing(addQuery, setQuery, clearQuery)
+import Hop exposing(addQuery, setQuery, clearQuery)
 
-update action model =
-  case action of
+update msg model =
+  case msg of
     ...
 
     AddQuery query ->
-      (model, Effects.map HopAction (addQuery config query model.location))
-
-    SetQuery query ->
-      (model, Effects.map HopAction (setQuery config query model.location))
-
-    ClearQuery ->
-      (model, Effects.map HopAction (clearQuery config model.location))
+      let
+        command =
+          model.location
+            |> addQuery query
+            |> makeUrlFromLocation routerConfig
+            |> Navigation.modifyUrl
+      in
+        (model, command)
 ```
 
-You need to pass the current `location` record to these functions. Hop will use that record to generate the new path.
+You need to pass the current `location` record to these functions. Then you use that `location` record to generate a url using makeUrlFromLocation`.
 
-Call these actions from your views:
+Trigger these messages from your views:
 
 ```elm
-button [ onClick address (SetQuery (Dict.singleton "color" "red")) ] [ text "Set query" ]
+button [ onClick (AddQuery (Dict.singleton "color" "red")) ] [ text "Set query" ]
 ```
 
-See details of available functions at <http://package.elm-lang.org/packages/sporto/hop/latest/Hop-Navigate>
+See details of available functions at <http://package.elm-lang.org/packages/sporto/hop/latest/Hop>
