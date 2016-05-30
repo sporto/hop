@@ -23,13 +23,17 @@ Please see this [example app](https://github.com/sporto/hop/blob/master/examples
 ### [Building routes](https://github.com/sporto/hop/blob/master/docs/building-routes.md)
 ### [Navigating](https://github.com/sporto/hop/blob/master/docs/navigating.md)
 ### [API](http://package.elm-lang.org/packages/sporto/hop/latest/)
+### [Changelog](./docs/changelog.md)
+### [Testing Hop](https://github.com/sporto/hop/blob/master/docs/testing.md)
+
+## More docs
+
+### [Upgrade guide 4 to 5](https://github.com/sporto/hop/blob/master/docs/upgrade-4-to-5.md)
 ### [Upgrade guide 3 to 4](https://github.com/sporto/hop/blob/master/docs/upgrade-3-to-4.md)
 ### [Upgrade guide 2.1 to 3.0](https://github.com/sporto/hop/blob/master/docs/upgrade-2-to-3.md)
 ### [Version 4 documentation](https://github.com/sporto/hop/tree/v4)
 ### [Version 3 documentation](https://github.com/sporto/hop/tree/v3)
 ### [Version 2 documentation](https://github.com/sporto/hop/tree/v2)
-### [Testing Hop](https://github.com/sporto/hop/blob/master/docs/testing.md)
-### [Changelog](./docs/changelog.md)
 
 ### Hash routing
 
