@@ -1,14 +1,12 @@
 module Main exposing (..)
 
 {-|
+   You will need Navigation and Hop
 
-You will need Navigation and Hop
-
-```
-elm package install elm-lang/navigation
-elm package install sporto/hop
-```
-
+   ```
+   elm package install elm-lang/navigation
+   elm package install sporto/hop
+   ```
 -}
 
 import Html exposing (..)
