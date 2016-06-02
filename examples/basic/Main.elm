@@ -46,13 +46,13 @@ For example:
 
 Will match "/about" and return AboutRoute
 
-    match2 UserRoute "/users" int
+    match2 UserRoute "/users/" int
 
 Will match "/users/1" and return (UserRoute 1)
 
 `int` is a matcher that matches only integers, for a string use `str` e.g.
 
-    match2 UserRoute "/users" str
+    match2 UserRoute "/users/" str
 
 Would match "/users/abc"
 
