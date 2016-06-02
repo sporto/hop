@@ -109,7 +109,7 @@ companyMatcher =
   match2 Company "/companies/" int
 
 companyServicesMatcher = 
-  nested2 CompanyServices "/companies" int servicesMatchers
+  nested2 CompanyServices "/companies/" int servicesMatchers
 
 matchers =
   [companyMatcher, companyServicesMatcher]
