@@ -24,10 +24,10 @@ type Route
   | Token String
 ```
 
-Routes are now defined using matchers. So instead of 
+Routes are now defined using matchers. So instead of
 
 ```elm
-routes = 
+routes =
   [ ("/users/:int", User) ]
 ```
 
@@ -37,7 +37,7 @@ You do:
 import Hop.Matchers exposing(match2)
 
 userMatcher =
-  match2 User "/users" int
+  match2 User "/users/" int
 
 matchers =
   [userMatcher]
@@ -102,4 +102,3 @@ case User userId ->
 ```
 
 The query is still a dictionary. The query is now in the `location` record as shown above.
-
