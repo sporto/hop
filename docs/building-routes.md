@@ -25,7 +25,7 @@ This matcher matches a route with one segment thus called `match1`.
 ```elm
 matcherUser : PathMatcher Route
 matcherUser =
-  match2 UserRoute "/users" int
+  match2 UserRoute "/users/" int
 ```
 
 This matches a route with two segments. The first segment is always a string. The second segment can be `int` or `str` (exposed in Hop.Matchers).
