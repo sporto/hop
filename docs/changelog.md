@@ -1,5 +1,9 @@
 # Changelog
 
+### 5.0.1
+
+Encode query string when converting location to URL.
+
 ## 5.0.0
 
 Update for Elm 0.17
