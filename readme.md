@@ -13,6 +13,7 @@ On top of Elm Navigation Hop provides:
 - A helper for reverse routing
 - Transparent support for push or hash routing
 - Helpers for changing the query string
+- Encode / Decode query string
 
 ## Getting Started
 
