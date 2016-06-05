@@ -64,6 +64,11 @@ fromUrlTest =
               , "http://localhost:3000/app/v1/users/1?a=1"
               , { path = [ "users", "1" ], query = Dict.singleton "a" "1" }
               )
+            , ( "it decodes the query"
+              , config
+              , "http://localhost:3000/basepath#/?a%20b%26c%3Fd=1%202%263%3F4"
+              , { path = [], query = Dict.singleton "a b&c?d" "1 2&3?4" }
+              )
             ]
 
         run ( testCase, config, href, expected ) =
@@ -184,6 +189,11 @@ locationToFullPathTest =
               , configPathAndBasePath
               , { empty | query = Dict.singleton "k" "1", path = [ "a", "b" ] }
               , "/app/v1/a/b?k=1"
+              )
+            , ( "hash: it encodes"
+              , config
+              , { empty | query = Dict.singleton "a b&c?d" "1 2&3?4", path = [] }
+              , "#/?a%20b%26c%3Fd=1%202%263%3F4"
               )
             ]
 

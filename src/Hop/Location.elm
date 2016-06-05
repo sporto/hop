@@ -3,7 +3,7 @@ module Hop.Location exposing (..)
 import Dict
 import String
 import Regex
-import Http
+import Http exposing (uriEncode, uriDecode)
 import Hop.Types exposing (..)
 
 
@@ -64,6 +64,7 @@ queryFromLocation location =
     else
         location.query
             |> Dict.toList
+            |> List.map (\( k, v ) -> ( uriEncode k, uriEncode v ))
             |> List.map (\( k, v ) -> k ++ "=" ++ v)
             |> String.join "&"
             |> String.append "?"
@@ -194,6 +195,11 @@ parseQuery route =
         |> Dict.fromList
 
 
+{-| @priv
+Convert a string to a tuple. Decode on the way.
+
+    "k=1" --> ("k", "1")
+-}
 queryKVtoTuple : String -> ( String, String )
 queryKVtoTuple kv =
     let
@@ -207,7 +213,7 @@ queryKVtoTuple kv =
                 |> Maybe.withDefault ""
 
         firstDecoded =
-            Http.uriDecode first
+            uriDecode first
 
         second =
             splitted
@@ -216,6 +222,6 @@ queryKVtoTuple kv =
                 |> Maybe.withDefault ""
 
         secondDecoded =
-            Http.uriDecode second
+            uriDecode second
     in
         ( firstDecoded, secondDecoded )
