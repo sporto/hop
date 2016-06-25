@@ -27,7 +27,7 @@ NavigateTo path ->
   let
     command =
       makeUrl routerConfig path
-        |> Navigation.modifyUrl
+        |> Navigation.newUrl
   in
     ( model, command )
 ```
@@ -59,7 +59,7 @@ update msg model =
           model.location
             |> addQuery query
             |> makeUrlFromLocation routerConfig
-            |> Navigation.modifyUrl
+            |> Navigation.newUrl
       in
         (model, command)
 ```

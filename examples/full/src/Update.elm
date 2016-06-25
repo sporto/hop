@@ -14,7 +14,7 @@ import Languages.Models
 
 navigationCmd : String -> Cmd a
 navigationCmd path =
-    Navigation.modifyUrl (makeUrl Routing.Config.config path)
+    Navigation.newUrl (makeUrl Routing.Config.config path)
 
 
 routerConfig : Hop.Types.Config Route
@@ -43,7 +43,7 @@ update message model =
                     model.location
                         |> setQuery query
                         |> makeUrlFromLocation routerConfig
-                        |> Navigation.modifyUrl
+                        |> Navigation.newUrl
             in
                 ( model, command )
 

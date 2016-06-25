@@ -133,9 +133,9 @@ update msg model =
             let
                 command =
                     -- First generate the URL using your router config
-                    -- Then generate a command using Navigation.modifyUrl
+                    -- Then generate a command using Navigation.newUrl
                     makeUrl routerConfig path
-                        |> Navigation.modifyUrl
+                        |> Navigation.newUrl
             in
                 ( model, command )
 
@@ -144,11 +144,11 @@ update msg model =
                 command =
                     -- First modify the current stored location record (setting the query)
                     -- Then generate a URL using makeUrlFromLocation
-                    -- Finally, create a command using Navigation.modifyUrl
+                    -- Finally, create a command using Navigation.newUrl
                     model.location
                         |> setQuery query
                         |> makeUrlFromLocation routerConfig
-                        |> Navigation.modifyUrl
+                        |> Navigation.newUrl
             in
                 ( model, command )
 
