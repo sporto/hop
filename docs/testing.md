@@ -3,7 +3,7 @@
 ## Unit tests
 
 ```bash
-cd ./test
+cd ./test/unit
 elm package install -y
 npm i
 npm test
