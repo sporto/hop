@@ -15,6 +15,7 @@ type TopLevelRoutes
     | UsersToken String
     | UserToken Int String
     | UserPosts Int (PostNestedRoutes)
+    | Other String
     | NotFound
 
 
@@ -63,8 +64,19 @@ userPostRoute =
     nested2 UserPosts "/users/" int postRoutes
 
 
+catchAllRoute =
+    match2 Other "/" str
+
+
 topLevelRoutes =
-    [ rootRoute, usersRoute, userRoute, userStatusRoute, usersTokenRoute, userPostRoute, userTokenRoute ]
+    [ rootRoute
+    , usersRoute
+    , userRoute
+    , userStatusRoute
+    , usersTokenRoute
+    , userPostRoute
+    , userTokenRoute
+    ]
 
 
 config =
@@ -186,6 +198,11 @@ matchUrlTest =
               , config
               , "http://example.com/#/users/4/posts/2"
               , ( UserPosts 4 (Post 2), { path = [ "users", "4", "posts", "2" ], query = Dict.empty } )
+              )
+            , ( "hash: catch all"
+              , config
+              , "http://example.com/#/monkeys/1/punch"
+              , ( Other "monkeys/1/punch", { path = [ "monkeys", "1", "punch" ], query = Dict.empty } )
               )
               -- not found
             , ( "hash: Matches not found"
