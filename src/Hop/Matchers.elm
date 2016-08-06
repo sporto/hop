@@ -4,7 +4,7 @@ module Hop.Matchers exposing (match1, match2, match3, match4, nested1, nested2, 
 Functions for building matchers
 
 # Building matchers
-@docs match1, match2, match3, match4, nested1, nested2, int, str
+@docs match1, match2, match3, match4, nested1, nested2, int, str, regex
 
 -}
 
