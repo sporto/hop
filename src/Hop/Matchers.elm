@@ -1,4 +1,4 @@
-module Hop.Matchers exposing (match1, match2, match3, match4, nested1, nested2, int, str)
+module Hop.Matchers exposing (match1, match2, match3, match4, nested1, nested2, int, str, regex)
 
 {-|
 Functions for building matchers
@@ -207,3 +207,11 @@ int =
 str : Parser String
 str =
     Combine.regex "[^/]+"
+
+{-| Build your own string matcher using a regex
+
+    match2 CatchAllRoute "/" (regex ".+")
+-}
+regex : String -> Parser String
+regex = 
+    Combine.regex

@@ -65,10 +65,10 @@ userPostRoute =
 
 
 catchAllRoute =
-    match2 Other "/" str
+    match2 Other "/" (regex ".+")
 
 
-topLevelRoutes =
+matchers =
     [ rootRoute
     , usersRoute
     , userRoute
@@ -78,13 +78,19 @@ topLevelRoutes =
     , userTokenRoute
     ]
 
+matchersWithCatchAll =
+    List.append matchers [catchAllRoute]
+
 
 config =
     { hash = True
     , basePath = ""
-    , matchers = topLevelRoutes
+    , matchers = matchers
     , notFound = NotFound
     }
+
+configWitCatchAll = 
+    { config | matchers = matchersWithCatchAll  }
 
 
 configWithPath =
@@ -200,7 +206,7 @@ matchUrlTest =
               , ( UserPosts 4 (Post 2), { path = [ "users", "4", "posts", "2" ], query = Dict.empty } )
               )
             , ( "hash: catch all"
-              , config
+              , configWitCatchAll
               , "http://example.com/#/monkeys/1/punch"
               , ( Other "monkeys/1/punch", { path = [ "monkeys", "1", "punch" ], query = Dict.empty } )
               )
