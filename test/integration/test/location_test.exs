@@ -26,12 +26,12 @@ defmodule LocationTest do
 		assert_title("Users.List")
 	end
 
-	test "shows user" do
+	test "shows user 1" do
 		goto("/users/1")
 		assert_title("Users.Show 1")
 	end
 
-	test "shows user" do
+	test "shows user 2" do
 		goto("/users/2")
 		assert_title("Users.Show 2")
 	end
