@@ -20,6 +20,10 @@ import String
 -- import Hop exposing (makeUrl, makeUrlFromLocation, matchUrl, setQuery)
 
 import Hop
+import Hop.Types
+import Hop.Simulated
+import Hop.Real
+import Hop.Address
 
 
 -- import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
@@ -64,7 +68,7 @@ This is useful if you application is not located at the root of a url e.g. `/app
 - `notFound` is a route that will be returned when the path doesn't match any known route.
 
 -}
-hopConfig : Hop.Config Route
+hopConfig : Hop.Types.Config Route
 hopConfig =
     { hash = True
     , basePath = ""
@@ -82,7 +86,7 @@ Add messages for navigation and changing the query
 -}
 type Msg
     = NavigateTo String
-    | SetQuery Hop.Query
+    | SetQuery Hop.Types.Query
 
 
 
@@ -103,7 +107,7 @@ This is needed because:
 
 -}
 type alias Model =
-    { location : Hop.Address
+    { location : Hop.Types.Address
     , route : Route
     }
 
@@ -120,7 +124,7 @@ update msg model =
                 command =
                     -- First generate the URL using your config
                     -- Then generate a command using Navigation.newUrl
-                    Hop.toRealPath hopConfig path
+                    Hop.Simulated.toRealPath hopConfig path
                         |> Navigation.newUrl
             in
                 ( model, command )
@@ -133,7 +137,7 @@ update msg model =
                     -- Finally, create a command using Navigation.newUrl
                     model.location
                         |> Hop.setQuery query
-                        |> Hop.addressToRealPath hopConfig
+                        |> Hop.Real.fromAddress hopConfig
                         |> Navigation.newUrl
             in
                 ( model, command )
@@ -149,21 +153,22 @@ Here we take `.href` from `Navigation.location` and send this to `Hop.matchUrl`.
     (User 1, { path = ["users", "1"], query = Dict.empty })
 
 -}
-urlParser : Navigation.Parser ( Route, Hop.Address )
+urlParser : Navigation.Parser ( Route, Hop.Types.Address )
 urlParser =
     let
-        parser realLocation =
+        parser location =
             let
 
                 _ =
                     Debug.log "parseResult" parseResult
 
                 address =
-                    Hop.realUrlToAddress hopConfig realLocation.href
+                    location.href
+                        |> Hop.Real.toSimulated hopConfig
+                        |> Hop.Simulated.toAddress
 
                 path =
-                    address.path
-                        |> String.join "/"
+                    Hop.Address.getPath address
 
                 parseResult =
                     UrlParser.parse identity routes path
@@ -202,7 +207,7 @@ Location is a record that has:
 Store these two things in the model. We store location because it is needed for matching a query string.
 
 -}
-urlUpdate : ( Route, Hop.Address ) -> Model -> ( Model, Cmd Msg )
+urlUpdate : ( Route, Hop.Types.Address ) -> Model -> ( Model, Cmd Msg )
 urlUpdate ( route, location ) model =
     ( { model | route = route, location = location }, Cmd.none )
 
@@ -279,7 +284,7 @@ Your init function will receive an initial payload from Navigation, this payload
 Here we store the `route` and `location` in our model.
 
 -}
-init : ( Route, Hop.Address ) -> ( Model, Cmd Msg )
+init : ( Route, Hop.Types.Address ) -> ( Model, Cmd Msg )
 init ( route, location ) =
     ( Model location route, Cmd.none )
 

@@ -16,42 +16,12 @@ import Hop.Types exposing (..)
 -------------------------------------------------------------------------------
 
 
-dedupSlash : String -> String
-dedupSlash =
-    Regex.replace Regex.All (Regex.regex "/+") (\_ -> "/")
+getPath : Address -> String
+getPath address =
+    address.path
+        |> String.join "/"
 
 
-{-| @priv
-Given a Address generate a real path. Used for navigation.
-e.g. address -> "#/users/1?a=1" when using hash
--}
-addressToRealPath : Config route -> Address -> String
-addressToRealPath config address =
-    let
-        joined =
-            String.join "/" address.path
-
-        query =
-            queryFromAddress address
-
-        url =
-            if config.hash then
-                "#/" ++ joined ++ query
-            else if String.isEmpty config.basePath then
-                "/" ++ joined ++ query
-            else if String.isEmpty joined then
-                "/" ++ config.basePath ++ query
-            else
-                "/" ++ config.basePath ++ "/" ++ joined ++ query
-        
-        realPath =
-            dedupSlash url
-
-    in
-        if realPath == "" then
-            "/"
-        else
-            realPath
 
 
 
@@ -60,8 +30,8 @@ addressToRealPath config address =
 Get the query string from a Address.
 Including ?
 -}
-queryFromAddress : Address -> String
-queryFromAddress address =
+getQuery : Address -> String
+getQuery address =
     if Dict.isEmpty address.query then
         ""
     else
