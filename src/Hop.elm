@@ -1,11 +1,7 @@
 module Hop
     exposing
-        ( 
-
-
-
-
-         addQuery
+        ( ingest
+        , addQuery
         , setQuery
         , removeQuery
         , clearQuery
@@ -17,7 +13,7 @@ module Hop
 @docs Config, Address, Query
 
 # Normalise URLs
-@docs realUrlToNormPathWithQuery, realUrlToNormAddress
+@docs ingest
 
 # Create URLs
 @docs toRealPath, addressToRealPath
@@ -34,52 +30,31 @@ import String
 import Dict
 import Hop.Types exposing (Query)
 import Hop.Address
+import Hop.In
 import Regex
 
 
-
-
-
-
-
-
-
 ---------------------------------------
--- NORMALISE LOCATIONS
+-- INGEST
 ---------------------------------------
 
 
+{-|
+Return only the relevant part of a location string depending on the configuration
 
-
-
-
+    http://localhost:3000/app/languages?k=1 --> /app/languages?k=1
+-}
+ingest =
+    Hop.In.ingest
 
 
 
 ---------------------------------------
 -- CREATE URLs
 ---------------------------------------
-
-
-
-
-
-
 ---------------------------------------
 -- ADDRESS
 ---------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
 -------------------------------------------------------------------------------
 -- QUERY MUTATION
 -------------------------------------------------------------------------------

@@ -2,7 +2,6 @@ module Hop.Simulated exposing(..)
 
 import Hop.Types
 import Hop.Address
-import Hop.Utils
 import Hop.Real
 
 toAddress : String -> Hop.Types.Address

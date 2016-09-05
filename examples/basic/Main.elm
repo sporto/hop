@@ -158,14 +158,12 @@ urlParser =
     let
         parser location =
             let
-
                 _ =
                     Debug.log "parseResult" parseResult
 
                 address =
                     location.href
-                        |> Hop.Real.toSimulated hopConfig
-                        |> Hop.Simulated.toAddress
+                        |> Hop.ingest hopConfig
 
                 path =
                     Hop.Address.getPath address
