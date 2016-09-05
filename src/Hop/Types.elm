@@ -1,4 +1,4 @@
-module Hop.Types exposing (Config, Query, Location)
+module Hop.Types exposing (Config, Query, Address)
 
 import Dict
 
@@ -7,7 +7,7 @@ type alias Query =
     Dict.Dict String String
 
 
-type alias Location =
+type alias Address =
     { path : List String
     , query : Query
     }

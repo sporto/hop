@@ -1,4 +1,4 @@
-module Hop.Location exposing (..)
+module Hop.Address exposing (..)
 
 import Dict
 import String
@@ -22,17 +22,17 @@ dedupSlash =
 
 
 {-| @priv
-Given a Location generate a real path. Used for navigation.
-e.g. location -> "#/users/1?a=1" when using hash
+Given a Address generate a real path. Used for navigation.
+e.g. address -> "#/users/1?a=1" when using hash
 -}
-locationToRealPath : Config route -> Location -> String
-locationToRealPath config location =
+addressToRealPath : Config route -> Address -> String
+addressToRealPath config address =
     let
         joined =
-            String.join "/" location.path
+            String.join "/" address.path
 
         query =
-            queryFromLocation location
+            queryFromAddress address
 
         url =
             if config.hash then
@@ -54,37 +54,18 @@ locationToRealPath config location =
             realPath
 
 
-{-| @priv
-Takes a normalised path and convert it to a location record
-e.g. 
-    toLocation /users/1 ->
-    {
-        path: ["users", "1"],
-        query: ...
-    }
--}
-toLocation : String -> Location
-toLocation route =
-    let
-        normalized =
-            if String.startsWith "#" route then
-                route
-            else
-                "#" ++ route
-    in
-        parse normalized
 
 
 {-| @priv
-Get the query string from a Location.
+Get the query string from a Address.
 Including ?
 -}
-queryFromLocation : Location -> String
-queryFromLocation location =
-    if Dict.isEmpty location.query then
+queryFromAddress : Address -> String
+queryFromAddress address =
+    if Dict.isEmpty address.query then
         ""
     else
-        location.query
+        address.query
             |> Dict.toList
             |> List.map (\( k, v ) -> ( uriEncode k, uriEncode v ))
             |> List.map (\( k, v ) -> k ++ "=" ++ v)
@@ -95,7 +76,7 @@ queryFromLocation location =
 
 --------------------------------------------------------------------------------
 -- PARSING
--- Parse a path into a Location
+-- Parse a path into a Address
 --------------------------------------------------------------------------------
 
 
@@ -107,28 +88,28 @@ queryFromLocation location =
 
 
 {-|
-Convert a real path/url to a location record
+Convert a real path/url to a address record
 
 - Considers path or hash routing
 - Removes the basePath if necessary
 
     http://localhost:3000/app/languages --> { path = ..., query = .... }
 -}
--- fromUrl : Config route -> String -> Location
+-- fromUrl : Config route -> String -> Address
 -- fromUrl config href =
 --     let
---         relevantLocationString =
+--         relevantAddressString =
 --             fromUrlString config href
 --     in
 --         if config.hash then
---             parse relevantLocationString
+--             parse relevantAddressString
 --         else
---             relevantLocationString
---                 |> locationStringWithoutBase config
+--             relevantAddressString
+--                 |> addressStringWithoutBase config
 --                 |> parse
 
 
-parse : String -> Location
+parse : String -> Address
 parse route =
     { path = parsePath route
     , query = parseQuery route

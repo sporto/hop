@@ -92,7 +92,7 @@ type Msg
 {-|
 Add route and location to your model.
 
-- ``Hop.Location` is record TODO (not Navigation.Location)
+- ``Hop.Address` is record TODO (not Navigation.Location)
 - `Route` is your Route union type
 
 This is needed because:
@@ -103,7 +103,7 @@ This is needed because:
 
 -}
 type alias Model =
-    { location : Hop.Location
+    { location : Hop.Address
     , route : Route
     }
 
@@ -133,7 +133,7 @@ update msg model =
                     -- Finally, create a command using Navigation.newUrl
                     model.location
                         |> Hop.setQuery query
-                        |> Hop.locationToRealPath hopConfig
+                        |> Hop.addressToRealPath hopConfig
                         |> Navigation.newUrl
             in
                 ( model, command )
@@ -149,39 +149,29 @@ Here we take `.href` from `Navigation.location` and send this to `Hop.matchUrl`.
     (User 1, { path = ["users", "1"], query = Dict.empty })
 
 -}
-urlParser : Navigation.Parser ( Route, Hop.Location )
+urlParser : Navigation.Parser ( Route, Hop.Address )
 urlParser =
     let
-        parser location =
+        parser realLocation =
             let
-                _ =
-                    Debug.log "normalisedPathWithoutSlash" normalisedPathWithoutSlash
 
                 _ =
                     Debug.log "parseResult" parseResult
 
-                normalisedLocation =
-                    Hop.toNormLocation hopConfig location.href
+                address =
+                    Hop.realUrlToAddress hopConfig realLocation.href
 
-                normalisedPath =
-                    Hop.toNormPath hopConfig location.href
-
-                normalisedPathWithoutSlash =
-                    if String.startsWith "/" normalisedPath then
-                        String.dropLeft 1 normalisedPath
-                    else
-                        normalisedPath
-
-                locationRecord =
-                    Hop.toLocationRecord normalisedLocation
+                path =
+                    address.path
+                        |> String.join "/"
 
                 parseResult =
-                    UrlParser.parse identity routes normalisedPathWithoutSlash
+                    UrlParser.parse identity routes path
 
                 route =
                     Result.withDefault NotFoundRoute parseResult
             in
-                ( route, locationRecord )
+                ( route, address )
     in
         Navigation.makeParser parser
 
@@ -212,7 +202,7 @@ Location is a record that has:
 Store these two things in the model. We store location because it is needed for matching a query string.
 
 -}
-urlUpdate : ( Route, Hop.Location ) -> Model -> ( Model, Cmd Msg )
+urlUpdate : ( Route, Hop.Address ) -> Model -> ( Model, Cmd Msg )
 urlUpdate ( route, location ) model =
     ( { model | route = route, location = location }, Cmd.none )
 
@@ -289,7 +279,7 @@ Your init function will receive an initial payload from Navigation, this payload
 Here we store the `route` and `location` in our model.
 
 -}
-init : ( Route, Hop.Location ) -> ( Model, Cmd Msg )
+init : ( Route, Hop.Address ) -> ( Model, Cmd Msg )
 init ( route, location ) =
     ( Model location route, Cmd.none )
 
