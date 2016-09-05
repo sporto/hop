@@ -1,10 +1,27 @@
-module Hop.Real exposing (..)
+module Hop.Out exposing (..)
 
 import String
 import Regex
-import Hop.Types
-import Hop.Address
+import Hop.Types exposing (Config)
 import Hop.Utils exposing (dedupSlash)
+import Hop.Address exposing (parse)
+
+
+{-|
+Make a real path from a simulated path.
+This will add the hash and the basePath as necessary.
+
+    toRealPath config "/users"
+
+    ==
+
+    "#/users"
+-}
+outgestFromPath : Config route -> String -> String
+outgestFromPath config path =
+    path
+        |> Hop.Address.parse
+        |> outgest config
 
 
 {-|
@@ -18,8 +35,8 @@ This will add the hash and the basePath as necessary.
     "#/users/1"
 
 -}
-fromAddress : Hop.Types.Config route -> Hop.Types.Address -> String
-fromAddress config address =
+outgest : Hop.Types.Config route -> Hop.Types.Address -> String
+outgest config address =
     let
         joined =
             String.join "/" address.path

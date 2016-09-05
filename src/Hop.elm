@@ -1,6 +1,9 @@
 module Hop
     exposing
         ( ingest
+        , pathFromAddress
+        , outgest
+        , outgestFromPath
         , addQuery
         , setQuery
         , removeQuery
@@ -16,9 +19,9 @@ module Hop
 @docs ingest
 
 # Create URLs
-@docs toRealPath, addressToRealPath
+@docs outgest, outgestFromPath
 
-# Address
+# Manipulate Address
 @docs pathFromAddress
 
 # Change query string
@@ -28,9 +31,10 @@ module Hop
 
 import String
 import Dict
-import Hop.Types exposing (Query)
+import Hop.Types exposing (Address, Query)
 import Hop.Address
 import Hop.In
+import Hop.Out
 import Regex
 
 
@@ -47,14 +51,29 @@ Return only the relevant part of a location string depending on the configuratio
 ingest =
     Hop.In.ingest
 
+---------------------------------------
+-- CREATE OUTBOUND URLs
+---------------------------------------
+
+outgest =
+    Hop.Out.outgest
+
+outgestFromPath =
+    Hop.Out.outgestFromPath
 
 
 ---------------------------------------
--- CREATE URLs
+-- WORK WITH ADDRESS
 ---------------------------------------
----------------------------------------
--- ADDRESS
----------------------------------------
+
+
+pathFromAddress : Address -> String
+pathFromAddress address =
+    address.path
+        |> String.join "/"
+
+
+
 -------------------------------------------------------------------------------
 -- QUERY MUTATION
 -------------------------------------------------------------------------------

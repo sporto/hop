@@ -20,9 +20,7 @@ import String
 -- import Hop exposing (makeUrl, makeUrlFromLocation, matchUrl, setQuery)
 
 import Hop
-import Hop.Types
-import Hop.Simulated
-import Hop.Real
+import Hop.Types exposing (Address)
 import Hop.Address
 
 
@@ -94,20 +92,20 @@ type Msg
 
 
 {-|
-Add route and location to your model.
+Add route and address to your model.
 
 - ``Hop.Address` is record TODO (not Navigation.Location)
 - `Route` is your Route union type
 
 This is needed because:
 
-- Some navigation functions in Hop need this information to rebuild the current location.
+- Some navigation functions in Hop need this information to rebuild the current address.
 - Your views will need information about the current route.
 - Your views might need information about the current query string.
 
 -}
 type alias Model =
-    { location : Hop.Types.Address
+    { address : Address
     , route : Route
     }
 
@@ -124,7 +122,7 @@ update msg model =
                 command =
                     -- First generate the URL using your config
                     -- Then generate a command using Navigation.newUrl
-                    Hop.Simulated.toRealPath hopConfig path
+                    Hop.outgestFromPath hopConfig path
                         |> Navigation.newUrl
             in
                 ( model, command )
@@ -132,12 +130,12 @@ update msg model =
         SetQuery query ->
             let
                 command =
-                    -- First modify the current stored location record (setting the query)
+                    -- First modify the current stored address record (setting the query)
                     -- Then generate a URL using makeUrlFromLocation
                     -- Finally, create a command using Navigation.newUrl
-                    model.location
+                    model.address
                         |> Hop.setQuery query
-                        |> Hop.Real.fromAddress hopConfig
+                        |> Hop.outgest hopConfig
                         |> Navigation.newUrl
             in
                 ( model, command )
@@ -146,14 +144,14 @@ update msg model =
 {-|
 Create a URL Parser for Navigation
 
-Here we take `.href` from `Navigation.location` and send this to `Hop.matchUrl`.
+Here we take `.href` from `Navigation.address` and send this to `Hop.matchUrl`.
 
-`matchUrl` returns a tuple: (matched route, Hop location record). e.g.
+`matchUrl` returns a tuple: (matched route, Hop address record). e.g.
 
     (User 1, { path = ["users", "1"], query = Dict.empty })
 
 -}
-urlParser : Navigation.Parser ( Route, Hop.Types.Address )
+urlParser : Navigation.Parser ( Route, Address )
 urlParser =
     let
         parser location =
@@ -166,7 +164,7 @@ urlParser =
                         |> Hop.ingest hopConfig
 
                 path =
-                    Hop.Address.getPath address
+                    Hop.pathFromAddress address
 
                 parseResult =
                     UrlParser.parse identity routes path
@@ -187,7 +185,7 @@ urlParser =
 
 
 {-|
-Navigation will call urlUpdate when the location changes.
+Navigation will call urlUpdate when the address changes.
 This function gets the result from `urlParser`, which is a tuple with (Route, Hop.Types.Location)
 
 Location is a record that has:
@@ -202,12 +200,12 @@ Location is a record that has:
 - `path` is an array of string that has the current path e.g. `["users", "1"]` for `"/users/1"`
 - `query` Is dictionary of String String. You can access this information in your views to show the content.
 
-Store these two things in the model. We store location because it is needed for matching a query string.
+Store these two things in the model. We store address because it is needed for matching a query string.
 
 -}
-urlUpdate : ( Route, Hop.Types.Address ) -> Model -> ( Model, Cmd Msg )
-urlUpdate ( route, location ) model =
-    ( { model | route = route, location = location }, Cmd.none )
+urlUpdate : ( Route, Address ) -> Model -> ( Model, Cmd Msg )
+urlUpdate ( route, address ) model =
+    ( { model | route = route, address = address }, Cmd.none )
 
 
 
@@ -250,7 +248,7 @@ currentQuery : Model -> Html msg
 currentQuery model =
     let
         query =
-            toString model.location.query
+            toString model.address.query
     in
         span [ class "labelQuery" ]
             [ text query ]
@@ -278,13 +276,13 @@ pageView model =
 
 
 {-|
-Your init function will receive an initial payload from Navigation, this payload is the initial matched location.
-Here we store the `route` and `location` in our model.
+Your init function will receive an initial payload from Navigation, this payload is the initial matched address.
+Here we store the `route` and `address` in our model.
 
 -}
-init : ( Route, Hop.Types.Address ) -> ( Model, Cmd Msg )
-init ( route, location ) =
-    ( Model location route, Cmd.none )
+init : ( Route, Address ) -> ( Model, Cmd Msg )
+init ( route, address ) =
+    ( Model address route, Cmd.none )
 
 
 {-|

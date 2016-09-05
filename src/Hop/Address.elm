@@ -16,10 +16,7 @@ import Hop.Types exposing (..)
 -------------------------------------------------------------------------------
 
 
-getPath : Address -> String
-getPath address =
-    address.path
-        |> String.join "/"
+
 
 
 
