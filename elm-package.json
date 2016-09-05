@@ -8,9 +8,7 @@
         "src"
     ],
     "exposed-modules": [
-        "Hop",
-        "Hop.Matchers",
-        "Hop.Types"
+        "Hop"
     ],
     "dependencies": {
         "Bogdanp/elm-combine": "2.2.1 <= v < 3.0.0",

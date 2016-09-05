@@ -1,15 +1,15 @@
-module Hop exposing (matchUrl, matcherToPath, makeUrl, makeUrlFromLocation, addQuery, setQuery, removeQuery, clearQuery)
+module Hop exposing (Config, Location, Query, toNormLocation, toNormPath, toLocationRecord, locationToRealPath, toRealPath, addQuery, setQuery, removeQuery, clearQuery)
 
 {-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
+# Types
+@docs Config, Location, Query
+
+# Normalise URLs
+@docs toNormLocation, toLocationRecord, toNormPath
+
 # Create URLs
-@docs makeUrl, makeUrlFromLocation
-
-# Match current URL
-@docs matchUrl
-
-# Reverse Routing
-@docs matcherToPath
+@docs toRealPath, locationToRealPath
 
 # Change query string
 @docs addQuery, setQuery, removeQuery, clearQuery
@@ -18,64 +18,117 @@ module Hop exposing (matchUrl, matcherToPath, makeUrl, makeUrlFromLocation, addQ
 
 import String
 import Dict
-import Hop.Types exposing (..)
+import Hop.Types
 import Hop.Location
-import Hop.Matching exposing (..)
+import Regex
+
+{-| A Dict that holds query parameters
+
+    Dict.Dict String String
+-}
+type alias Query = Hop.Types.Query
+
+{-| A Record that represents the current location
+Includes a `path` and a `query`
+
+    {
+      path: String,
+      query: Query
+    }
+-}
+type alias Location = Hop.Types.Location
 
 
----------------------------------------
--- MATCHING
----------------------------------------
+{-| Hop Configuration
+
+- basePath: Only for pushState routing (not hash). e.g. "/app". All routing and matching is done after this basepath.
+- hash: True for hash routing, False for pushState routing.
+- notFound: Route that will match when a location is not found.
+
+-}
+type alias Config route = Hop.Types.Config route
 
 
 {-|
-Match a URL.
-This function returns a tuple with the first element being the matched route and the second a location record.
-Config is the router Config record.
-
-    matchUrl config "/users/1"
-
-    ==
-
-    (User 1, { path = ["users", "1"], query = Dict.fromList [] })
-
+Create an empty Query record
 -}
-matchUrl : Config route -> String -> ( route, Hop.Types.Location )
-matchUrl config url =
-    let
-        location =
-            Hop.Location.fromUrl config url
-    in
-        ( matchLocation config location, location )
-
+newQuery : Query
+newQuery =
+    Dict.empty
 
 {-|
-Generates a path from a matcher. Use this for reverse routing.
-
-The last parameters is a list of strings. You need to pass one string for each dynamic parameter that this route takes.
-
-    matcherToPath bookReviewMatcher ["1", "2"]
-
-    ==
-
-    "/books/1/reviews/2"
+Create a empty Location record
 -}
-matcherToPath : PathMatcher a -> List String -> String
-matcherToPath matcher inputs =
+newLocation : Location
+newLocation =
+    { query = newQuery
+    , path = []
+    }
+
+---------------------------------------
+-- NORMALISE LOCATIONS
+---------------------------------------
+
+{-|
+Return only the relevant part of a location string
+
+    http://localhost:3000/app/languages?k=1 --> /app/languages?k=1
+-}
+toNormLocation : Config route -> String -> String
+toNormLocation config href =
     let
-        inputs' =
-            List.append inputs [ "" ]
+        withoutProtocol =
+            href
+                |> String.split "//"
+                |> List.reverse
+                |> List.head
+                |> Maybe.withDefault ""
 
-        makeSegment segment input =
-            segment ++ input
-
-        path =
-            List.map2 makeSegment matcher.segments inputs'
-                |> String.join ""
+        withoutDomain =
+            withoutProtocol
+                |> String.split "/"
+                |> List.tail
+                |> Maybe.withDefault []
+                |> String.join "/"
+                |> String.append "/"
     in
-        path
+        if config.hash then
+            withoutDomain
+                |> String.split "#"
+                |> List.drop 1
+                |> List.head
+                |> Maybe.withDefault ""
+        else
+            withoutDomain
+                |> String.split "#"
+                |> List.head
+                |> Maybe.withDefault ""
+                |> locationStringWithoutBase config
 
+toNormPath : Config route -> String -> String
+toNormPath config href =
+    href
+        |> toNormLocation config
+        |> String.split "?"
+        |> List.head
+        |> Maybe.withDefault ""
 
+{-| @priv
+Remove the basePath from a location string
+
+"/basepath/a/b?k=1" -> "/a/b?k=1"
+-}
+locationStringWithoutBase : Config route -> String -> String
+locationStringWithoutBase config locationString =
+    let
+        regex =
+            Regex.regex config.basePath
+    in
+        Regex.replace (Regex.AtMost 1) regex (always "") locationString
+
+toLocationRecord : String -> Location
+toLocationRecord =
+    Hop.Location.parse
 
 ---------------------------------------
 -- CREATE URLs
@@ -83,44 +136,36 @@ matcherToPath matcher inputs =
 
 
 {-|
-Make a URL from a string, this will add # or the base path as necessary.
+Make a real path from a normalised path.
+This will add the hash and the basePath as necessary.
 
-    makeUrl config "/users"
+    toRealPath config "/users"
 
     ==
 
     "#/users"
 -}
-makeUrl : Config route -> String -> String
-makeUrl config route =
-    route
-        |> Hop.Location.locationFromUser
-        |> makeUrlFromLocation config
+toRealPath : Config route -> String -> String
+toRealPath config path =
+    path
+        |> Hop.Location.toLocation
+        |> locationToRealPath config
 
 
 {-|
-Make a URL from a location record.
+Make a real path from a location record.
+This will add the hash and the basePath as necessary.
 
-    makeUrlFromLocation config { path = ["users", "1"], query = Dict.empty }
+    locationToRealPath config { path = ["users", "1"], query = Dict.empty }
 
     ==
 
     "#/users/1"
 
 -}
-makeUrlFromLocation : Config route -> Location -> String
-makeUrlFromLocation config location =
-    let
-        fullPath =
-            Hop.Location.locationToFullPath config location
-
-        path =
-            if fullPath == "" then
-                "/"
-            else
-                fullPath
-    in
-        path
+locationToRealPath : Config route -> Location -> String
+locationToRealPath  =
+    Hop.Location.locationToRealPath
 
 
 

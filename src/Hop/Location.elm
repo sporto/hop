@@ -8,6 +8,12 @@ import Hop.Types exposing (..)
 
 
 -------------------------------------------------------------------------------
+-- A real path represents the browser url without normalising for hash or path routing
+-- e.g. http://example.com/#users/1?k=1
+
+-- A normalised path represents an application path after normalising hash and basepath
+-- e.g. /users/1?k=1 regardless if hash or path routing
+-------------------------------------------------------------------------------
 
 
 dedupSlash : String -> String
@@ -16,11 +22,11 @@ dedupSlash =
 
 
 {-| @priv
-Given a Location generate a full path. Used for navigation.
+Given a Location generate a real path. Used for navigation.
 e.g. location -> "#/users/1?a=1" when using hash
 -}
-locationToFullPath : Config route -> Location -> String
-locationToFullPath config location =
+locationToRealPath : Config route -> Location -> String
+locationToRealPath config location =
     let
         joined =
             String.join "/" location.path
@@ -37,12 +43,28 @@ locationToFullPath config location =
                 "/" ++ config.basePath ++ query
             else
                 "/" ++ config.basePath ++ "/" ++ joined ++ query
+        
+        realPath =
+            dedupSlash url
+
     in
-        dedupSlash url
+        if realPath == "" then
+            "/"
+        else
+            realPath
 
 
-locationFromUser : String -> Location
-locationFromUser route =
+{-| @priv
+Takes a normalised path and convert it to a location record
+e.g. 
+    toLocation /users/1 ->
+    {
+        path: ["users", "1"],
+        query: ...
+    }
+-}
+toLocation : String -> Location
+toLocation route =
     let
         normalized =
             if String.startsWith "#" route then
@@ -77,76 +99,33 @@ queryFromLocation location =
 --------------------------------------------------------------------------------
 
 
-{-| @priv
-Remove the basePath from a location string
-
-"/basepath/a/b?k=1" -> "/a/b?k=1"
--}
-locationStringWithoutBase : Config route -> String -> String
-locationStringWithoutBase config locationString =
-    let
-        regex =
-            Regex.regex config.basePath
-    in
-        Regex.replace (Regex.AtMost 1) regex (always "") locationString
 
 
-{-| @priv
-Return only the relevant part of a location string
 
-    http://localhost:3000/app/languages --> /app/languages
--}
-fromUrlString : Config route -> String -> String
-fromUrlString config href =
-    let
-        withoutProtocol =
-            href
-                |> String.split "//"
-                |> List.reverse
-                |> List.head
-                |> Maybe.withDefault ""
 
-        withoutDomain =
-            withoutProtocol
-                |> String.split "/"
-                |> List.tail
-                |> Maybe.withDefault []
-                |> String.join "/"
-                |> String.append "/"
-    in
-        if config.hash then
-            withoutDomain
-                |> String.split "#"
-                |> List.drop 1
-                |> List.head
-                |> Maybe.withDefault ""
-        else
-            withoutDomain
-                |> String.split "#"
-                |> List.head
-                |> Maybe.withDefault ""
+
 
 
 {-|
-Convert a full url to a location
+Convert a real path/url to a location record
 
 - Considers path or hash routing
 - Removes the basePath if necessary
 
     http://localhost:3000/app/languages --> { path = ..., query = .... }
 -}
-fromUrl : Config route -> String -> Location
-fromUrl config href =
-    let
-        relevantLocationString =
-            fromUrlString config href
-    in
-        if config.hash then
-            parse relevantLocationString
-        else
-            relevantLocationString
-                |> locationStringWithoutBase config
-                |> parse
+-- fromUrl : Config route -> String -> Location
+-- fromUrl config href =
+--     let
+--         relevantLocationString =
+--             fromUrlString config href
+--     in
+--         if config.hash then
+--             parse relevantLocationString
+--         else
+--             relevantLocationString
+--                 |> locationStringWithoutBase config
+--                 |> parse
 
 
 parse : String -> Location

@@ -14,13 +14,17 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Dict
 import Navigation
-import Hop exposing (makeUrl, makeUrlFromLocation, matchUrl, setQuery)
-import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
+import String
 
 
---Hop.Matchers exposes functions for building route matchers
+-- import Hop exposing (makeUrl, makeUrlFromLocation, matchUrl, setQuery)
 
-import Hop.Matchers exposing (..)
+import Hop
+
+
+-- import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
+
+import UrlParser exposing ((</>))
 
 
 -- ROUTES
@@ -37,31 +41,14 @@ type Route
 
 
 {-|
-
-Define matchers
-
-For example:
-
-    match1 AboutRoute "/about"
-
-Will match "/about" and return AboutRoute
-
-    match2 UserRoute "/users/" int
-
-Will match "/users/1" and return (UserRoute 1)
-
-`int` is a matcher that matches only integers, for a string use `str` e.g.
-
-    match2 UserRoute "/users/" str
-
-Would match "/users/abc"
-
+Define route matchers
 -}
-matchers : List (PathMatcher Route)
-matchers =
-    [ match1 MainRoute ""
-    , match1 AboutRoute "/about"
-    ]
+routes : UrlParser.Parser (Route -> a) a
+routes =
+    UrlParser.oneOf
+        [ UrlParser.format MainRoute (UrlParser.s "")
+        , UrlParser.format AboutRoute (UrlParser.s "about")
+        ]
 
 
 {-|
@@ -77,11 +64,10 @@ This is useful if you application is not located at the root of a url e.g. `/app
 - `notFound` is a route that will be returned when the path doesn't match any known route.
 
 -}
-routerConfig : Config Route
-routerConfig =
+hopConfig : Hop.Config Route
+hopConfig =
     { hash = True
     , basePath = ""
-    , matchers = matchers
     , notFound = NotFoundRoute
     }
 
@@ -96,7 +82,7 @@ Add messages for navigation and changing the query
 -}
 type Msg
     = NavigateTo String
-    | SetQuery Query
+    | SetQuery Hop.Query
 
 
 
@@ -106,7 +92,7 @@ type Msg
 {-|
 Add route and location to your model.
 
-- `Location` is a `Hop.Types.Location` record (not Navigation.Location)
+- ``Hop.Location` is record TODO (not Navigation.Location)
 - `Route` is your Route union type
 
 This is needed because:
@@ -117,7 +103,7 @@ This is needed because:
 
 -}
 type alias Model =
-    { location : Location
+    { location : Hop.Location
     , route : Route
     }
 
@@ -132,9 +118,9 @@ update msg model =
         NavigateTo path ->
             let
                 command =
-                    -- First generate the URL using your router config
+                    -- First generate the URL using your config
                     -- Then generate a command using Navigation.newUrl
-                    makeUrl routerConfig path
+                    Hop.toRealPath hopConfig path
                         |> Navigation.newUrl
             in
                 ( model, command )
@@ -146,8 +132,8 @@ update msg model =
                     -- Then generate a URL using makeUrlFromLocation
                     -- Finally, create a command using Navigation.newUrl
                     model.location
-                        |> setQuery query
-                        |> makeUrlFromLocation routerConfig
+                        |> Hop.setQuery query
+                        |> Hop.locationToRealPath hopConfig
                         |> Navigation.newUrl
             in
                 ( model, command )
@@ -163,9 +149,48 @@ Here we take `.href` from `Navigation.location` and send this to `Hop.matchUrl`.
     (User 1, { path = ["users", "1"], query = Dict.empty })
 
 -}
-urlParser : Navigation.Parser ( Route, Hop.Types.Location )
+urlParser : Navigation.Parser ( Route, Hop.Location )
 urlParser =
-    Navigation.makeParser (.href >> matchUrl routerConfig)
+    let
+        parser location =
+            let
+                _ =
+                    Debug.log "normalisedPathWithoutSlash" normalisedPathWithoutSlash
+
+                _ =
+                    Debug.log "parseResult" parseResult
+
+                normalisedLocation =
+                    Hop.toNormLocation hopConfig location.href
+
+                normalisedPath =
+                    Hop.toNormPath hopConfig location.href
+
+                normalisedPathWithoutSlash =
+                    if String.startsWith "/" normalisedPath then
+                        String.dropLeft 1 normalisedPath
+                    else
+                        normalisedPath
+
+                locationRecord =
+                    Hop.toLocationRecord normalisedLocation
+
+                parseResult =
+                    UrlParser.parse identity routes normalisedPathWithoutSlash
+
+                route =
+                    Result.withDefault NotFoundRoute parseResult
+            in
+                ( route, locationRecord )
+    in
+        Navigation.makeParser parser
+
+
+
+-- Get the .href
+-- Convert that to a normalised path
+-- Parse
+-- Wrap in (Route, Location)
 
 
 {-|
@@ -187,7 +212,7 @@ Location is a record that has:
 Store these two things in the model. We store location because it is needed for matching a query string.
 
 -}
-urlUpdate : ( Route, Hop.Types.Location ) -> Model -> ( Model, Cmd Msg )
+urlUpdate : ( Route, Hop.Location ) -> Model -> ( Model, Cmd Msg )
 urlUpdate ( route, location ) model =
     ( { model | route = route, location = location }, Cmd.none )
 
@@ -264,7 +289,7 @@ Your init function will receive an initial payload from Navigation, this payload
 Here we store the `route` and `location` in our model.
 
 -}
-init : ( Route, Hop.Types.Location ) -> ( Model, Cmd Msg )
+init : ( Route, Hop.Location ) -> ( Model, Cmd Msg )
 init ( route, location ) =
     ( Model location route, Cmd.none )
 
