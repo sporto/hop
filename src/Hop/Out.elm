@@ -17,11 +17,11 @@ This will add the hash and the basePath as necessary.
 
     "#/users"
 -}
-outgestFromPath : Config route -> String -> String
-outgestFromPath config path =
+outputFromPath : Config route -> String -> String
+outputFromPath config path =
     path
         |> Hop.Address.parse
-        |> outgest config
+        |> output config
 
 
 {-|
@@ -35,8 +35,8 @@ This will add the hash and the basePath as necessary.
     "#/users/1"
 
 -}
-outgest : Hop.Types.Config route -> Hop.Types.Address -> String
-outgest config address =
+output : Hop.Types.Config route -> Hop.Types.Address -> String
+output config address =
     let
         joined =
             String.join "/" address.path

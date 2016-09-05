@@ -2,8 +2,8 @@ module Hop
     exposing
         ( ingest
         , pathFromAddress
-        , outgest
-        , outgestFromPath
+        , output
+        , outputFromPath
         , addQuery
         , setQuery
         , removeQuery
@@ -19,7 +19,7 @@ module Hop
 @docs ingest
 
 # Create URLs
-@docs outgest, outgestFromPath
+@docs output, outputFromPath
 
 # Manipulate Address
 @docs pathFromAddress
@@ -55,11 +55,11 @@ ingest =
 -- CREATE OUTBOUND URLs
 ---------------------------------------
 
-outgest =
-    Hop.Out.outgest
+output =
+    Hop.Out.output
 
-outgestFromPath =
-    Hop.Out.outgestFromPath
+outputFromPath =
+    Hop.Out.outputFromPath
 
 
 ---------------------------------------

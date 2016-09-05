@@ -14,19 +14,9 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Dict
 import Navigation
-import String
-
-
--- import Hop exposing (makeUrl, makeUrlFromLocation, matchUrl, setQuery)
-
-import Hop
-import Hop.Types exposing (Address)
-import Hop.Address
-
-
--- import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
-
 import UrlParser exposing ((</>))
+import Hop
+import Hop.Types exposing (Config, Address, Query)
 
 
 -- ROUTES
@@ -66,7 +56,7 @@ This is useful if you application is not located at the root of a url e.g. `/app
 - `notFound` is a route that will be returned when the path doesn't match any known route.
 
 -}
-hopConfig : Hop.Types.Config Route
+hopConfig : Config Route
 hopConfig =
     { hash = True
     , basePath = ""
@@ -84,7 +74,7 @@ Add messages for navigation and changing the query
 -}
 type Msg
     = NavigateTo String
-    | SetQuery Hop.Types.Query
+    | SetQuery Query
 
 
 
@@ -122,7 +112,7 @@ update msg model =
                 command =
                     -- First generate the URL using your config
                     -- Then generate a command using Navigation.newUrl
-                    Hop.outgestFromPath hopConfig path
+                    Hop.outputFromPath hopConfig path
                         |> Navigation.newUrl
             in
                 ( model, command )
@@ -135,7 +125,7 @@ update msg model =
                     -- Finally, create a command using Navigation.newUrl
                     model.address
                         |> Hop.setQuery query
-                        |> Hop.outgest hopConfig
+                        |> Hop.output hopConfig
                         |> Navigation.newUrl
             in
                 ( model, command )

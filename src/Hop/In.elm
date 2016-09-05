@@ -18,6 +18,8 @@ ingest config href =
         |> parse
 
 
+{-| @priv
+-}
 removeProtocol href =
     href
         |> String.split "//"
@@ -26,6 +28,8 @@ removeProtocol href =
         |> Maybe.withDefault ""
 
 
+{-| @priv
+-}
 removeDomain href =
     href
         |> String.split "/"
@@ -35,6 +39,8 @@ removeDomain href =
         |> String.append "/"
 
 
+{-| @priv
+-}
 getRelevantPathWithQuery config href =
     if config.hash then
         href
