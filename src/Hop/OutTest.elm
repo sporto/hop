@@ -111,6 +111,7 @@ outputTest =
     in
         describe "locationToFullPath" (List.map run inputs)
 
+# TODO OUTPUT FROM PATH
 
 all : Test
 all =

@@ -12,13 +12,13 @@ module Hop
 
 {-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
-# Normalise URLs
+# Inbound URLs
 @docs ingest
 
-# Create URLs
+# Outbound URLs
 @docs output, outputFromPath
 
-# Manipulate Address
+# Work with an Address record
 @docs pathFromAddress
 
 # Change query string
@@ -26,11 +26,11 @@ module Hop
 
 -}
 
-import String
 import Dict
-import Hop.Types exposing (Address, Config, Query)
+import Hop.Address
 import Hop.In
 import Hop.Out
+import Hop.Types exposing (Address, Config, Query)
 
 
 ---------------------------------------
@@ -39,9 +39,20 @@ import Hop.Out
 
 
 {-|
-Return only the relevant part of a location string depending on the configuration
+Convert a raw url to an Address record
+This conversion will take in account your basePath and hash configuration 
 
-    http://localhost:3000/app/languages?k=1 --> /app/languages?k=1
+E.g. with path routing
+
+    ingest config "http://localhost:3000/app/languages/1?k=1" 
+    -->
+    { path = ["app", "languages", "1" ], query = Dict.singleton "k" "1" }
+
+E.g. with hash routing
+
+    ingest config "http://localhost:3000/app#/languages/1?k=1" 
+    -->
+    { path = ["languages", "1" ], query = Dict.singleton "k" "1" }
 -}
 ingest : Config -> String -> Address
 ingest =
@@ -55,7 +66,20 @@ ingest =
 
 
 {-|
-TODO
+Convert an Address record to a URL to feed the browser
+This will take in account your basePath and hash config
+
+E.g. with path routing
+
+    output config { path = ["languages", "1" ], query = Dict.singleton "k" "1" }
+    -->
+    "/languages/1?k=1"
+
+E.g. with hash routing
+
+    output config { path = ["languages", "1" ], query = Dict.singleton "k" "1" }
+    -->
+    "#/languages/1?k=1"
 -}
 output : Config -> Address -> String
 output =
@@ -63,7 +87,26 @@ output =
 
 
 {-|
-TODO
+Convert a string to a URL to feed the browser
+This will take in account your basePath and hash config
+
+E.g. with path routing
+
+    outputFromPath config "/languages/1?k=1"
+    -->
+    "/languages/1?k=1"
+
+E.g. with path + basePath routing
+
+    outputFromPath config "/languages/1?k=1"
+    -->
+    "/app/languages/1?k=1"
+
+E.g. with hash routing
+
+    output config "/languages/1?k=1"
+    -->
+    "#/languages/1?k=1"
 -}
 outputFromPath : Config -> String -> String
 outputFromPath =
@@ -77,12 +120,14 @@ outputFromPath =
 
 
 {-|
-TODO
+Get the path as a string from an Address record
+
+    
+
 -}
 pathFromAddress : Address -> String
-pathFromAddress address =
-    address.path
-        |> String.join "/"
+pathFromAddress =
+    Hop.Address.getPath
 
 
 
