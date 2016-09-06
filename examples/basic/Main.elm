@@ -56,11 +56,10 @@ This is useful if you application is not located at the root of a url e.g. `/app
 - `notFound` is a route that will be returned when the path doesn't match any known route.
 
 -}
-hopConfig : Config Route
+hopConfig : Config
 hopConfig =
     { hash = True
     , basePath = ""
-    , notFound = NotFoundRoute
     }
 
 
@@ -226,7 +225,7 @@ menu model =
                 [ text "About" ]
             , button
                 [ class "btnQuery"
-                , onClick (SetQuery (Dict.singleton "keyword" "elm"))
+                , onClick (SetQuery (Dict.singleton "keyword" "el/m"))
                 ]
                 [ text "Set query string" ]
             , currentQuery model

@@ -1,7 +1,6 @@
 module Hop.Out exposing (..)
 
 import String
-import Regex
 import Hop.Types exposing (Config)
 import Hop.Utils exposing (dedupSlash)
 import Hop.Address exposing (parse)
@@ -17,7 +16,7 @@ This will add the hash and the basePath as necessary.
 
     "#/users"
 -}
-outputFromPath : Config route -> String -> String
+outputFromPath : Config -> String -> String
 outputFromPath config path =
     path
         |> Hop.Address.parse
@@ -35,7 +34,7 @@ This will add the hash and the basePath as necessary.
     "#/users/1"
 
 -}
-output : Hop.Types.Config route -> Hop.Types.Address -> String
+output : Config -> Hop.Types.Address -> String
 output config address =
     let
         joined =

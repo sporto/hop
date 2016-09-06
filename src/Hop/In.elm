@@ -2,14 +2,14 @@ module Hop.In exposing (..)
 
 import Regex
 import String
-import Hop.Types
+import Hop.Types exposing (Address, Config)
 import Hop.Address exposing (parse)
 
 
 {-|
 In
 -}
-ingest : Hop.Types.Config route -> String -> Hop.Types.Address
+ingest : Config -> String -> Address
 ingest config href =
     href
         |> removeProtocol

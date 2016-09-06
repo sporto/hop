@@ -2,7 +2,6 @@ module Hop.Address exposing (..)
 
 import Dict
 import String
-import Regex
 import Http exposing (uriEncode, uriDecode)
 import Hop.Types exposing (..)
 
@@ -10,20 +9,12 @@ import Hop.Types exposing (..)
 -------------------------------------------------------------------------------
 -- A real path represents the browser url without normalising for hash or path routing
 -- e.g. http://example.com/#users/1?k=1
-
 -- A normalised path represents an application path after normalising hash and basepath
 -- e.g. /users/1?k=1 regardless if hash or path routing
 -------------------------------------------------------------------------------
 
 
-
-
-
-
-
-
-
-{-| @priv
+{-|
 Get the query string from a Address.
 Including ?
 -}
@@ -45,35 +36,6 @@ getQuery address =
 -- PARSING
 -- Parse a path into a Address
 --------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-{-|
-Convert a real path/url to a address record
-
-- Considers path or hash routing
-- Removes the basePath if necessary
-
-    http://localhost:3000/app/languages --> { path = ..., query = .... }
--}
--- fromUrl : Config route -> String -> Address
--- fromUrl config href =
---     let
---         relevantAddressString =
---             fromUrlString config href
---     in
---         if config.hash then
---             parse relevantAddressString
---         else
---             relevantAddressString
---                 |> addressStringWithoutBase config
---                 |> parse
 
 
 parse : String -> Address

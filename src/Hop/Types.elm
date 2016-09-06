@@ -36,10 +36,9 @@ type alias Address =
 - notFound: Route that will match when a location is not found.
 
 -}
-type alias Config route =
+type alias Config =
     { basePath : String
     , hash : Bool
-    , notFound : route
     }
 
 {-|
