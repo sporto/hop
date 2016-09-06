@@ -6,6 +6,14 @@ import Http exposing (uriEncode, uriDecode)
 import Hop.Types exposing (..)
 
 
+getPath : Address -> String
+getPath address =
+    address.path
+        |> List.map uriEncode
+        |> String.join "/"
+        |> String.append "/"
+
+
 {-|
 Get the query string from a Address.
 Including ?
@@ -55,6 +63,7 @@ parsePath route =
         |> extractPath
         |> String.split "/"
         |> List.filter (\segment -> not (String.isEmpty segment))
+        |> List.map uriDecode
 
 
 extractQuery : String -> String
