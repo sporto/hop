@@ -1,14 +1,6 @@
 module Languages.Routing.Utils exposing (..)
 
--- import Hop.Types exposing (Config)
 import Languages.Models exposing (..)
-import Routing.Config
-
-
-
--- config : Config
--- config =
---     Routing.Config.config
 
 
 toS : a -> String
@@ -25,13 +17,11 @@ reverse : Route -> String
 reverse route =
     case route of
         LanguagesRoute ->
-            "/languages"
+            "/"
 
         LanguageRoute id ->
-            "/languages/" ++ (toS id)
+            "/" ++ (toS id)
 
         LanguageEditRoute id ->
-            "/languages/" ++ (toS id) ++ "/edit"
+            "/" ++ (toS id) ++ "/edit"
 
-        NotFoundRoute ->
-            ""

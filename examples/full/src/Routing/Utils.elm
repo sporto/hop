@@ -1,8 +1,6 @@
 module Routing.Utils exposing (..)
 
-import Hop exposing (..)
 import Models exposing (..)
-import Routing.Config exposing (..)
 import Languages.Routing.Utils
 
 
@@ -16,7 +14,7 @@ reverse route =
             "about"
 
         LanguagesRoutes subRoute ->
-            "languages/" ++ Languages.Routing.Utils.reverse subRoute
+            "languages" ++ Languages.Routing.Utils.reverse subRoute
 
         NotFoundRoute ->
             ""

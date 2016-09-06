@@ -16,12 +16,18 @@ urlParser =
     let
         parser location =
             let
+                _ =
+                    Debug.log "path" path
+
+                _ =
+                    Debug.log "parseResult" parseResult
+
                 address =
                     location.href
                         |> Hop.ingest Routing.Config.config
 
                 path =
-                    Hop.pathFromAddress address
+                    Hop.pathFromAddress address ++ "/"
 
                 parseResult =
                     UrlParser.parse identity Routing.Config.parser path
