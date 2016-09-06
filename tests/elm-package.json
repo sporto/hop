@@ -5,14 +5,14 @@
     "license": "MIT",
     "source-directories": [
         ".",
-        "../../src"
+        "../src"
     ],
     "exposed-modules": [],
     "dependencies": {
-        "Bogdanp/elm-combine": "2.2.1 <= v < 3.0.0",
-        "elm-community/elm-test": "1.1.0 <= v < 2.0.0",
+        "elm-community/elm-test": "2.1.0 <= v < 3.0.0",
         "elm-lang/core": "4.0.0 <= v < 5.0.0",
-        "evancz/elm-http": "3.0.1 <= v < 4.0.0"
+        "evancz/elm-http": "3.0.1 <= v < 4.0.0",
+        "rtfeldman/node-test-runner": "2.0.0 <= v < 3.0.0"
     },
     "elm-version": "0.16.0 <= v < 0.18.0"
 }

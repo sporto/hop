@@ -6,14 +6,6 @@ import Http exposing (uriEncode, uriDecode)
 import Hop.Types exposing (..)
 
 
--------------------------------------------------------------------------------
--- A real path represents the browser url without normalising for hash or path routing
--- e.g. http://example.com/#users/1?k=1
--- A normalised path represents an application path after normalising hash and basepath
--- e.g. /users/1?k=1 regardless if hash or path routing
--------------------------------------------------------------------------------
-
-
 {-|
 Get the query string from a Address.
 Including ?

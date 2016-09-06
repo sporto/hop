@@ -5,92 +5,12 @@ import ElmTest exposing (..)
 import Hop exposing (..)
 import Hop.Location as Location
 import Hop.Types exposing (..)
-import Hop.Matchers exposing (..)
-
-
-type TopLevelRoutes
-    = Users
-    | User Int
-    | UserStatus Int
-    | UsersToken String
-    | UserToken Int String
-    | UserPosts Int (PostNestedRoutes)
-    | Other String
-    | NotFound
-
-
-type PostNestedRoutes
-    = Posts
-    | Post Int
-
-
-postsRoute =
-    match1 Posts "/posts"
-
-
-postRoute =
-    match2 Post "/posts/" int
-
-
-postRoutes =
-    [ postsRoute, postRoute ]
-
-
-rootRoute =
-    match1 Users ""
-
-
-usersRoute =
-    match1 Users "/users"
-
-
-userRoute =
-    match2 User "/users/" int
-
-
-userStatusRoute =
-    match3 UserStatus "/users/" int "/status"
-
-
-usersTokenRoute =
-    match2 UsersToken "/users/" str
-
-
-userTokenRoute =
-    match4 UserToken "/users/" int "/" str
-
-
-userPostRoute =
-    nested2 UserPosts "/users/" int postRoutes
-
-
-catchAllRoute =
-    match2 Other "/" (regex ".+")
-
-
-matchers =
-    [ rootRoute
-    , usersRoute
-    , userRoute
-    , userStatusRoute
-    , usersTokenRoute
-    , userPostRoute
-    , userTokenRoute
-    ]
-
-matchersWithCatchAll =
-    List.append matchers [catchAllRoute]
 
 
 config =
     { hash = True
     , basePath = ""
-    , matchers = matchers
-    , notFound = NotFound
     }
-
-configWitCatchAll = 
-    { config | matchers = matchersWithCatchAll  }
 
 
 configWithPath =
@@ -102,7 +22,6 @@ configWithBasePath =
 
 
 
--- TODO add root "/"
 
 
 matchUrlTest : Test
