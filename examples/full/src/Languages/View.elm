@@ -2,7 +2,7 @@ module Languages.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (href, style)
-import Hop.Types exposing (Location)
+import Hop.Types exposing (Address)
 import Languages.Models exposing (LanguageId, Language, Route, Route(..))
 import Languages.Messages exposing (..)
 import Languages.Filter
@@ -13,7 +13,7 @@ import Languages.Edit
 
 type alias ViewModel =
     { languages : List Language
-    , location : Location
+    , address : Address
     , route : Route
     }
 
@@ -30,7 +30,7 @@ view : ViewModel -> Html Msg
 view model =
     div [ containerStyle ]
         [ Languages.Filter.view {}
-        , Languages.List.view { languages = model.languages, location = model.location }
+        , Languages.List.view { languages = model.languages, address = model.address }
         , subView model
         ]
 

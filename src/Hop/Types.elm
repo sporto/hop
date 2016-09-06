@@ -1,4 +1,4 @@
-module Hop.Types exposing (Config, Query, Address)
+module Hop.Types exposing (Config, Query, Address, newQuery, newAddress)
 
 {-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 

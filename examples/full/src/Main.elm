@@ -1,32 +1,51 @@
 module Main exposing (..)
 
 import Navigation
-import Hop exposing (matchUrl)
-import Hop.Types exposing (Router)
+import Hop
+import Hop.Types exposing (Address)
 import Messages exposing (..)
 import Models exposing (..)
 import Update exposing (..)
 import View exposing (..)
 import Routing.Config
+import UrlParser
 
 
-urlParser : Navigation.Parser ( Route, Hop.Types.Location )
+urlParser : Navigation.Parser ( Route, Address )
 urlParser =
-    Navigation.makeParser (.href >> matchUrl Routing.Config.config)
+    let
+        parser location =
+            let
+                address =
+                    location.href
+                        |> Hop.ingest Routing.Config.config
+
+                path =
+                    Hop.pathFromAddress address
+
+                parseResult =
+                    UrlParser.parse identity Routing.Config.parser path
+
+                route =
+                    Result.withDefault NotFoundRoute parseResult
+            in
+                ( route, address )
+    in
+        Navigation.makeParser parser
 
 
-urlUpdate : ( Route, Hop.Types.Location ) -> AppModel -> ( AppModel, Cmd Msg )
-urlUpdate ( route, location ) model =
+urlUpdate : ( Route, Address ) -> AppModel -> ( AppModel, Cmd Msg )
+urlUpdate ( route, address ) model =
     let
         _ =
-            Debug.log "urlUpdate location" location
+            Debug.log "urlUpdate address" address
     in
-        ( { model | route = route, location = location }, Cmd.none )
+        ( { model | route = route, address = address }, Cmd.none )
 
 
-init : ( Route, Hop.Types.Location ) -> ( AppModel, Cmd Msg )
-init ( route, location ) =
-    ( newAppModel route location, Cmd.none )
+init : ( Route, Address ) -> ( AppModel, Cmd Msg )
+init ( route, address ) =
+    ( newAppModel route address, Cmd.none )
 
 
 main : Program Never

@@ -1,16 +1,14 @@
 module Languages.Routing.Utils exposing (..)
 
-import Hop exposing (..)
-import Hop.Types exposing (Config)
-import Models
+-- import Hop.Types exposing (Config)
 import Languages.Models exposing (..)
 import Routing.Config
-import Languages.Routing.Config exposing (..)
 
 
-config : Config Models.Route
-config =
-    Routing.Config.config
+
+-- config : Config
+-- config =
+--     Routing.Config.config
 
 
 toS : a -> String
@@ -27,13 +25,13 @@ reverse : Route -> String
 reverse route =
     case route of
         LanguagesRoute ->
-            matcherToPath matcherLanguages []
+            "/languages"
 
         LanguageRoute id ->
-            matcherToPath matcherLanguage [ toS id ]
+            "/languages/" ++ (toS id)
 
         LanguageEditRoute id ->
-            matcherToPath matcherLanguageEdit [ toS id ]
+            "/languages/" ++ (toS id) ++ "/edit"
 
         NotFoundRoute ->
             ""

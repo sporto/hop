@@ -12,9 +12,6 @@ module Hop
 
 {-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
-# Types
-@docs Config, Address, Query
-
 # Normalise URLs
 @docs ingest
 
@@ -31,11 +28,9 @@ module Hop
 
 import String
 import Dict
-import Hop.Types exposing (Address, Query)
-import Hop.Address
+import Hop.Types exposing (Address, Config, Query)
 import Hop.In
 import Hop.Out
-import Regex
 
 
 ---------------------------------------
@@ -48,18 +43,32 @@ Return only the relevant part of a location string depending on the configuratio
 
     http://localhost:3000/app/languages?k=1 --> /app/languages?k=1
 -}
+ingest : Config -> String -> Address
 ingest =
     Hop.In.ingest
+
+
 
 ---------------------------------------
 -- CREATE OUTBOUND URLs
 ---------------------------------------
 
+
+{-|
+TODO
+-}
+output : Config -> Address -> String
 output =
     Hop.Out.output
 
+
+{-|
+TODO
+-}
+outputFromPath : Config -> String -> String
 outputFromPath =
     Hop.Out.outputFromPath
+
 
 
 ---------------------------------------
@@ -67,6 +76,9 @@ outputFromPath =
 ---------------------------------------
 
 
+{-|
+TODO
+-}
 pathFromAddress : Address -> String
 pathFromAddress address =
     address.path
@@ -95,7 +107,7 @@ Add query string values (patches any existing values) to a location record.
 
 To remove a value set the value to ""
 -}
-addQuery : Query -> Hop.Types.Address -> Hop.Types.Address
+addQuery : Query -> Address -> Address
 addQuery query location =
     let
         updatedQuery =
@@ -109,7 +121,7 @@ Set query string values (removes existing values).
 
     setQuery query location
 -}
-setQuery : Query -> Hop.Types.Address -> Hop.Types.Address
+setQuery : Query -> Address -> Address
 setQuery query location =
     { location | query = query }
 
@@ -119,7 +131,7 @@ Remove one key from the query string
 
     removeQuery key location
 -}
-removeQuery : String -> Hop.Types.Address -> Hop.Types.Address
+removeQuery : String -> Address -> Address
 removeQuery key location =
     let
         updatedQuery =
@@ -132,6 +144,6 @@ removeQuery key location =
 
     clearQuery location
 -}
-clearQuery : Hop.Types.Address -> Hop.Types.Address
+clearQuery : Address -> Address
 clearQuery location =
     { location | query = Dict.empty }

@@ -1,38 +1,26 @@
 module Routing.Config exposing (..)
 
-import Hop.Types exposing (Config, Location, Query, Router, PathMatcher, newLocation)
-import Hop.Matchers exposing (..)
 import Models exposing (..)
+import Hop.Types exposing (Config)
 import Languages.Routing.Config
+import UrlParser exposing ((</>), oneOf, int, s)
 
 
-matcherHome : PathMatcher Route
-matcherHome =
-    match1 HomeRoute ""
-
-
-matcherAbout : PathMatcher Route
-matcherAbout =
-    match1 AboutRoute "/about"
-
-
-matchersLanguages : PathMatcher Route
-matchersLanguages =
-    nested1 LanguagesRoutes "/languages" Languages.Routing.Config.matchers
-
-
-matchers : List (PathMatcher Route)
+matchers : List (UrlParser.Parser (Route -> a) a)
 matchers =
-    [ matcherHome
-    , matcherAbout
-    , matchersLanguages
+    [ UrlParser.format HomeRoute (s "")
+    , UrlParser.format AboutRoute (s "about")
+    , UrlParser.format LanguagesRoutes (s "languages" </> (oneOf Languages.Routing.Config.matchers))
     ]
 
 
-config : Config Route
+parser : UrlParser.Parser (Route -> a) a
+parser =
+    oneOf matchers
+
+
+config : Config
 config =
     { basePath = "/app"
     , hash = False
-    , matchers = matchers
-    , notFound = NotFoundRoute
     }

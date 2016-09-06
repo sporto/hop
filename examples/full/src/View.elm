@@ -60,7 +60,7 @@ pageView model =
                 viewModel =
                     { languages = model.languages
                     , route = languagesRoute
-                    , location = model.location
+                    , address = model.address
                     }
             in
                 div [ class "p2" ]
