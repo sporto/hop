@@ -20,21 +20,23 @@ This will add the hash and the basePath as necessary.
 output : Config -> Address -> String
 output config address =
     let
-        joined =
-            String.join "/" address.path
+        -- path -> "/a/1"
+        path =
+            Hop.Address.getPath address
 
+        -- query -> "?a=1"
         query =
             Hop.Address.getQuery address
 
         url =
             if config.hash then
-                "#/" ++ joined ++ query
+                "#" ++ path ++ query
             else if String.isEmpty config.basePath then
-                "/" ++ joined ++ query
-            else if String.isEmpty joined then
+                path ++ query
+            else if path == "/" then
                 "/" ++ config.basePath ++ query
             else
-                "/" ++ config.basePath ++ "/" ++ joined ++ query
+                "/" ++ config.basePath ++ path ++ query
 
         realPath =
             dedupSlash url
