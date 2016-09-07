@@ -9,10 +9,15 @@ full-up:
 docs:
 	elm make --docs=documentation.json
 
-### TEST LOCALLY
-
 # Run unit tests locally
 test-unit:
 	npm test
+
+test-ci:
+	npm install -g elm
+	npm install -g elm-test
+	elm-package install -y
+	pushd tests && elm-package install -y && popd
+	elm-test
 
 .PHONY: docs test
