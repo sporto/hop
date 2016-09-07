@@ -8,10 +8,10 @@
         "src"
     ],
     "exposed-modules": [
-        "Hop"
+        "Hop",
+        "Hop.Types"
     ],
     "dependencies": {
-        "Bogdanp/elm-combine": "2.2.1 <= v < 3.0.0",
         "elm-lang/core": "4.0.0 <= v < 5.0.0",
         "evancz/elm-http": "3.0.1 <= v < 4.0.0"
     },
