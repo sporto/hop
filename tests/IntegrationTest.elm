@@ -47,10 +47,8 @@ parseWithUrlParser currentConfig location =
     let
         -- _ =
         --     Debug.log "parseResult" parseResult
-
         -- _ =
         --     Debug.log "path" path
-
         address =
             location.href
                 |> Hop.ingest currentConfig
@@ -75,108 +73,170 @@ urlParserIntegrationTest =
         inputs =
             [ ( "Home page"
               , configWithPath
-              , "http://example.com/"
-              , HomeRoute
-              )
-            , ( "Home page without trailing slash"
-              , configWithPath
               , "http://example.com"
               , HomeRoute
+              , "/"
               )
             , ( "Base: Home page"
               , configPathAndBasePath
               , "http://example.com/app/v1"
               , HomeRoute
+              , "/app/v1"
               )
-            , ( "Hash: Home page"
+            , ( "Hash: Home page with /#"
               , configWithHash
               , "http://example.com/#"
               , HomeRoute
+              , "#/"
+              )
+            , ( "Hash: Home page with /#/"
+              , configWithHash
+              , "http://example.com/#/"
+              , HomeRoute
+              , "#/"
+              )
+            , ( "Hash: Home page without hash"
+              , configWithHash
+              , "http://example.com"
+              , HomeRoute
+              , "#/"
+              )
+            , ( "Hash: Home page"
+              , configWithHash
+              , "http://example.com/index.html"
+              , HomeRoute
+              , "#/"
               )
               -- about
             , ( "AboutRoute"
               , configWithPath
               , "http://example.com/about"
               , AboutRoute
+              , "/about"
               )
             , ( "Base: AboutRoute"
               , configPathAndBasePath
               , "http://example.com/app/v1/about"
               , AboutRoute
+              , "/app/v1/about"
               )
             , ( "Hash: AboutRoute"
               , configWithHash
-              , "http://example.com/#about"
+              , "http://example.com/#/about"
               , AboutRoute
+              , "#/about"
               )
             , ( "Hash: AboutRoute with slash"
               , configWithHash
               , "http://example.com/app#/about"
               , AboutRoute
+              , "#/about"
               )
               -- users
             , ( "UsersRoute"
               , configWithPath
               , "http://example.com/users"
               , UsersRoutes UsersRoute
+              , "/users"
               )
             , ( "Base: UsersRoute"
               , configPathAndBasePath
               , "http://example.com/app/v1/users"
               , UsersRoutes UsersRoute
+              , "/app/v1/users"
               )
             , ( "Hash: UsersRoute"
               , configWithHash
-              , "http://example.com/#users"
+              , "http://example.com/#/users"
               , UsersRoutes UsersRoute
+              , "#/users"
+              )
+              -- users with query
+            , ( "UsersRoute"
+              , configWithPath
+              , "http://example.com/users?k=1"
+              , UsersRoutes UsersRoute
+              , "/users?k=1"
+              )
+            , ( "Base: UsersRoute"
+              , configPathAndBasePath
+              , "http://example.com/app/v1/users?k=1"
+              , UsersRoutes UsersRoute
+              , "/app/v1/users?k=1"
+              )
+            , ( "Hash: UsersRoute"
+              , configWithHash
+              , "http://example.com/#/users?k=1"
+              , UsersRoutes UsersRoute
+              , "#/users?k=1"
               )
               -- user
             , ( "UserRoute"
               , configWithPath
               , "http://example.com/users/2"
               , UsersRoutes (UserRoute 2)
+              , "/users/2"
               )
             , ( "Base: UserRoute"
               , configPathAndBasePath
               , "http://example.com/app/v1/users/2"
               , UsersRoutes (UserRoute 2)
+              , "/app/v1/users/2"
               )
             , ( "Hash: UserRoute"
               , configWithHash
-              , "http://example.com/#users/2"
+              , "http://example.com/#/users/2"
               , UsersRoutes (UserRoute 2)
+              , "#/users/2"
               )
               -- user edit
             , ( "UserRoute"
               , configWithPath
               , "http://example.com/users/2/edit"
               , UsersRoutes (UserEditRoute 2)
+              , "/users/2/edit"
               )
             , ( "Base: UserRoute"
               , configPathAndBasePath
               , "http://example.com/app/v1/users/2/edit"
               , UsersRoutes (UserEditRoute 2)
+              , "/app/v1/users/2/edit"
               )
             , ( "Hash: UserRoute"
               , configWithHash
-              , "http://example.com/#users/2/edit"
+              , "http://example.com/#/users/2/edit"
               , UsersRoutes (UserEditRoute 2)
+              , "#/users/2/edit"
               )
             ]
 
-        run ( testCase, currentConfig, href, expected ) =
-            test testCase
+        run ( testCase, currentConfig, href, expected, expectedRoundTrip ) =
+            [ test testCase
                 <| \() ->
                     let
                         location =
                             { href = href }
 
-                        ( actual, address ) =
+                        ( actual, _ ) =
                             parseWithUrlParser currentConfig location
                     in
                         Expect.equal expected actual
+            , test (testCase ++  " - output")
+                <| \() ->
+                    let
+                        location =
+                            { href = href }
+
+                        ( _, address ) =
+                            parseWithUrlParser currentConfig location
+
+                        actual =
+                            Hop.output currentConfig address
+                    in
+                        Expect.equal expectedRoundTrip actual
+            ]
     in
-        describe "UrlParser integration" (List.map run inputs)
+        describe "UrlParser integration" (List.concatMap run inputs)
 
 
 all : Test
