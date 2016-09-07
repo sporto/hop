@@ -13,6 +13,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Dict
+import String
 import Navigation
 import UrlParser exposing ((</>))
 import Hop
@@ -154,6 +155,7 @@ urlParser =
 
                 path =
                     Hop.pathFromAddress address
+                        |> String.dropLeft 1
 
                 parseResult =
                     UrlParser.parse identity routes path
