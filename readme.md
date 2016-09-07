@@ -29,7 +29,7 @@ Please see this [example app](https://github.com/sporto/hop/blob/master/examples
 
 ## More docs
 
-### [Upgrade guide 4 to 5](https://github.com/sporto/hop/blob/master/docs/upgrade-4-to-5.md)
+### [Upgrade guide 4 to 5](./docs/upgrade-4-to-5.md)
 ### [Upgrade guide 3 to 4](https://github.com/sporto/hop/blob/master/docs/upgrade-3-to-4.md)
 ### [Upgrade guide 2.1 to 3.0](https://github.com/sporto/hop/blob/master/docs/upgrade-2-to-3.md)
 ### [Version 4 documentation](https://github.com/sporto/hop/tree/v4)
