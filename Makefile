@@ -17,7 +17,7 @@ test-ci:
 	npm install -g elm
 	npm install -g elm-test
 	elm-package install -y
-	pushd tests && elm-package install -y && popd
+	cd tests && elm-package install -y && cd ..
 	elm-test
 
 .PHONY: docs test
