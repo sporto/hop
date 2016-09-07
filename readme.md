@@ -1,19 +1,23 @@
-# Hop: Navigation and routing matchers for Elm SPAs
+# Hop: Navigation and routing helpers for Elm SPAs
 
 [![Build Status](https://semaphoreci.com/api/v1/sporto/hop/branches/master/badge.svg)](https://semaphoreci.com/sporto/hop)
 
 ![alt Hop](https://raw.githubusercontent.com/sporto/hop/master/assets/logo.png)
 
-Hop is meant to be used with [the Elm Navigation package](http://package.elm-lang.org/packages/elm-lang/navigation/). 
+Hop is a helper library to be used with:
 
-On top of Elm Navigation Hop provides:
+- [the Navigation package](http://package.elm-lang.org/packages/elm-lang/navigation).
+- [the UrlParser package](http://package.elm-lang.org/packages/evancz/url-parser).
 
-- Matchers for URL parsing
-- Support for nested routes
-- A helper for reverse routing
-- Transparent support for push or hash routing
-- Helpers for changing the query string
-- Encode / Decode query string
+Use __Navigation__ for listening to location changes in the browser and pushing changes to it.
+Use __UrlParser__ for constructing routes and parsing URLs.
+
+On top of these two packages, Hop helps with:
+
+- Abstracting the differences between push or hash routing
+- Providing helpers for working with the query string
+- Encode / Decode the location path
+- Encode / Decode the query string
 
 ## Getting Started
 
@@ -29,6 +33,7 @@ Please see this [example app](https://github.com/sporto/hop/blob/master/examples
 
 ## More docs
 
+### [Upgrade guide 5 to 6](https://github.com/sporto/hop/blob/master/docs/upgrade-5-to-6.md)
 ### [Upgrade guide 4 to 5](https://github.com/sporto/hop/blob/master/docs/upgrade-4-to-5.md)
 ### [Upgrade guide 3 to 4](https://github.com/sporto/hop/blob/master/docs/upgrade-3-to-4.md)
 ### [Upgrade guide 2.1 to 3.0](https://github.com/sporto/hop/blob/master/docs/upgrade-2-to-3.md)
