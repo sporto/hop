@@ -4,7 +4,7 @@ import Dict
 import Expect
 import Hop.Out as Out
 import Hop.Types exposing (newAddress)
-import Hop.TestHelper exposing (config, configWithPath, configPathAndBasePath)
+import Hop.TestHelper exposing (configWithHash, configWithPath, configPathAndBasePath)
 import Test exposing (..)
 
 
@@ -16,7 +16,7 @@ outputTest =
 
         inputs =
             [ ( "hash: it is empty when empty"
-              , config
+              , configWithHash
               , empty
               , ""
               , "#/"
@@ -41,7 +41,7 @@ outputTest =
               )
               -- path
             , ( "hash: it adds the path"
-              , config
+              , configWithHash
               , { empty | path = [ "a", "b" ] }
               , "/a/b"
               , "#/a/b"
@@ -60,7 +60,7 @@ outputTest =
               )
               -- query
             , ( "hash: it adds the query as pseudo query"
-              , config
+              , configWithHash
               , { empty | query = Dict.singleton "k" "1" }
               , "?k=1"
               , "#/?k=1"
@@ -79,7 +79,7 @@ outputTest =
               )
               -- path and query
             , ( "hash: it adds the path and query"
-              , config
+              , configWithHash
               , { empty | query = Dict.singleton "k" "1", path = [ "a", "b" ] }
               , "/a/b?k=1"
               , "#/a/b?k=1"
@@ -97,7 +97,7 @@ outputTest =
               , "/app/v1/a/b?k=1"
               )
             , ( "hash: it encodes"
-              , config
+              , configWithHash
               , { empty | query = Dict.singleton "a/d" "1/4", path = [ "a/b", "1" ] }
               , "/a%2Fb/1?a%2Fd=1%2F4"
               , "#/a%2Fb/1?a%2Fd=1%2F4"

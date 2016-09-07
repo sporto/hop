@@ -3,8 +3,8 @@ module Hop.TestHelper exposing (..)
 import Hop.Types exposing (Config)
 
 
-config : Config
-config =
+configWithHash : Config
+configWithHash =
     { basePath = ""
     , hash = True
     }
@@ -12,9 +12,13 @@ config =
 
 configWithPath : Config
 configWithPath =
-    { config | hash = False }
+    { basePath = ""
+    , hash = False
+    }
 
 
 configPathAndBasePath : Config
 configPathAndBasePath =
-    { configWithPath | basePath = "/app/v1" }
+    { basePath = "/app/v1"
+    , hash = False
+    }
