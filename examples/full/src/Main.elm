@@ -8,6 +8,7 @@ import Models exposing (..)
 import Update exposing (..)
 import View exposing (..)
 import Routing.Config
+import String
 import UrlParser
 
 
@@ -28,6 +29,7 @@ urlParser =
 
                 path =
                     Hop.pathFromAddress address ++ "/"
+                        |> String.dropLeft 1
 
                 parseResult =
                     UrlParser.parse identity Routing.Config.parser path
