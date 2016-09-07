@@ -4,15 +4,16 @@
 
 ![alt Hop](https://raw.githubusercontent.com/sporto/hop/master/assets/logo.png)
 
-Hop is a helper library to be used with:
+__As of version 6 Hop doesn't include matchers anymore, instead I have decided to embrace the UrlParser library__.
 
-- [the Navigation package](http://package.elm-lang.org/packages/elm-lang/navigation).
-- [the UrlParser package](http://package.elm-lang.org/packages/evancz/url-parser).
+Hop is a helper library meant to be used with:
 
-Use __Navigation__ for listening to location changes in the browser and pushing changes to it.
-Use __UrlParser__ for constructing routes and parsing URLs.
+- [__Navigation__](http://package.elm-lang.org/packages/elm-lang/navigation) for listening to location changes in the browser and pushing changes to it.
+- [__UrlParser__](http://package.elm-lang.org/packages/evancz/url-parser) for constructing routes and parsing URLs.
 
-On top of these two packages, Hop helps with:
+## What Hop provides
+
+On top of these two packages above, Hop helps with:
 
 - Abstracting the differences between push or hash routing
 - Providing helpers for working with the query string
@@ -56,13 +57,3 @@ See `examples/basic` and `examples/full` folders. To run the example apps:
 - Clone this repo
 - Go to example folder
 - Follow the readme in that folder
-
-## Acknowledgements
-
-Thanks to @etaque and @Bogdanp for the inspiration to make this better.
-
-
-
-
-
-

@@ -1,5 +1,7 @@
 # Building routes
 
+As of version 6 Hop doesn't provide matchers anymore, instead you can use [__UrlParser__](http://package.elm-lang.org/packages/evancz/url-parser).
+
 You build your routes by using union types:
 
 ```elm
@@ -10,146 +12,64 @@ type Route
   | NotFoundRoute
 ```
 
-Then you need to create path matchers for these routes:
+Then you need to create matchers for these routes:
 
 ```elm
-import Hop.Matchers exposing (match1, match2, int)
+import UrlParser exposing ((</>), format, oneOf, int, s)
 
-matcherHome : PathMatcher Route
-matcherHome =
-  match1 HomeRoute "/"
+matchers =
+  oneOf [
+    UrlParser.format HomeRoute (s "")
+  , UrlParser.format UserRoute (s "users" </> int)
+  , UrlParser.format UserStatusRoute (s "users" </> int </> s "status")
+  ]
 ```
 
-This matcher matches a route with one segment thus called `match1`.
+These matchers will match:
 
-```elm
-matcherUser : PathMatcher Route
-matcherUser =
-  match2 UserRoute "/users/" int
-```
-
-This matches a route with two segments. The first segment is always a string. The second segment can be `int` or `str` (exposed in Hop.Matchers).
-
-For example a matcher like this:
-
-```elm
-matcher =
-  match2 UserRoute "/users/" int
-```
-
-Will match "/users/1" but not "/users/abc".
+- "/"
+- "users/1"
+- "users/1/status"
 
 
-## Matching
-
-Use `Hop.matchUrl` to match a location.
-
-```elm
-matchUrl config "/users/1"
---> UserRoute 1
-
-matchUrl config "/users/abc"
---> NotFoundRoute
-```
-
-To match "/users/abc" you use `str`. e.g.
-
-```elm
-type Route
-  = UserRoute String
-
-matcher =
-  match2 UserRoute "/users/" str
-
-matchUrl config "/users/abc"
---> UserRoute "abc"
-```
-
-See more information about matchers in <http://package.elm-lang.org/packages/sporto/hop/latest/Hop-Matchers>
 
 ## Nested routes
 
-Hop supports nested routes. Define your children routes:
+UrlParser supports nested routes:
 
 ```elm
-type ServicesRoute
-  = Service Int
-  | ServiceStatus Int
-```
+type UserRoute
+    = UsersRoute
+    | UserRoute UserId
 
-Then define your top level routes:
+type MainRoute
+    = HomeRoute
+    | AboutRoute
+    | UsersRoutes UserRoute
+    | NotFoundRoute
 
-```elm
-type Route
-  = Home
-  | Company Int
-  | CompanyServices Int (ServicesRoute)
-  | NotFound
-```
+usersMatchers =
+    [ UrlParser.format UserRoute (int)
+    , UrlParser.format UsersRoute (s "")
+    ]
 
-Create path matchers:
-
-```elm
-import Hop.Matchers exposing (match2, match3, nested2, matchPath)
-
--- Matchers for services
-
-serviceMatcher = 
-  match2 Service "/services/" int
-
-serviceStatusMatcher = 
-  match3 ServiceStatus "/services/" int "/status"
-
-servicesMatchers = 
-  [serviceMatcher, serviceStatusMatcher]
-
--- Top level matchers
-
-companyMatcher =
-  match2 Company "/companies/" int
-
-companyServicesMatcher = 
-  nested2 CompanyServices "/companies/" int servicesMatchers
+mainMatchers =
+    [ UrlParser.format HomeRoute (s "")
+    , UrlParser.format AboutRoute (s "about")
+    , UrlParser.format UsersRoutes (s "users" </> (oneOf usersMatchers))
+    ]
 
 matchers =
-  [companyMatcher, companyServicesMatcher]
+  oneOf mainMatchers 
 ```
 
-Then you can match nested paths:
+With a setup like this UrlParser will be able to match routes like:
 
-```elm
-matchPath matchers NotFound "/companies/1/services/2/status"
---> CompanyServices 1 (ServiceStatus 2)
-```
+- "" -> HomeRoute
+- "/about" -> AboutRoute
+- "/users" -> UsersRoutes UsersRoute
+- "/users/2" -> UsersRoutes (UserRoute 2)
 
-`matchPath` is used internally in Hop. In practice the router signal will return a tuple like: `(CompanyServices 1 (ServiceStatus 2), location)`.
+## Matching
 
-## Reverse routing
-
-Reverse routing means creating a path from a route.
-e.g. `User 1` -> `"/users/1"`
-
-Hop provides `matcherToPath` to help with this. However you still need to do some pattern matching in your app.
-
-```elm
-type alias Route
-  = Users
-  | User Int
-  | NotFound
-
-reverse : Route -> String
-reverse route =
-  case route of
-
-    Users ->
-      matcherToPath usersMatcher []
-
-    User id ->
-      matcherToPath userMatcher [toString id]
-
-    NotFound ->
-      ""
-```
-
-See the API at <http://package.elm-lang.org/packages/sporto/hop/latest/Hop-Matchers>
-
+TODO
