@@ -115,11 +115,12 @@ A function that receives the normalised path and returns the result of parsing i
 ### Format function
 
 A function that receives the parsed result and an Address record.
-This function returns the final output to feed to the application. 
+These are given as a tuple `(result, address)`
+This function returns the final output to feed to the application.
 
 e.g.
 
-    (,)
+    identity
 
 A complete example looks like:
 
@@ -132,7 +133,7 @@ A complete example looks like:
                     |> Result.withDefault NotFoundRoute
 
             matcher =
-                Hop.makeMatcher hopConfig .href parse (,)
+                Hop.makeMatcher hopConfig .href parse identity
         in
             Navigation.makeParser matcher
 
@@ -141,7 +142,7 @@ makeMatcher :
     Config
     -> (url -> String)
     -> (String -> result)
-    -> (result -> Address -> formatted)
+    -> ((result, Address) -> formatted)
     -> url
     -> formatted
 makeMatcher config extract parse format rawInput =
@@ -157,7 +158,7 @@ makeMatcher config extract parse format rawInput =
                 |> String.dropLeft 1
                 |> parse
     in
-        format parseResult address
+        format (parseResult, address)
 
 
 

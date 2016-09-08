@@ -150,7 +150,7 @@ urlParser =
                 |> Result.withDefault NotFoundRoute
 
         matcher =
-            Hop.makeMatcher hopConfig .href parse (,)
+            Hop.makeMatcher hopConfig .href parse identity
     in
         Navigation.makeParser matcher
 

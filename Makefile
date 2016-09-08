@@ -20,15 +20,15 @@ test-unit-ci:
 	cd tests && elm-package install -y && cd ..
 	elm-test
 
-test-build-basic:
+build-basic:
 	cd examples/basic/ && elm make --yes Main.elm
 
-test-build-full:
+build-full:
 	cd examples/full/ && elm make --yes src/Main.elm
 
 test-ci:
 	make test-unit-ci
-	make test-build-basic
-	make test-build-full
+	make build-basic
+	make build-full
 
 .PHONY: docs test

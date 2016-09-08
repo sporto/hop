@@ -25,7 +25,7 @@ urlParser =
                 |> Result.withDefault NotFoundRoute
 
         matcher =
-            Hop.makeMatcher hopConfig .href parse (,)
+            Hop.makeMatcher hopConfig .href parse identity
     in
         Navigation.makeParser matcher
 ```
@@ -35,7 +35,9 @@ This parser
 - Takes the `.href` from the `Location` record given by `Navigation`
 - Converts that to a normalised path (done inside `makeMatcher`)
 - Passes the normalisedPath to your `parse` function, which returns a matched route or `NotFoundRoute`
-- Passes the return from the `parse` function above, plus an `Address` record to a format function. In this case just `(,)` so we return a tuple with `(Route, Address)`.
+- Passes the return from the `parse` function above, plus an `Address` record to a format function. 
+  - The result is given as a tuple `(Route, Address)`
+  - In this case we use `identity` as the format function, so we return the same tuple `(Route, Address)`.
 
 ## A parser that returns only the matched route
 
@@ -48,16 +50,15 @@ urlParser =
                 |> UrlParser.parse identity routes
                 |> Result.withDefault NotFoundRoute
 
-        format route address =
-            route
 
         matcher =
-            Hop.makeMatcher hopConfig .href parse format
+            Hop.makeMatcher hopConfig .href parse fst
     in
         Navigation.makeParser matcher
 ```
 
-This parser only returns the matched route, the `Address` record is discarded. However you probably need the address record for doing things with the query later.
+This parser only returns the matched route, the `Address` record is discarded. 
+However you probably need the address record for doing things with the query later.
 
 # A parser that returns the parser result + Address
 
@@ -70,7 +71,7 @@ urlParser =
                 |> UrlParser.parse identity routes
 
         matcher =
-            Hop.makeMatcher hopConfig .href parse (,)
+            Hop.makeMatcher hopConfig .href parse identity
     in
         Navigation.makeParser matcher
 ```
