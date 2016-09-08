@@ -84,24 +84,20 @@ ingest =
 
 
 {-|
-makeResolver is a convenient function to help extracting, parsing and formating
-the output from the Navigation module
+`makeResolver` normalizes the URL using your config and then gives that normalised URL to your parser.
 
-Use this for creating a function to give to `Navigation.makeParser`. See example in matching documentation.
+Use this for creating a function to give to `Navigation.makeParser`. 
+See examples in `docs/matching-routes.md`.
 
-makeResolver takes 4 arguments.
+    Hop.makeResolver hopConfig parse
+
+`makeResolver` takes 2 arguments.
 
 ### Config e.g.
 
     { basePath = ""
     , hash = False
     }
-
-### Extract function
-
-A function that extracts the url for parsing e.g.
-
-    .href
 
 ### Parse function
 
@@ -112,15 +108,20 @@ A function that receives the normalised path and returns the result of parsing i
             |> UrlParser.parse identity routes
             |> Result.withDefault NotFoundRoute
 
-### Format function
+### Return value from resolver
 
-A function that receives the parsed result and an Address record.
-These are given as a tuple `(result, address)`
-This function returns the final output to feed to the application.
+After being called with a URL the resolver will return a tuple with `(parse result, address)` e.g.
 
-e.g.
+    resolver =
+        Hop.makeResolver hopConfig parse
 
-    identity
+    resolver "http://example.com/index.html#/users/2"
+
+    -->
+
+    ( UserRoute 2, { path = ["users", "2"], query = ...} )
+
+### Example
 
 A complete example looks like:
 
@@ -132,24 +133,21 @@ A complete example looks like:
                     |> UrlParser.parse identity routes
                     |> Result.withDefault NotFoundRoute
 
-            matcher =
-                Hop.makeResolver hopConfig .href parse identity
+            resolver =
+                Hop.makeResolver hopConfig parse
         in
-            Navigation.makeParser matcher
+            Navigation.makeParser (.href >> resolver)
 
 -}
 makeResolver :
     Config
-    -> (url -> String)
     -> (String -> result)
-    -> ((result, Address) -> formatted)
-    -> url
-    -> formatted
-makeResolver config extract parse format rawInput =
+    -> String
+    -> (result, Address)
+makeResolver config parse rawInput =
     let
         address =
             rawInput
-                |> extract
                 |> ingest config
 
         parseResult =
@@ -158,7 +156,7 @@ makeResolver config extract parse format rawInput =
                 |> String.dropLeft 1
                 |> parse
     in
-        format (parseResult, address)
+        (parseResult, address)
 
 
 

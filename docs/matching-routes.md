@@ -16,64 +16,61 @@ hopConfig =
 ## A parser that returns `(Route, Address)`
 
 ```
-urlParser : Navigation.Parser ( Route, Address )
-urlParser =
+urlParserRouteAddress : Navigation.Parser ( MainRoute, Address )
+urlParserRouteAddress =
     let
         parse path =
             path
                 |> UrlParser.parse identity routes
                 |> Result.withDefault NotFoundRoute
 
-        matcher =
-            Hop.makeResolver hopConfig .href parse identity
+        solver =
+            Hop.makeResolver configWithHash parse
     in
-        Navigation.makeParser matcher
+        Navigation.makeParser (.href >> solver)
 ```
 
-This parser
+This parser:
 
-- Takes the `.href` from the `Location` record given by `Navigation`
-- Converts that to a normalised path (done inside `makeResolver`)
-- Passes the normalisedPath to your `parse` function, which returns a matched route or `NotFoundRoute`
-- Passes the return from the `parse` function above, plus an `Address` record to a format function. 
-  - The result is given as a tuple `(Route, Address)`
-  - In this case we use `identity` as the format function, so we return the same tuple `(Route, Address)`.
+- Takes the `.href` from the `Location` record given by `Navigation`.
+- Converts that to a normalised path (done inside `makeResolver`).
+- Passes the normalised path to your `parse` function, which returns a matched route or `NotFoundRoute`.
+- When run returns a tuple `(Route, Address)`.
 
 ## A parser that returns only the matched route
 
 ```
-urlParser : Navigation.Parser MainRoute
-urlParser =
+urlParserOnlyRoute : Navigation.Parser MainRoute
+urlParserOnlyRoute =
     let
         parse path =
             path
                 |> UrlParser.parse identity routes
                 |> Result.withDefault NotFoundRoute
 
-
-        matcher =
-            Hop.makeResolver hopConfig .href parse fst
+        solver =
+            Hop.makeResolver configWithHash parse
     in
-        Navigation.makeParser matcher
+        Navigation.makeParser (.href >> solver >> fst)
 ```
 
-This parser only returns the matched route, the `Address` record is discarded. 
+This parser only returns the matched route. The `address` record is discarded. 
 However you probably need the address record for doing things with the query later.
 
 # A parser that returns the parser result + Address
 
 ```
-urlParser : Navigation.Parser (Result String MainRoute, Address)
-urlParser =
+urlParserResultAddress : Navigation.Parser (Result String MainRoute, Address)
+urlParserResultAddress =
     let
         parse path =
             path
                 |> UrlParser.parse identity routes
 
-        matcher =
-            Hop.makeResolver hopConfig .href parse identity
+        solver =
+            Hop.makeResolver configWithHash parse
     in
-        Navigation.makeParser matcher
+        Navigation.makeParser (.href >> solver)
 ```
 
-This parser returns the result from `parse` e.g. `Result String MainRoute`
+This parser returns the result from `parse` e.g. `Result String MainRoute` and the address record.

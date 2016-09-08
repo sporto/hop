@@ -78,44 +78,44 @@ parseWithUrlParser currentConfig =
 ------------------------------
 
 
-urlParser1 : Navigation.Parser ( MainRoute, Address )
-urlParser1 =
+urlParserRouteAddress : Navigation.Parser ( MainRoute, Address )
+urlParserRouteAddress =
     let
         parse path =
             path
                 |> UrlParser.parse identity routes
                 |> Result.withDefault NotFoundRoute
 
-        matcher =
-            Hop.makeResolver configWithHash .href parse identity
+        solver =
+            Hop.makeResolver configWithHash parse
     in
-        Navigation.makeParser matcher
+        Navigation.makeParser (.href >> solver)
 
 
-urlParser2 : Navigation.Parser MainRoute
-urlParser2 =
+urlParserOnlyRoute : Navigation.Parser MainRoute
+urlParserOnlyRoute =
     let
         parse path =
             path
                 |> UrlParser.parse identity routes
                 |> Result.withDefault NotFoundRoute
 
-        matcher =
-            Hop.makeResolver configWithHash .href parse fst
+        solver =
+            Hop.makeResolver configWithHash parse
     in
-        Navigation.makeParser matcher
+        Navigation.makeParser (.href >> solver >> fst)
 
-urlParser3 : Navigation.Parser (Result String MainRoute, Address)
-urlParser3 =
+urlParserResultAddress : Navigation.Parser (Result String MainRoute, Address)
+urlParserResultAddress =
     let
         parse path =
             path
                 |> UrlParser.parse identity routes
 
-        matcher =
-            Hop.makeResolver configWithHash .href parse identity
+        solver =
+            Hop.makeResolver configWithHash parse
     in
-        Navigation.makeParser matcher
+        Navigation.makeParser (.href >> solver)
 
 
 urlParserIntegrationTest : Test

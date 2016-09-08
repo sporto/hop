@@ -1,10 +1,11 @@
 module Main exposing (..)
 
 {-|
-You will need Navigation and Hop
+You will need Navigation, UrlParser and Hop.
 
 ```
 elm package install elm-lang/navigation
+elm package install evancz/url-parser
 elm package install sporto/hop
 ```
 -}
@@ -13,7 +14,6 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Dict
-import String
 import Navigation
 import UrlParser exposing ((</>))
 import Hop
@@ -24,8 +24,8 @@ import Hop.Types exposing (Config, Address, Query)
 
 
 {-|
-Define your routes as union types
-You need to provide a route for when the current URL doesn't match any known route i.e. NotFoundRoute
+Define your routes as union types.
+You need to provide a route for when the current URL doesn't match any known route i.e. NotFoundRoute.
 -}
 type Route
     = AboutRoute
@@ -34,7 +34,8 @@ type Route
 
 
 {-|
-Define route matchers
+Define route matchers.
+See `docs/building-routes.md` for more examples.
 -}
 routes : UrlParser.Parser (Route -> a) a
 routes =
@@ -45,17 +46,13 @@ routes =
 
 
 {-|
-Define your router configuration
+Define your router configuration.
 
-Use `hash = True` for hash routing e.g. `#/users/1`
-Use `hash = False` for push state e.g. `/users/1`
+Use `hash = True` for hash routing e.g. `#/users/1`.
+Use `hash = False` for push state e.g. `/users/1`.
 
 The `basePath` is only used for path routing.
 This is useful if you application is not located at the root of a url e.g. `/app/v1/users/1` where `/app/v1` is the base path.
-
-- `matchers` is your list of matchers defined above.
-- `notFound` is a route that will be returned when the path doesn't match any known route.
-
 -}
 hopConfig : Config
 hopConfig =
@@ -69,8 +66,7 @@ hopConfig =
 
 
 {-|
-Add messages for navigation and changing the query
-
+Add messages for navigation and changing the query.
 -}
 type Msg
     = NavigateTo String
@@ -82,15 +78,16 @@ type Msg
 
 
 {-|
-Add route and address to your model.
+Add the current route and address to your model.
 
-- ``Hop.Address` is record TODO (not Navigation.Location)
-- `Route` is your Route union type
+- `Route` is your Route union type defined above.
+- `Hop.Address` is record to aid with changing the query string.
 
-This is needed because:
+`route` will be used for determining the current route in the views.
+
+`address` is needed because:
 
 - Some navigation functions in Hop need this information to rebuild the current address.
-- Your views will need information about the current route.
 - Your views might need information about the current query string.
 
 -}
@@ -102,7 +99,6 @@ type alias Model =
 
 {-|
 Respond to navigation messages in update i.e. NavigateTo and SetQuery
-
 -}
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -110,8 +106,8 @@ update msg model =
         NavigateTo path ->
             let
                 command =
-                    -- First generate the URL using your config
-                    -- Then generate a command using Navigation.newUrl
+                    -- First generate the URL using your config (`outputFromPath`).
+                    -- Then generate a command using Navigation.newUrl.
                     Hop.outputFromPath hopConfig path
                         |> Navigation.newUrl
             in
@@ -121,7 +117,7 @@ update msg model =
             let
                 command =
                     -- First modify the current stored address record (setting the query)
-                    -- Then generate a URL using makeUrlFromLocation
+                    -- Then generate a URL using Hop.output
                     -- Finally, create a command using Navigation.newUrl
                     model.address
                         |> Hop.setQuery query
@@ -133,40 +129,35 @@ update msg model =
 
 {-|
 Create a URL Parser for Navigation
-
-Here we take `.href` from `Navigation.address` and send this to `Hop.matchUrl`.
-
-`matchUrl` returns a tuple: (matched route, Hop address record). e.g.
-
-    (User 1, { path = ["users", "1"], query = Dict.empty })
-
 -}
 urlParser : Navigation.Parser ( Route, Address )
 urlParser =
     let
+        -- A parse function takes the normalised path from Hop after taking
+        -- in consideration the basePath and the hash.
+        -- This function then returns a result.
         parse path =
+            -- First we parse using UrlParser.parse.
+            -- Then we return the parsed route or NotFoundRoute if the parsed failed.
+            -- You can choose to return the parse return directly.
             path
                 |> UrlParser.parse identity routes
                 |> Result.withDefault NotFoundRoute
 
-        matcher =
-            Hop.makeResolver hopConfig .href parse identity
+        resolver =
+            -- Create a function that parses and formats the URL
+            -- This function takes 2 arguments: The Hop Config and the parse function.
+            Hop.makeResolver hopConfig parse
     in
-        Navigation.makeParser matcher
-
-
-
--- Get the .href
--- Convert that to a normalised path
--- Parse
--- Wrap in (Route, Location)
+        -- Create a Navigation URL parser
+        Navigation.makeParser (.href >> resolver)
 
 
 {-|
 Navigation will call urlUpdate when the address changes.
-This function gets the result from `urlParser`, which is a tuple with (Route, Hop.Types.Location)
+This function gets the result from `urlParser`, which is a tuple with (Route, Hop.Types.Address)
 
-Location is a record that has:
+Address is a record that has:
 
 ```elm
 {
@@ -175,10 +166,10 @@ Location is a record that has:
 }
 ```
 
-- `path` is an array of string that has the current path e.g. `["users", "1"]` for `"/users/1"`
-- `query` Is dictionary of String String. You can access this information in your views to show the content.
+- `path` is an array of strings that has the current path e.g. `["users", "1"]` for `"/users/1"`
+- `query` Is dictionary of String String. You can access this information in your views to show the relevant content.
 
-Store these two things in the model. We store address because it is needed for matching a query string.
+We store these two things in our model. We keep the address because it is needed for matching a query string.
 
 -}
 urlUpdate : ( Route, Address ) -> Model -> ( Model, Cmd Msg )
@@ -254,9 +245,8 @@ pageView model =
 
 
 {-|
-Your init function will receive an initial payload from Navigation, this payload is the initial matched address.
+Your init function will receive an initial payload from Navigation, this payload is the initial matched location.
 Here we store the `route` and `address` in our model.
-
 -}
 init : ( Route, Address ) -> ( Model, Cmd Msg )
 init ( route, address ) =
@@ -265,7 +255,6 @@ init ( route, address ) =
 
 {-|
 Wire everything using Navigation.
-
 -}
 main : Program Never
 main =
