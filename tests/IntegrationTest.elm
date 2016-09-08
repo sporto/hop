@@ -44,6 +44,7 @@ mainMatchers =
 routes =
     oneOf mainMatchers
 
+
 newLocation : Location
 newLocation =
     { hash = ""
@@ -68,7 +69,7 @@ parseWithUrlParser currentConfig =
                 |> UrlParser.parse identity routes
                 |> Result.withDefault NotFoundRoute
     in
-        Hop.makeLocationMatcher currentConfig parse
+        Hop.makeMatcher currentConfig .href parse (,)
 
 
 urlParserIntegrationTest : Test
