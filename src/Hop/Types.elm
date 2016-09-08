@@ -1,13 +1,12 @@
 module Hop.Types exposing (Config, Query, Address, newQuery, newAddress)
 
-{-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
+{-| Types used in Hop
 
 #Types
 @docs Config, Address, Query
 
 #Factories
 @docs newQuery, newAddress
-
 -}
 
 import Dict

@@ -84,7 +84,58 @@ ingest =
 
 
 {-|
-TODO
+makeMatcher is a convenient function to help extracting, parsing and formating
+the output from the Navigation module
+
+Use this for creating a function to give to `Navigation.makeParser`. See example in matching documentation.
+
+makeMatcher takes 4 arguments.
+
+### Config e.g.
+
+    { basePath = ""
+    , hash = False
+    }
+
+### Extract function
+
+A function that extracts the url for parsing e.g.
+
+    .href
+
+### Parse function
+
+A function that receives the normalised path and returns the result of parsing it.
+
+    parse path =
+        path
+            |> UrlParser.parse identity routes
+            |> Result.withDefault NotFoundRoute
+
+### Format function
+
+A function that receives the parsed result and an Address record.
+This function returns the final output to feed to the application. 
+
+e.g.
+
+    (,)
+
+A complete example looks like:
+
+    urlParser : Navigation.Parser ( Route, Address )
+    urlParser =
+        let
+            parse path =
+                path
+                    |> UrlParser.parse identity routes
+                    |> Result.withDefault NotFoundRoute
+
+            matcher =
+                Hop.makeMatcher hopConfig .href parse (,)
+        in
+            Navigation.makeParser matcher
+
 -}
 makeMatcher :
     Config

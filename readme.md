@@ -27,7 +27,10 @@ Please see this [example app](https://github.com/sporto/hop/blob/master/examples
 ## Docs
 
 ### [Building routes](https://github.com/sporto/hop/blob/master/docs/building-routes.md)
+### [Nesting routes](https://github.com/sporto/hop/blob/master/docs/nesting-routes.md)
+### [Matching routes](https://github.com/sporto/hop/blob/master/docs/matching-routes.md)
 ### [Navigating](https://github.com/sporto/hop/blob/master/docs/navigating.md)
+### [Reverse routing](https://github.com/sporto/hop/blob/master/docs/reverse-routing.md)
 ### [API](http://package.elm-lang.org/packages/sporto/hop/latest/)
 ### [Changelog](./docs/changelog.md)
 ### [Testing Hop](https://github.com/sporto/hop/blob/master/docs/testing.md)
