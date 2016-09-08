@@ -14,8 +14,8 @@ matchers =
     ]
 
 
-parser : UrlParser.Parser (Route -> a) a
-parser =
+routes : UrlParser.Parser (Route -> a) a
+routes =
     oneOf matchers
 
 

@@ -15,31 +15,15 @@ import UrlParser
 urlParser : Navigation.Parser ( Route, Address )
 urlParser =
     let
-        parser location =
-            let
-                _ =
-                    Debug.log "path" path
+        parse path =
+            path
+                |> UrlParser.parse identity Routing.Config.routes
+                |> Result.withDefault NotFoundRoute
 
-                _ =
-                    Debug.log "parseResult" parseResult
-
-                address =
-                    location.href
-                        |> Hop.ingest Routing.Config.config
-
-                path =
-                    Hop.pathFromAddress address ++ "/"
-                        |> String.dropLeft 1
-
-                parseResult =
-                    UrlParser.parse identity Routing.Config.parser path
-
-                route =
-                    Result.withDefault NotFoundRoute parseResult
-            in
-                ( route, address )
+        matcher =
+            Hop.makeMatcher Routing.Config.config .href parse (,)
     in
-        Navigation.makeParser parser
+        Navigation.makeParser matcher
 
 
 urlUpdate : ( Route, Address ) -> AppModel -> ( AppModel, Cmd Msg )
