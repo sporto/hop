@@ -21,9 +21,9 @@ urlParser =
                 |> Result.withDefault NotFoundRoute
 
         matcher =
-            Hop.makeResolver Routing.config .href parse identity
+            Hop.makeResolver Routing.config parse
     in
-        Navigation.makeParser matcher
+        Navigation.makeParser (.href >> matcher)
 
 
 urlUpdate : ( Route, Address ) -> AppModel -> ( AppModel, Cmd Msg )
