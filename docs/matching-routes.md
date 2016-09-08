@@ -1,6 +1,6 @@
 # Matching routes
 
-Create a parser using `Navigation.makeParser` combined with `Hop.makeMatcher`.
+Create a parser using `Navigation.makeParser` combined with `Hop.makeResolver`.
 There are serveral strategies you can use.
 
 ## Given you have some configuration
@@ -25,7 +25,7 @@ urlParser =
                 |> Result.withDefault NotFoundRoute
 
         matcher =
-            Hop.makeMatcher hopConfig .href parse identity
+            Hop.makeResolver hopConfig .href parse identity
     in
         Navigation.makeParser matcher
 ```
@@ -33,7 +33,7 @@ urlParser =
 This parser
 
 - Takes the `.href` from the `Location` record given by `Navigation`
-- Converts that to a normalised path (done inside `makeMatcher`)
+- Converts that to a normalised path (done inside `makeResolver`)
 - Passes the normalisedPath to your `parse` function, which returns a matched route or `NotFoundRoute`
 - Passes the return from the `parse` function above, plus an `Address` record to a format function. 
   - The result is given as a tuple `(Route, Address)`
@@ -52,7 +52,7 @@ urlParser =
 
 
         matcher =
-            Hop.makeMatcher hopConfig .href parse fst
+            Hop.makeResolver hopConfig .href parse fst
     in
         Navigation.makeParser matcher
 ```
@@ -71,7 +71,7 @@ urlParser =
                 |> UrlParser.parse identity routes
 
         matcher =
-            Hop.makeMatcher hopConfig .href parse identity
+            Hop.makeResolver hopConfig .href parse identity
     in
         Navigation.makeParser matcher
 ```

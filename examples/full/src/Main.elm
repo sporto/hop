@@ -21,7 +21,7 @@ urlParser =
                 |> Result.withDefault NotFoundRoute
 
         matcher =
-            Hop.makeMatcher Routing.config .href parse identity
+            Hop.makeResolver Routing.config .href parse identity
     in
         Navigation.makeParser matcher
 

@@ -3,7 +3,7 @@ module Hop
         ( addQuery
         , clearQuery
         , ingest
-        , makeMatcher
+        , makeResolver
         , output
         , outputFromPath
         , pathFromAddress
@@ -15,7 +15,7 @@ module Hop
 {-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
 # Consuming an URL from the browser
-@docs ingest, makeMatcher
+@docs ingest, makeResolver
 
 # Preparing a URL for changing the browser location
 @docs output, outputFromPath
@@ -84,12 +84,12 @@ ingest =
 
 
 {-|
-makeMatcher is a convenient function to help extracting, parsing and formating
+makeResolver is a convenient function to help extracting, parsing and formating
 the output from the Navigation module
 
 Use this for creating a function to give to `Navigation.makeParser`. See example in matching documentation.
 
-makeMatcher takes 4 arguments.
+makeResolver takes 4 arguments.
 
 ### Config e.g.
 
@@ -133,19 +133,19 @@ A complete example looks like:
                     |> Result.withDefault NotFoundRoute
 
             matcher =
-                Hop.makeMatcher hopConfig .href parse identity
+                Hop.makeResolver hopConfig .href parse identity
         in
             Navigation.makeParser matcher
 
 -}
-makeMatcher :
+makeResolver :
     Config
     -> (url -> String)
     -> (String -> result)
     -> ((result, Address) -> formatted)
     -> url
     -> formatted
-makeMatcher config extract parse format rawInput =
+makeResolver config extract parse format rawInput =
     let
         address =
             rawInput

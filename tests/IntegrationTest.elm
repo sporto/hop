@@ -69,7 +69,7 @@ parseWithUrlParser currentConfig =
                 |> UrlParser.parse identity routes
                 |> Result.withDefault NotFoundRoute
     in
-        Hop.makeMatcher currentConfig .href parse identity
+        Hop.makeResolver currentConfig .href parse identity
 
 
 
@@ -87,7 +87,7 @@ urlParser1 =
                 |> Result.withDefault NotFoundRoute
 
         matcher =
-            Hop.makeMatcher configWithHash .href parse identity
+            Hop.makeResolver configWithHash .href parse identity
     in
         Navigation.makeParser matcher
 
@@ -101,7 +101,7 @@ urlParser2 =
                 |> Result.withDefault NotFoundRoute
 
         matcher =
-            Hop.makeMatcher configWithHash .href parse fst
+            Hop.makeResolver configWithHash .href parse fst
     in
         Navigation.makeParser matcher
 
@@ -113,7 +113,7 @@ urlParser3 =
                 |> UrlParser.parse identity routes
 
         matcher =
-            Hop.makeMatcher configWithHash .href parse identity
+            Hop.makeResolver configWithHash .href parse identity
     in
         Navigation.makeParser matcher
 
