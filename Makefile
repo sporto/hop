@@ -21,12 +21,10 @@ test-unit-ci:
 	elm-test
 
 test-build-basic:
-	cd examples/basic/
-	elm make Main.elm
+	cd examples/basic/ && elm make --yes Main.elm
 
 test-build-full:
-	cd examples/full/
-	elm make src/Main.elm
+	cd examples/full/ && elm make --yes src/Main.elm
 
 test-ci:
 	make test-unit-ci
