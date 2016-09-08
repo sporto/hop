@@ -44,7 +44,23 @@ mainMatchers =
 routes =
     oneOf mainMatchers
 
-parseWithUrlParser : Config -> Location -> (MainRoute, Address)
+newLocation : Location
+newLocation =
+    { hash = ""
+    , host = "example.com"
+    , hostname = "example.com"
+    , href = ""
+    , origin = ""
+    , password = ""
+    , pathname = ""
+    , port_ = ""
+    , protocol = "http"
+    , search = ""
+    , username = ""
+    }
+
+
+parseWithUrlParser : Config -> Location -> ( MainRoute, Address )
 parseWithUrlParser currentConfig =
     let
         parse path =
@@ -203,10 +219,7 @@ urlParserIntegrationTest =
                 <| \() ->
                     let
                         location =
-                            { host = "example.com"
-                            , href = href
-                            , protocol = "http"
-                            }
+                            { newLocation | href = href }
 
                         ( actual, _ ) =
                             parseWithUrlParser currentConfig location
@@ -216,7 +229,7 @@ urlParserIntegrationTest =
                 <| \() ->
                     let
                         location =
-                            { href = href }
+                            { newLocation | href = href }
 
                         ( _, address ) =
                             parseWithUrlParser currentConfig location
