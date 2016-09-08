@@ -2,8 +2,11 @@ module Hop.Types exposing (Config, Query, Address, newQuery, newAddress)
 
 {-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
-# Types
+#Types
 @docs Config, Address, Query
+
+#Factories
+@docs newQuery, newAddress
 
 -}
 
@@ -31,9 +34,8 @@ type alias Address =
 
 {-| Hop Configuration
 
-- basePath: Only for pushState routing (not hash). e.g. "/app". All routing and matching is done after this basepath.
+- basePath: Only for pushState routing (not hash). e.g. "/app".
 - hash: True for hash routing, False for pushState routing.
-- notFound: Route that will match when a location is not found.
 
 -}
 type alias Config =
@@ -50,7 +52,7 @@ newQuery =
 
 
 {-|
-Create a empty Address record
+Create an empty Address record
 -}
 newAddress : Address
 newAddress =

@@ -3,6 +3,7 @@ module Hop
         ( addQuery
         , clearQuery
         , ingest
+        , makeLocationMatcher
         , output
         , outputFromPath
         , pathFromAddress
@@ -14,7 +15,7 @@ module Hop
 {-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
 # Consuming an URL from the browser
-@docs ingest
+@docs ingest, makeLocationMatcher
 
 # Preparing a URL for changing the browser location
 @docs output, outputFromPath
@@ -28,6 +29,7 @@ module Hop
 -}
 
 import Dict
+import String
 import Hop.Address
 import Hop.In
 import Hop.Out
@@ -79,6 +81,27 @@ E.g. with hash routing
 ingest : Config -> String -> Address
 ingest =
     Hop.In.ingest
+
+
+{-|
+TODO
+-}
+makeLocationMatcher : Config -> (String -> a) -> { b | href : String } -> ( a, Address )
+makeLocationMatcher config parse location =
+    let
+        address =
+            location.href
+                |> ingest config
+
+        path =
+            pathFromAddress address
+                ++ "/"
+                |> String.dropLeft 1
+
+        parseResult =
+            parse path
+    in
+        ( parseResult, address )
 
 
 

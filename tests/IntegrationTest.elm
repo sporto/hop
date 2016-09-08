@@ -1,11 +1,13 @@
 module IntegrationTest exposing (..)
 
 import UrlParser exposing ((</>), oneOf, int, s)
+import Navigation exposing (Location)
 import Expect
 import String
 import Test exposing (..)
 import Hop.TestHelper exposing (configWithHash, configWithPath, configPathAndBasePath)
 import Hop
+import Hop.Types exposing (Address, Config)
 
 
 type alias UserId =
@@ -42,29 +44,15 @@ mainMatchers =
 routes =
     oneOf mainMatchers
 
-
-parseWithUrlParser currentConfig location =
+parseWithUrlParser : Config -> Location -> (MainRoute, Address)
+parseWithUrlParser currentConfig =
     let
-        -- _ =
-        --     Debug.log "parseResult" parseResult
-        -- _ =
-        --     Debug.log "path" path
-        address =
-            location.href
-                |> Hop.ingest currentConfig
-
-        path =
-            Hop.pathFromAddress address
-                ++ "/"
-                |> String.dropLeft 1
-
-        parseResult =
-            UrlParser.parse identity routes path
-
-        route =
-            Result.withDefault NotFoundRoute parseResult
+        parse path =
+            path
+                |> UrlParser.parse identity routes
+                |> Result.withDefault NotFoundRoute
     in
-        ( route, address )
+        Hop.makeLocationMatcher currentConfig parse
 
 
 urlParserIntegrationTest : Test
@@ -215,13 +203,16 @@ urlParserIntegrationTest =
                 <| \() ->
                     let
                         location =
-                            { href = href }
+                            { host = "example.com"
+                            , href = href
+                            , protocol = "http"
+                            }
 
                         ( actual, _ ) =
                             parseWithUrlParser currentConfig location
                     in
                         Expect.equal expected actual
-            , test (testCase ++  " - output")
+            , test (testCase ++ " - output")
                 <| \() ->
                     let
                         location =
