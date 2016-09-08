@@ -72,6 +72,55 @@ parseWithUrlParser currentConfig =
         Hop.makeMatcher currentConfig .href parse (,)
 
 
+
+------------------------------
+-- Example urlParsers
+------------------------------
+
+
+urlParser1 : Navigation.Parser ( MainRoute, Address )
+urlParser1 =
+    let
+        parse path =
+            path
+                |> UrlParser.parse identity routes
+                |> Result.withDefault NotFoundRoute
+
+        matcher =
+            Hop.makeMatcher configWithHash .href parse (,)
+    in
+        Navigation.makeParser matcher
+
+
+urlParser2 : Navigation.Parser MainRoute
+urlParser2 =
+    let
+        parse path =
+            path
+                |> UrlParser.parse identity routes
+                |> Result.withDefault NotFoundRoute
+
+        format route address =
+            route
+
+        matcher =
+            Hop.makeMatcher configWithHash .href parse format
+    in
+        Navigation.makeParser matcher
+
+urlParser3 : Navigation.Parser (Result String MainRoute, Address)
+urlParser3 =
+    let
+        parse path =
+            path
+                |> UrlParser.parse identity routes
+
+        matcher =
+            Hop.makeMatcher configWithHash .href parse (,)
+    in
+        Navigation.makeParser matcher
+
+
 urlParserIntegrationTest : Test
 urlParserIntegrationTest =
     let
