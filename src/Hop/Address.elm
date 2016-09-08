@@ -5,7 +5,9 @@ import String
 import Http exposing (uriEncode, uriDecode)
 import Hop.Types exposing (..)
 
-
+{-|
+Get the Path
+-}
 getPath : Address -> String
 getPath address =
     address.path

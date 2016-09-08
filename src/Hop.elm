@@ -1,27 +1,28 @@
 module Hop
     exposing
-        ( ingest
-        , pathFromAddress
+        ( addQuery
+        , clearQuery
+        , ingest
         , output
         , outputFromPath
-        , addQuery
-        , setQuery
+        , pathFromAddress
+        , queryFromAddress
         , removeQuery
-        , clearQuery
+        , setQuery
         )
 
 {-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
-# Inbound URLs
+# Consuming an URL from the browser
 @docs ingest
 
-# Outbound URLs
+# Preparing a URL for changing the browser location
 @docs output, outputFromPath
 
 # Work with an Address record
-@docs pathFromAddress
+@docs pathFromAddress, queryFromAddress
 
-# Change query string
+# Modify the query string
 @docs addQuery, setQuery, removeQuery, clearQuery
 
 -}
@@ -39,18 +40,39 @@ import Hop.Types exposing (Address, Config, Query)
 
 
 {-|
-Convert a raw url to an Address record
-This conversion will take in account your basePath and hash configuration 
+Convert a raw url to an Address record. Use this function for 'normalizing' the URL before parsing it.
+This conversion will take in account your basePath and hash configuration.
 
 E.g. with path routing
 
-    ingest config "http://localhost:3000/app/languages/1?k=1" 
+    config =
+        { basePath = ""
+        , hash = False
+        }
+
+    ingest config "http://localhost:3000/app/languages/1?k=1"
     -->
     { path = ["app", "languages", "1" ], query = Dict.singleton "k" "1" }
 
+E.g. with path routing and base path
+
+    config =
+        { basePath = "/app/v1"
+        , hash = False
+        }
+
+    ingest config "http://localhost:3000/app/v1/languages/1?k=1"
+    -->
+    { path = ["languages", "1" ], query = Dict.singleton "k" "1" }
+
 E.g. with hash routing
 
-    ingest config "http://localhost:3000/app#/languages/1?k=1" 
+    config =
+        { basePath = ""
+        , hash = True
+        }
+
+    ingest config "http://localhost:3000/app#/languages/1?k=1"
     -->
     { path = ["languages", "1" ], query = Dict.singleton "k" "1" }
 -}
@@ -66,8 +88,8 @@ ingest =
 
 
 {-|
-Convert an Address record to a URL to feed the browser
-This will take in account your basePath and hash config
+Convert an Address record to an URL to feed the browser.
+This will take in account your basePath and hash config.
 
 E.g. with path routing
 
@@ -87,8 +109,8 @@ output =
 
 
 {-|
-Convert a string to a URL to feed the browser
-This will take in account your basePath and hash config
+Convert a string to an URL to feed the browser.
+This will take in account your basePath and hash config.
 
 E.g. with path routing
 
@@ -96,7 +118,7 @@ E.g. with path routing
     -->
     "/languages/1?k=1"
 
-E.g. with path + basePath routing
+E.g. with path routing + basePath
 
     outputFromPath config "/languages/1?k=1"
     -->
@@ -120,13 +142,30 @@ outputFromPath =
 
 
 {-|
-Get the path as a string from an Address record
+Get the path as a string from an Address record.
 
-    
+    address = { path = ["languages", "1" ], query = Dict.singleton "k" "1" }
 
+    pathFromAddress address
+    -->
+    "/languages/1"
 -}
 pathFromAddress : Address -> String
 pathFromAddress =
+    Hop.Address.getPath
+
+
+{-|
+Get the query as a string from an Address record.
+
+    address = { path = ["app"], query = Dict.singleton "k" "1" }
+
+    queryFromAddress address
+    -->
+    "?k=1"
+-}
+queryFromAddress : Address -> String
+queryFromAddress =
     Hop.Address.getPath
 
 
@@ -137,9 +176,9 @@ pathFromAddress =
 
 
 {-|
-Add query string values (patches any existing values) to a location record.
+Add query string values (patches any existing values) to an Address record.
 
-    addQuery query location
+    addQuery query address
 
     addQuery (Dict.Singleton "b" "2") { path = [], query = Dict.fromList [("a", "1")] }
 
@@ -148,9 +187,8 @@ Add query string values (patches any existing values) to a location record.
     { path = [], query = Dict.fromList [("a", "1"), ("b", "2")] }
 
 - query is a dictionary with keys to add
-- location is a record representing the current location
 
-To remove a value set the value to ""
+To remove a key / value pair set the value to ""
 -}
 addQuery : Query -> Address -> Address
 addQuery query location =
@@ -162,9 +200,9 @@ addQuery query location =
 
 
 {-|
-Set query string values (removes existing values).
+Set the whole query string (removes any existing values).
 
-    setQuery query location
+    setQuery query address
 -}
 setQuery : Query -> Address -> Address
 setQuery query location =
@@ -174,7 +212,7 @@ setQuery query location =
 {-|
 Remove one key from the query string
 
-    removeQuery key location
+    removeQuery key address
 -}
 removeQuery : String -> Address -> Address
 removeQuery key location =
@@ -187,7 +225,7 @@ removeQuery key location =
 
 {-| Clear all query string values
 
-    clearQuery location
+    clearQuery address
 -}
 clearQuery : Address -> Address
 clearQuery location =

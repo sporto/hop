@@ -4,12 +4,12 @@
 
 ![alt Hop](https://raw.githubusercontent.com/sporto/hop/master/assets/logo.png)
 
-__As of version 6 Hop doesn't include matchers anymore, instead I have decided to embrace the UrlParser library__.
-
 Hop is a helper library meant to be used with:
 
 - [__Navigation__](http://package.elm-lang.org/packages/elm-lang/navigation) for listening to location changes in the browser and pushing changes to it.
 - [__UrlParser__](http://package.elm-lang.org/packages/evancz/url-parser) for constructing routes and parsing URLs.
+
+__As of version 6 Hop doesn't include matchers anymore, instead I have decided to favour the UrlParser library which provides a more flexible way of building matchers.__
 
 ## What Hop provides
 
