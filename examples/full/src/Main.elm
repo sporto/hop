@@ -7,7 +7,7 @@ import Messages exposing (..)
 import Models exposing (..)
 import Update exposing (..)
 import View exposing (..)
-import Routing.Config
+import Routing
 import String
 import UrlParser
 
@@ -17,11 +17,11 @@ urlParser =
     let
         parse path =
             path
-                |> UrlParser.parse identity Routing.Config.routes
+                |> UrlParser.parse identity Routing.routes
                 |> Result.withDefault NotFoundRoute
 
         matcher =
-            Hop.makeMatcher Routing.Config.config .href parse (,)
+            Hop.makeMatcher Routing.config .href parse (,)
     in
         Navigation.makeParser matcher
 

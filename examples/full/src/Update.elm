@@ -6,8 +6,7 @@ import Hop exposing (output, outputFromPath, setQuery)
 import Hop.Types exposing (Config)
 import Messages exposing (..)
 import Models exposing (..)
-import Routing.Config
-import Routing.Utils
+import Routing
 import Languages.Update
 import Languages.Models
 
@@ -15,13 +14,13 @@ import Languages.Models
 navigationCmd : String -> Cmd a
 navigationCmd path =
     path
-        |> outputFromPath Routing.Config.config
+        |> outputFromPath Routing.config
         |> Navigation.newUrl
 
 
 routerConfig : Config
 routerConfig =
-    Routing.Config.config
+    Routing.config
 
 
 update : Msg -> AppModel -> ( AppModel, Cmd Msg )
@@ -52,20 +51,20 @@ update message model =
         ShowHome ->
             let
                 path =
-                    Routing.Utils.reverse HomeRoute
+                    Routing.reverse HomeRoute
             in
                 ( model, navigationCmd path )
 
         ShowLanguages ->
             let
                 path =
-                    Routing.Utils.reverse (LanguagesRoutes Languages.Models.LanguagesRoute)
+                    Routing.reverse (LanguagesRoutes Languages.Models.LanguagesRoute)
             in
                 ( model, navigationCmd path )
 
         ShowAbout ->
             let
                 path =
-                    Routing.Utils.reverse AboutRoute
+                    Routing.reverse AboutRoute
             in
                 ( model, navigationCmd path )
