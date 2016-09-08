@@ -65,9 +65,6 @@ subView model =
         LanguagesRoute ->
             emptyView
 
-        NotFoundRoute ->
-            notFoundView model
-
 
 emptyView : Html msg
 emptyView =
