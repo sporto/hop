@@ -144,28 +144,15 @@ Here we take `.href` from `Navigation.address` and send this to `Hop.matchUrl`.
 urlParser : Navigation.Parser ( Route, Address )
 urlParser =
     let
-        parser location =
-            let
-                _ =
-                    Debug.log "parseResult" parseResult
+        parse path =
+            path
+                |> UrlParser.parse identity routes
+                |> Result.withDefault NotFoundRoute
 
-                address =
-                    location.href
-                        |> Hop.ingest hopConfig
-
-                path =
-                    Hop.pathFromAddress address
-                        |> String.dropLeft 1
-
-                parseResult =
-                    UrlParser.parse identity routes path
-
-                route =
-                    Result.withDefault NotFoundRoute parseResult
-            in
-                ( route, address )
+        matcher =
+            Hop.makeMatcher hopConfig .href parse (,)
     in
-        Navigation.makeParser parser
+        Navigation.makeParser matcher
 
 
 
