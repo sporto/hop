@@ -2,7 +2,7 @@
 
 ## Changing the location
 
-Use `Hop.makeUrl` for changing the browser location.
+Use `Hop.outputFromPath` for changing the browser location.
 
 Add a message:
 
@@ -18,15 +18,13 @@ Trigger this message from you view:
 button [ onClick (NavigateTo "/users") ] [ text "Users" ]
 ```
 
-You can create the paths (e.g. "/users/1") by using reverse routing, see [here](https://github.com/sporto/hop/blob/master/docs/building-routes.md#reverse-routing).
-
 React to this message in update:
 
 ```elm
 NavigateTo path ->
   let
     command =
-      makeUrl routerConfig path
+      Hop.outputFromPath routerConfig path
         |> Navigation.newUrl
   in
     ( model, command )
@@ -56,15 +54,16 @@ update msg model =
     AddQuery query ->
       let
         command =
-          model.location
-            |> addQuery query
-            |> makeUrlFromLocation routerConfig
+          model.address
+            |> Hop.addQuery query
+            |> Hop.output routerConfig
             |> Navigation.newUrl
       in
         (model, command)
 ```
 
-You need to pass the current `location` record to these functions. Then you use that `location` record to generate a url using makeUrlFromLocation`.
+You need to pass the current `address` record to these functions. 
+Then you use that `address` record to generate a url using `output`.
 
 Trigger these messages from your views:
 

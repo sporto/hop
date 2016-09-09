@@ -1,24 +1,30 @@
 # Changelog
 
+### 6.0.0
+
+- Remove matchers (Use UrlParser instead)
+- Rename input and output functions
+- Encode and decode path segments
+
 ### 5.0.1
 
-Encode query string when converting location to URL.
+- Encode query string when converting location to URL.
 
 ## 5.0.0
 
-Update for Elm 0.17
+- Update for Elm 0.17
 
 ### 4.0.3
 
-Fix issue where root path wouldn't match when using hash routing.
+- Fix issue where root path wouldn't match when using hash routing.
 
 ### 4.0.2
 
-Futher fix for navigating to root path, use / instead of .
+- Futher fix for navigating to root path, use / instead of .
 
 ### 4.0.1
 
-Fix https://github.com/sporto/hop/issues/20
+- Fix https://github.com/sporto/hop/issues/20
 
 ## 4.0.0
 

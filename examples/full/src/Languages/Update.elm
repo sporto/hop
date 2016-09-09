@@ -2,29 +2,30 @@ module Languages.Update exposing (..)
 
 import Debug
 import Navigation
-import Hop exposing (makeUrl, makeUrlFromLocation, addQuery, setQuery)
-import Hop.Types exposing (Config, Location)
-import Routing.Config
-import Models
+import Hop exposing (output, outputFromPath, addQuery, setQuery)
+import Hop.Types exposing (Config, Address)
+import Routing
 import Languages.Models exposing (..)
 import Languages.Messages exposing (Msg(..))
-import Languages.Routing.Utils
+import Languages.Routing
 
 
 type alias UpdateModel =
     { languages : List Language
-    , location : Location
+    , address : Address
     }
 
 
-routerConfig : Config Models.Route
+routerConfig : Config
 routerConfig =
-    Routing.Config.config
+    Routing.config
 
 
 navigationCmd : String -> Cmd a
 navigationCmd path =
-    Navigation.modifyUrl (makeUrl Routing.Config.config path)
+    path
+        |> outputFromPath routerConfig
+        |> Navigation.modifyUrl
 
 
 update : Msg -> UpdateModel -> ( UpdateModel, Cmd Msg )
@@ -33,14 +34,14 @@ update message model =
         Show id ->
             let
                 path =
-                    Languages.Routing.Utils.reverseWithPrefix (Languages.Models.LanguageRoute id)
+                    Languages.Routing.reverseWithPrefix (Languages.Models.LanguageRoute id)
             in
                 ( model, navigationCmd path )
 
         Edit id ->
             let
                 path =
-                    Languages.Routing.Utils.reverseWithPrefix (Languages.Models.LanguageEditRoute id)
+                    Languages.Routing.reverseWithPrefix (Languages.Models.LanguageEditRoute id)
             in
                 ( model, navigationCmd path )
 
@@ -54,9 +55,9 @@ update message model =
         AddQuery query ->
             let
                 command =
-                    model.location
+                    model.address
                         |> addQuery query
-                        |> makeUrlFromLocation routerConfig
+                        |> output routerConfig
                         |> Navigation.modifyUrl
             in
                 ( model, command )
@@ -64,9 +65,9 @@ update message model =
         SetQuery query ->
             let
                 command =
-                    model.location
+                    model.address
                         |> setQuery query
-                        |> makeUrlFromLocation routerConfig
+                        |> output routerConfig
                         |> Navigation.modifyUrl
             in
                 ( model, command )

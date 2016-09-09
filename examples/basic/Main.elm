@@ -1,10 +1,11 @@
 module Main exposing (..)
 
 {-|
-You will need Navigation and Hop
+You will need Navigation, UrlParser and Hop.
 
 ```
 elm package install elm-lang/navigation
+elm package install evancz/url-parser
 elm package install sporto/hop
 ```
 -}
@@ -14,21 +15,17 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Dict
 import Navigation
-import Hop exposing (makeUrl, makeUrlFromLocation, matchUrl, setQuery)
-import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
-
-
---Hop.Matchers exposes functions for building route matchers
-
-import Hop.Matchers exposing (..)
+import UrlParser exposing ((</>))
+import Hop
+import Hop.Types exposing (Config, Address, Query)
 
 
 -- ROUTES
 
 
 {-|
-Define your routes as union types
-You need to provide a route for when the current URL doesn't match any known route i.e. NotFoundRoute
+Define your routes as union types.
+You need to provide a route for when the current URL doesn't match any known route i.e. NotFoundRoute.
 -}
 type Route
     = AboutRoute
@@ -37,52 +34,30 @@ type Route
 
 
 {-|
-
-Define matchers
-
-For example:
-
-    match1 AboutRoute "/about"
-
-Will match "/about" and return AboutRoute
-
-    match2 UserRoute "/users/" int
-
-Will match "/users/1" and return (UserRoute 1)
-
-`int` is a matcher that matches only integers, for a string use `str` e.g.
-
-    match2 UserRoute "/users/" str
-
-Would match "/users/abc"
-
+Define route matchers.
+See `docs/building-routes.md` for more examples.
 -}
-matchers : List (PathMatcher Route)
-matchers =
-    [ match1 MainRoute ""
-    , match1 AboutRoute "/about"
-    ]
+routes : UrlParser.Parser (Route -> a) a
+routes =
+    UrlParser.oneOf
+        [ UrlParser.format MainRoute (UrlParser.s "")
+        , UrlParser.format AboutRoute (UrlParser.s "about")
+        ]
 
 
 {-|
-Define your router configuration
+Define your router configuration.
 
-Use `hash = True` for hash routing e.g. `#/users/1`
-Use `hash = False` for push state e.g. `/users/1`
+Use `hash = True` for hash routing e.g. `#/users/1`.
+Use `hash = False` for push state e.g. `/users/1`.
 
 The `basePath` is only used for path routing.
 This is useful if you application is not located at the root of a url e.g. `/app/v1/users/1` where `/app/v1` is the base path.
-
-- `matchers` is your list of matchers defined above.
-- `notFound` is a route that will be returned when the path doesn't match any known route.
-
 -}
-routerConfig : Config Route
-routerConfig =
+hopConfig : Config
+hopConfig =
     { hash = True
     , basePath = ""
-    , matchers = matchers
-    , notFound = NotFoundRoute
     }
 
 
@@ -91,8 +66,7 @@ routerConfig =
 
 
 {-|
-Add messages for navigation and changing the query
-
+Add messages for navigation and changing the query.
 -}
 type Msg
     = NavigateTo String
@@ -104,27 +78,27 @@ type Msg
 
 
 {-|
-Add route and location to your model.
+Add the current route and address to your model.
 
-- `Location` is a `Hop.Types.Location` record (not Navigation.Location)
-- `Route` is your Route union type
+- `Route` is your Route union type defined above.
+- `Hop.Address` is record to aid with changing the query string.
 
-This is needed because:
+`route` will be used for determining the current route in the views.
 
-- Some navigation functions in Hop need this information to rebuild the current location.
-- Your views will need information about the current route.
+`address` is needed because:
+
+- Some navigation functions in Hop need this information to rebuild the current address.
 - Your views might need information about the current query string.
 
 -}
 type alias Model =
-    { location : Location
+    { address : Address
     , route : Route
     }
 
 
 {-|
 Respond to navigation messages in update i.e. NavigateTo and SetQuery
-
 -}
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -132,9 +106,9 @@ update msg model =
         NavigateTo path ->
             let
                 command =
-                    -- First generate the URL using your router config
-                    -- Then generate a command using Navigation.newUrl
-                    makeUrl routerConfig path
+                    -- First generate the URL using your config (`outputFromPath`).
+                    -- Then generate a command using Navigation.newUrl.
+                    Hop.outputFromPath hopConfig path
                         |> Navigation.newUrl
             in
                 ( model, command )
@@ -142,12 +116,12 @@ update msg model =
         SetQuery query ->
             let
                 command =
-                    -- First modify the current stored location record (setting the query)
-                    -- Then generate a URL using makeUrlFromLocation
+                    -- First modify the current stored address record (setting the query)
+                    -- Then generate a URL using Hop.output
                     -- Finally, create a command using Navigation.newUrl
-                    model.location
-                        |> setQuery query
-                        |> makeUrlFromLocation routerConfig
+                    model.address
+                        |> Hop.setQuery query
+                        |> Hop.output hopConfig
                         |> Navigation.newUrl
             in
                 ( model, command )
@@ -155,24 +129,35 @@ update msg model =
 
 {-|
 Create a URL Parser for Navigation
-
-Here we take `.href` from `Navigation.location` and send this to `Hop.matchUrl`.
-
-`matchUrl` returns a tuple: (matched route, Hop location record). e.g.
-
-    (User 1, { path = ["users", "1"], query = Dict.empty })
-
 -}
-urlParser : Navigation.Parser ( Route, Hop.Types.Location )
+urlParser : Navigation.Parser ( Route, Address )
 urlParser =
-    Navigation.makeParser (.href >> matchUrl routerConfig)
+    let
+        -- A parse function takes the normalised path from Hop after taking
+        -- in consideration the basePath and the hash.
+        -- This function then returns a result.
+        parse path =
+            -- First we parse using UrlParser.parse.
+            -- Then we return the parsed route or NotFoundRoute if the parsed failed.
+            -- You can choose to return the parse return directly.
+            path
+                |> UrlParser.parse identity routes
+                |> Result.withDefault NotFoundRoute
+
+        resolver =
+            -- Create a function that parses and formats the URL
+            -- This function takes 2 arguments: The Hop Config and the parse function.
+            Hop.makeResolver hopConfig parse
+    in
+        -- Create a Navigation URL parser
+        Navigation.makeParser (.href >> resolver)
 
 
 {-|
-Navigation will call urlUpdate when the location changes.
-This function gets the result from `urlParser`, which is a tuple with (Route, Hop.Types.Location)
+Navigation will call urlUpdate when the address changes.
+This function gets the result from `urlParser`, which is a tuple with (Route, Hop.Types.Address)
 
-Location is a record that has:
+Address is a record that has:
 
 ```elm
 {
@@ -181,15 +166,15 @@ Location is a record that has:
 }
 ```
 
-- `path` is an array of string that has the current path e.g. `["users", "1"]` for `"/users/1"`
-- `query` Is dictionary of String String. You can access this information in your views to show the content.
+- `path` is an array of strings that has the current path e.g. `["users", "1"]` for `"/users/1"`
+- `query` Is dictionary of String String. You can access this information in your views to show the relevant content.
 
-Store these two things in the model. We store location because it is needed for matching a query string.
+We store these two things in our model. We keep the address because it is needed for matching a query string.
 
 -}
-urlUpdate : ( Route, Hop.Types.Location ) -> Model -> ( Model, Cmd Msg )
-urlUpdate ( route, location ) model =
-    ( { model | route = route, location = location }, Cmd.none )
+urlUpdate : ( Route, Address ) -> Model -> ( Model, Cmd Msg )
+urlUpdate ( route, address ) model =
+    ( { model | route = route, address = address }, Cmd.none )
 
 
 
@@ -220,7 +205,7 @@ menu model =
                 [ text "About" ]
             , button
                 [ class "btnQuery"
-                , onClick (SetQuery (Dict.singleton "keyword" "elm"))
+                , onClick (SetQuery (Dict.singleton "keyword" "el/m"))
                 ]
                 [ text "Set query string" ]
             , currentQuery model
@@ -232,7 +217,7 @@ currentQuery : Model -> Html msg
 currentQuery model =
     let
         query =
-            toString model.location.query
+            toString model.address.query
     in
         span [ class "labelQuery" ]
             [ text query ]
@@ -261,17 +246,15 @@ pageView model =
 
 {-|
 Your init function will receive an initial payload from Navigation, this payload is the initial matched location.
-Here we store the `route` and `location` in our model.
-
+Here we store the `route` and `address` in our model.
 -}
-init : ( Route, Hop.Types.Location ) -> ( Model, Cmd Msg )
-init ( route, location ) =
-    ( Model location route, Cmd.none )
+init : ( Route, Address ) -> ( Model, Cmd Msg )
+init ( route, address ) =
+    ( Model address route, Cmd.none )
 
 
 {-|
 Wire everything using Navigation.
-
 -}
 main : Program Never
 main =

@@ -5,59 +5,30 @@ basic-up:
 full-up:
 	cd ./examples/full && npm run dev
 
-test-up:
-	cd ./examples/test && npm run dev
-
 # Generate documentation for preview
 docs:
 	elm make --docs=documentation.json
 
-### TEST LOCALLY
-
 # Run unit tests locally
 test-unit:
-	cd ./test/unit && npm test
-	
-# Run integration test locally
-# You need to have a webdriver and app running for this e.g.
-# - make test-up
-# - selenium-server -p 4444
-# - phantomjs --wd
-test-int:
-	cd ./test/integration && APP_HOST=localhost APP_PORT=9000 ROUTER_HASH=0 WEBDRIVER_DRIVER=phantomjs mix test
+	npm test
 
-### TESTS IN DOCKER
+test-unit-ci:
+	npm install -g elm
+	npm install -g elm-test
+	elm-package install -y
+	cd tests && elm-package install -y && cd ..
+	elm-test
 
-# Run unit test
-test-unit-docker:
-	docker-compose run --rm test_unit
-	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
+build-basic:
+	cd examples/basic/ && elm make --yes Main.elm
 
-# Test building basic app
-test-basic-build-docker:
-	docker-compose run --rm example_basic
-	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
+build-full:
+	cd examples/full/ && elm make --yes src/Main.elm
 
-# Test building full app
-test-full-build-docker:
-	docker-compose run --rm example_full
-	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
-
-build-test-apps:
-	docker-compose build test_app_hash
-	docker-compose build test_app_path
-	docker-compose build test_app_basepath
-
-# Run integration tests
-test-int-docker:
-	docker-compose run --rm --service-ports test_app_integration
-	docker-compose ps -q | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d ' '
-
-upgrade-deps:
-	cd ./support/upgrade_deps && mix escript.build
-	./support/upgrade_deps/upgrade_deps --dir ${PWD}
-	./support/upgrade_deps/upgrade_deps --dir ${PWD}/test/unit
-	./support/upgrade_deps/upgrade_deps --dir ${PWD}/examples/basic
-	./support/upgrade_deps/upgrade_deps --dir ${PWD}/examples/full
+test-ci:
+	make test-unit-ci
+	make build-basic
+	make build-full
 
 .PHONY: docs test

@@ -3,7 +3,7 @@ module Languages.List exposing (..)
 import Html exposing (..)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (class, href, style)
-import Hop.Types exposing (Location)
+import Hop.Types exposing (Address)
 import Dict
 import Languages.Models exposing (..)
 import Languages.Messages exposing (..)
@@ -11,7 +11,7 @@ import Languages.Messages exposing (..)
 
 type alias ViewModel =
     { languages : List Language
-    , location : Location
+    , address : Address
     }
 
 
@@ -32,7 +32,7 @@ filteredLanguages : ViewModel -> List Language
 filteredLanguages model =
     let
         typed =
-            model.location.query
+            model.address.query
                 |> Dict.get "typed"
                 |> Maybe.withDefault ""
     in

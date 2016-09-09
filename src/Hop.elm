@@ -1,126 +1,256 @@
-module Hop exposing (matchUrl, matcherToPath, makeUrl, makeUrlFromLocation, addQuery, setQuery, removeQuery, clearQuery)
+module Hop
+    exposing
+        ( addQuery
+        , clearQuery
+        , ingest
+        , makeResolver
+        , output
+        , outputFromPath
+        , pathFromAddress
+        , queryFromAddress
+        , removeQuery
+        , setQuery
+        )
 
 {-| Navigation and routing utilities for single page applications. See [readme](https://github.com/sporto/hop) for usage.
 
-# Create URLs
-@docs makeUrl, makeUrlFromLocation
+# Consuming an URL from the browser
+@docs ingest, makeResolver
 
-# Match current URL
-@docs matchUrl
+# Preparing a URL for changing the browser location
+@docs output, outputFromPath
 
-# Reverse Routing
-@docs matcherToPath
+# Work with an Address record
+@docs pathFromAddress, queryFromAddress
 
-# Change query string
+# Modify the query string
 @docs addQuery, setQuery, removeQuery, clearQuery
 
 -}
 
-import String
 import Dict
-import Hop.Types exposing (..)
-import Hop.Location
-import Hop.Matching exposing (..)
+import String
+import Hop.Address
+import Hop.In
+import Hop.Out
+import Hop.Types exposing (Address, Config, Query)
 
 
 ---------------------------------------
--- MATCHING
+-- INGEST
 ---------------------------------------
 
 
 {-|
-Match a URL.
-This function returns a tuple with the first element being the matched route and the second a location record.
-Config is the router Config record.
+Convert a raw url to an Address record. Use this function for 'normalizing' the URL before parsing it.
+This conversion will take in account your basePath and hash configuration.
 
-    matchUrl config "/users/1"
+E.g. with path routing
 
-    ==
+    config =
+        { basePath = ""
+        , hash = False
+        }
 
-    (User 1, { path = ["users", "1"], query = Dict.fromList [] })
+    ingest config "http://localhost:3000/app/languages/1?k=1"
+    -->
+    { path = ["app", "languages", "1" ], query = Dict.singleton "k" "1" }
 
+E.g. with path routing and base path
+
+    config =
+        { basePath = "/app/v1"
+        , hash = False
+        }
+
+    ingest config "http://localhost:3000/app/v1/languages/1?k=1"
+    -->
+    { path = ["languages", "1" ], query = Dict.singleton "k" "1" }
+
+E.g. with hash routing
+
+    config =
+        { basePath = ""
+        , hash = True
+        }
+
+    ingest config "http://localhost:3000/app#/languages/1?k=1"
+    -->
+    { path = ["languages", "1" ], query = Dict.singleton "k" "1" }
 -}
-matchUrl : Config route -> String -> ( route, Hop.Types.Location )
-matchUrl config url =
-    let
-        location =
-            Hop.Location.fromUrl config url
-    in
-        ( matchLocation config location, location )
+ingest : Config -> String -> Address
+ingest =
+    Hop.In.ingest
 
 
 {-|
-Generates a path from a matcher. Use this for reverse routing.
+`makeResolver` normalizes the URL using your config and then gives that normalised URL to your parser.
 
-The last parameters is a list of strings. You need to pass one string for each dynamic parameter that this route takes.
+Use this for creating a function to give to `Navigation.makeParser`. 
+See examples in `docs/matching-routes.md`.
 
-    matcherToPath bookReviewMatcher ["1", "2"]
+    Hop.makeResolver hopConfig parse
 
-    ==
+`makeResolver` takes 2 arguments.
 
-    "/books/1/reviews/2"
--}
-matcherToPath : PathMatcher a -> List String -> String
-matcherToPath matcher inputs =
-    let
-        inputs' =
-            List.append inputs [ "" ]
+### Config e.g.
 
-        makeSegment segment input =
-            segment ++ input
+    { basePath = ""
+    , hash = False
+    }
 
-        path =
-            List.map2 makeSegment matcher.segments inputs'
-                |> String.join ""
-    in
+### Parse function
+
+A function that receives the normalised path and returns the result of parsing it.
+
+    parse path =
         path
+            |> UrlParser.parse identity routes
+            |> Result.withDefault NotFoundRoute
 
+You parse function will receive the path like this:
 
+`http://example.com/users/1` --> 'users/1/'
 
----------------------------------------
--- CREATE URLs
----------------------------------------
+So it won't have a leading /, but it will have a trailing /. This is because the way UrlParse works.
 
+### Return value from resolver
 
-{-|
-Make a URL from a string, this will add # or the base path as necessary.
+After being called with a URL the resolver will return a tuple with `(parse result, address)` e.g.
 
-    makeUrl config "/users"
+    resolver =
+        Hop.makeResolver hopConfig parse
 
-    ==
+    resolver "http://example.com/index.html#/users/2"
 
-    "#/users"
+    -->
+
+    ( UserRoute 2, { path = ["users", "2"], query = ...} )
+
+### Example
+
+A complete example looks like:
+
+    urlParser : Navigation.Parser ( Route, Address )
+    urlParser =
+        let
+            parse path =
+                path
+                    |> UrlParser.parse identity routes
+                    |> Result.withDefault NotFoundRoute
+
+            resolver =
+                Hop.makeResolver hopConfig parse
+        in
+            Navigation.makeParser (.href >> resolver)
+
 -}
-makeUrl : Config route -> String -> String
-makeUrl config route =
-    route
-        |> Hop.Location.locationFromUser
-        |> makeUrlFromLocation config
-
-
-{-|
-Make a URL from a location record.
-
-    makeUrlFromLocation config { path = ["users", "1"], query = Dict.empty }
-
-    ==
-
-    "#/users/1"
-
--}
-makeUrlFromLocation : Config route -> Location -> String
-makeUrlFromLocation config location =
+makeResolver :
+    Config
+    -> (String -> result)
+    -> String
+    -> (result, Address)
+makeResolver config parse rawInput =
     let
-        fullPath =
-            Hop.Location.locationToFullPath config location
+        address =
+            rawInput
+                |> ingest config
 
-        path =
-            if fullPath == "" then
-                "/"
-            else
-                fullPath
+        parseResult =
+            pathFromAddress address
+                ++ "/"
+                |> String.dropLeft 1
+                |> parse
     in
-        path
+        (parseResult, address)
+
+
+
+---------------------------------------
+-- CREATE OUTBOUND URLs
+---------------------------------------
+
+
+{-|
+Convert an Address record to an URL to feed the browser.
+This will take in account your basePath and hash config.
+
+E.g. with path routing
+
+    output config { path = ["languages", "1" ], query = Dict.singleton "k" "1" }
+    -->
+    "/languages/1?k=1"
+
+E.g. with hash routing
+
+    output config { path = ["languages", "1" ], query = Dict.singleton "k" "1" }
+    -->
+    "#/languages/1?k=1"
+-}
+output : Config -> Address -> String
+output =
+    Hop.Out.output
+
+
+{-|
+Convert a string to an URL to feed the browser.
+This will take in account your basePath and hash config.
+
+E.g. with path routing
+
+    outputFromPath config "/languages/1?k=1"
+    -->
+    "/languages/1?k=1"
+
+E.g. with path routing + basePath
+
+    outputFromPath config "/languages/1?k=1"
+    -->
+    "/app/languages/1?k=1"
+
+E.g. with hash routing
+
+    output config "/languages/1?k=1"
+    -->
+    "#/languages/1?k=1"
+-}
+outputFromPath : Config -> String -> String
+outputFromPath =
+    Hop.Out.outputFromPath
+
+
+
+---------------------------------------
+-- WORK WITH ADDRESS
+---------------------------------------
+
+
+{-|
+Get the path as a string from an Address record.
+
+    address = { path = ["languages", "1" ], query = Dict.singleton "k" "1" }
+
+    pathFromAddress address
+    -->
+    "/languages/1"
+-}
+pathFromAddress : Address -> String
+pathFromAddress =
+    Hop.Address.getPath
+
+
+{-|
+Get the query as a string from an Address record.
+
+    address = { path = ["app"], query = Dict.singleton "k" "1" }
+
+    queryFromAddress address
+    -->
+    "?k=1"
+-}
+queryFromAddress : Address -> String
+queryFromAddress =
+    Hop.Address.getPath
 
 
 
@@ -130,9 +260,9 @@ makeUrlFromLocation config location =
 
 
 {-|
-Add query string values (patches any existing values) to a location record.
+Add query string values (patches any existing values) to an Address record.
 
-    addQuery query location
+    addQuery query address
 
     addQuery (Dict.Singleton "b" "2") { path = [], query = Dict.fromList [("a", "1")] }
 
@@ -141,11 +271,10 @@ Add query string values (patches any existing values) to a location record.
     { path = [], query = Dict.fromList [("a", "1"), ("b", "2")] }
 
 - query is a dictionary with keys to add
-- location is a record representing the current location
 
-To remove a value set the value to ""
+To remove a key / value pair set the value to ""
 -}
-addQuery : Query -> Location -> Location
+addQuery : Query -> Address -> Address
 addQuery query location =
     let
         updatedQuery =
@@ -155,11 +284,11 @@ addQuery query location =
 
 
 {-|
-Set query string values (removes existing values).
+Set the whole query string (removes any existing values).
 
-    setQuery query location
+    setQuery query address
 -}
-setQuery : Query -> Location -> Location
+setQuery : Query -> Address -> Address
 setQuery query location =
     { location | query = query }
 
@@ -167,9 +296,9 @@ setQuery query location =
 {-|
 Remove one key from the query string
 
-    removeQuery key location
+    removeQuery key address
 -}
-removeQuery : String -> Location -> Location
+removeQuery : String -> Address -> Address
 removeQuery key location =
     let
         updatedQuery =
@@ -180,8 +309,8 @@ removeQuery key location =
 
 {-| Clear all query string values
 
-    clearQuery location
+    clearQuery address
 -}
-clearQuery : Location -> Location
+clearQuery : Address -> Address
 clearQuery location =
     { location | query = Dict.empty }

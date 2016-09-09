@@ -21,7 +21,6 @@ type Route
     = LanguagesRoute
     | LanguageRoute LanguageId
     | LanguageEditRoute LanguageId
-    | NotFoundRoute
 
 
 languages : List Language

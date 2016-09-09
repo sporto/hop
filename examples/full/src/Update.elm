@@ -2,24 +2,25 @@ module Update exposing (..)
 
 import Debug
 import Navigation
-import Hop exposing (makeUrl, makeUrlFromLocation, setQuery)
-import Hop.Types
+import Hop exposing (output, outputFromPath, setQuery)
+import Hop.Types exposing (Config)
 import Messages exposing (..)
 import Models exposing (..)
-import Routing.Config
-import Routing.Utils
+import Routing
 import Languages.Update
 import Languages.Models
 
 
 navigationCmd : String -> Cmd a
 navigationCmd path =
-    Navigation.newUrl (makeUrl Routing.Config.config path)
+    path
+        |> outputFromPath Routing.config
+        |> Navigation.newUrl
 
 
-routerConfig : Hop.Types.Config Route
+routerConfig : Config
 routerConfig =
-    Routing.Config.config
+    Routing.config
 
 
 update : Msg -> AppModel -> ( AppModel, Cmd Msg )
@@ -29,7 +30,7 @@ update message model =
             let
                 updateModel =
                     { languages = model.languages
-                    , location = model.location
+                    , address = model.address
                     }
 
                 ( updatedModel, cmd ) =
@@ -40,9 +41,9 @@ update message model =
         SetQuery query ->
             let
                 command =
-                    model.location
+                    model.address
                         |> setQuery query
-                        |> makeUrlFromLocation routerConfig
+                        |> output routerConfig
                         |> Navigation.newUrl
             in
                 ( model, command )
@@ -50,20 +51,20 @@ update message model =
         ShowHome ->
             let
                 path =
-                    Routing.Utils.reverse HomeRoute
+                    Routing.reverse HomeRoute
             in
                 ( model, navigationCmd path )
 
         ShowLanguages ->
             let
                 path =
-                    Routing.Utils.reverse (LanguagesRoutes Languages.Models.LanguagesRoute)
+                    Routing.reverse (LanguagesRoutes Languages.Models.LanguagesRoute)
             in
                 ( model, navigationCmd path )
 
         ShowAbout ->
             let
                 path =
-                    Routing.Utils.reverse AboutRoute
+                    Routing.reverse AboutRoute
             in
                 ( model, navigationCmd path )

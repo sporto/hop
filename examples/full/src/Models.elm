@@ -1,6 +1,6 @@
 module Models exposing (..)
 
-import Hop.Types exposing (Location, newLocation)
+import Hop.Types exposing (Address, newAddress)
 import Languages.Models exposing (Language, languages)
 
 
@@ -13,16 +13,16 @@ type Route
 
 type alias AppModel =
     { languages : List Language
-    , location : Location
+    , address : Address
     , route : Route
     , selectedLanguage : Maybe Language
     }
 
 
-newAppModel : Route -> Hop.Types.Location -> AppModel
-newAppModel route location =
+newAppModel : Route -> Address -> AppModel
+newAppModel route address =
     { languages = languages
-    , location = location
+    , address = address
     , route = route
     , selectedLanguage = Maybe.Nothing
     }

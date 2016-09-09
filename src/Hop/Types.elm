@@ -1,18 +1,15 @@
-module Hop.Types exposing (Config, Router, PathMatcher, Query, Location, newLocation, newQuery)
+module Hop.Types exposing (Config, Query, Address, newQuery, newAddress)
 
-{-|
+{-| Types used in Hop
 
-# Types
-@docs Config, Router, PathMatcher, Query, Location
+#Types
+@docs Config, Address, Query
 
-# Create
-@docs newLocation, newQuery
+#Factories
+@docs newQuery, newAddress
 -}
 
 import Dict
-import Task exposing (Task)
-import Combine exposing (Parser)
-
 
 {-| A Dict that holds query parameters
 
@@ -21,59 +18,29 @@ import Combine exposing (Parser)
 type alias Query =
     Dict.Dict String String
 
-
 {-| A Record that represents the current location
 Includes a `path` and a `query`
 
     {
-      path: String,
+      path: List String,
       query: Query
     }
 -}
-type alias Location =
+type alias Address =
     { path : List String
     , query : Query
     }
 
+{-| Hop Configuration
 
-{-| A path matcher
--}
-type alias PathMatcher action =
-    { parser : Parser action
-    , segments : List String
-    }
-
-
-{-| Configuration input for Hop.new
-
-- basePath: Only for pushState routing (not hash). e.g. "/app". All routing and matching is done after this basepath.
+- basePath: Only for pushState routing (not hash). e.g. "/app".
 - hash: True for hash routing, False for pushState routing.
-- matchers: A List of route matchers.
-- notFound: Route that will match when a location is not found.
 
 -}
-type alias Config route =
+type alias Config =
     { basePath : String
     , hash : Bool
-    , matchers : List (PathMatcher route)
-    , notFound : route
     }
-
-
-{-| Router record created by Hop.new
--}
-type alias Router =
-    { run : Task () ()
-    }
-
-
-
--- type alias Router route =
---   { run : Task () ()
---   , signal : Signal ( route, Location )
---   }
----------------------------------------
-
 
 {-|
 Create an empty Query record
@@ -84,10 +51,10 @@ newQuery =
 
 
 {-|
-Create a empty Location record
+Create an empty Address record
 -}
-newLocation : Location
-newLocation =
+newAddress : Address
+newAddress =
     { query = newQuery
     , path = []
     }

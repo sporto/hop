@@ -2,7 +2,6 @@ module Languages.Messages exposing (..)
 
 import Dict
 import Languages.Models exposing (..)
-import Hop.Types exposing (Config, Location, Query, Router, PathMatcher, newLocation)
 
 
 type alias Prop =
