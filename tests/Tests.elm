@@ -1,5 +1,6 @@
 module Tests exposing (..)
 
+import HopTest
 import Hop.AddressTest
 import Hop.InTest
 import Hop.OutTest
@@ -10,7 +11,8 @@ import Test exposing (..)
 all : Test
 all =
   describe "Hop"
-    [ Hop.AddressTest.all
+    [ HopTest.all
+    , Hop.AddressTest.all
     , Hop.InTest.all
     , Hop.OutTest.all
     , IntegrationTest.all

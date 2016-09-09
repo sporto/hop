@@ -6,8 +6,7 @@ import Hop.Types exposing (Address, Config)
 import Hop.Address exposing (parse)
 
 
-{-|
-In
+{-| @priv
 -}
 ingest : Config -> String -> Address
 ingest config href =
@@ -20,6 +19,7 @@ ingest config href =
 
 {-| @priv
 -}
+removeProtocol : String -> String
 removeProtocol href =
     href
         |> String.split "//"
@@ -30,6 +30,7 @@ removeProtocol href =
 
 {-| @priv
 -}
+removeDomain : String -> String
 removeDomain href =
     href
         |> String.split "/"
@@ -41,6 +42,7 @@ removeDomain href =
 
 {-| @priv
 -}
+getRelevantPathWithQuery : Config -> String -> String
 getRelevantPathWithQuery config href =
     if config.hash then
         href
@@ -61,6 +63,7 @@ Remove the basePath from a path
 
 "/basepath/a/b?k=1" -> "/a/b?k=1"
 -}
+removeBase : Config -> String -> String
 removeBase config pathWithQuery =
     let
         regex =
