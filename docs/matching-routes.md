@@ -57,7 +57,7 @@ urlParserOnlyRoute =
 This parser only returns the matched route. The `address` record is discarded. 
 However you probably need the address record for doing things with the query later.
 
-# A parser that returns the parser result + Address
+## A parser that returns the parser result + Address
 
 ```
 urlParserResultAddress : Navigation.Parser (Result String MainRoute, Address)

@@ -1,4 +1,4 @@
-# Reverser routing
+# Reverse routing
 
 Reverse routing means converting a route tag back to an url e.g.
 
