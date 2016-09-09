@@ -69,7 +69,7 @@ parseWithUrlParser currentConfig =
                 |> UrlParser.parse identity routes
                 |> Result.withDefault NotFoundRoute
     in
-        Hop.makeResolver currentConfig .href parse identity
+        .href >> Hop.makeResolver currentConfig parse
 
 
 
