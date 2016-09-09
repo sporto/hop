@@ -7,7 +7,7 @@
     "test": "elm-test"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "elm-test": "^0.17.3"
   }
