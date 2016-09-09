@@ -108,6 +108,12 @@ A function that receives the normalised path and returns the result of parsing i
             |> UrlParser.parse identity routes
             |> Result.withDefault NotFoundRoute
 
+You parse function will receive the path like this:
+
+`http://example.com/users/1` --> 'users/1/'
+
+So it won't have a leading /, but it will have a trailing /. This is because the way UrlParse works.
+
 ### Return value from resolver
 
 After being called with a URL the resolver will return a tuple with `(parse result, address)` e.g.
