@@ -6,8 +6,8 @@
 
 Hop is a helper library meant to be used with:
 
-- [__Navigation__](http://package.elm-lang.org/packages/elm-lang/navigation) for listening to location changes in the browser and pushing changes to it.
-- [__UrlParser__](http://package.elm-lang.org/packages/evancz/url-parser) for constructing routes and parsing URLs.
+- [__Navigation v1__](http://package.elm-lang.org/packages/elm-lang/navigation) for listening to location changes in the browser and pushing changes to it.
+- [__UrlParser v1__](http://package.elm-lang.org/packages/evancz/url-parser) for constructing routes and parsing URLs.
 
 __As of version 6 Hop doesn't include matchers anymore, instead I have decided to favour the UrlParser library which provides a more flexible way of building matchers.__
 
