@@ -249,8 +249,8 @@ Get the query as a string from an Address record.
     "?k=1"
 -}
 queryFromAddress : Address -> String
-queryFromAddress address =
-    Hop.Address.getQuery address
+queryFromAddress =
+    Hop.Address.getQuery
 
 
 
