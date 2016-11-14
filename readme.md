@@ -4,12 +4,12 @@
 
 ![alt Hop](https://raw.githubusercontent.com/sporto/hop/master/assets/logo.png)
 
+__With the release of Elm 0.18 the official libraries `Navigation` and `UrlParser` have become a lot more robust and useful. They now integrate a lot of the functionality that Hop used to provide for previous versions of Elm. For example `UrlParser` now has `parseHash` and `parsePath`. Because of this I'm not convinced that Hop needs to be upgraded to Elm 0.18. I'll wait and see if this library could provide value in 0.18.__
+
 Hop is a helper library meant to be used with:
 
 - [__Navigation__](http://package.elm-lang.org/packages/elm-lang/navigation) for listening to location changes in the browser and pushing changes to it.
 - [__UrlParser__](http://package.elm-lang.org/packages/evancz/url-parser) for constructing routes and parsing URLs.
-
-__As of version 6 Hop doesn't include matchers anymore, instead I have decided to favour the UrlParser library which provides a more flexible way of building matchers.__
 
 ## What Hop provides
 
