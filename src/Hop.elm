@@ -250,7 +250,7 @@ Get the query as a string from an Address record.
 -}
 queryFromAddress : Address -> String
 queryFromAddress =
-    Hop.Address.getPath
+    Hop.Address.getQuery
 
 
 

@@ -8,8 +8,8 @@ __With the release of Elm 0.18 the official libraries `Navigation` and `UrlParse
 
 Hop is a helper library meant to be used with:
 
-- [__Navigation__](http://package.elm-lang.org/packages/elm-lang/navigation) for listening to location changes in the browser and pushing changes to it.
-- [__UrlParser__](http://package.elm-lang.org/packages/evancz/url-parser) for constructing routes and parsing URLs.
+- [__Navigation v1__](http://package.elm-lang.org/packages/elm-lang/navigation) for listening to location changes in the browser and pushing changes to it.
+- [__UrlParser v1__](http://package.elm-lang.org/packages/evancz/url-parser) for constructing routes and parsing URLs.
 
 ## What Hop provides
 
