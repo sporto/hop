@@ -15,13 +15,13 @@ type Route
 Then you need to create matchers for these routes:
 
 ```elm
-import UrlParser exposing ((</>), format, oneOf, int, s)
+import UrlParser exposing ((</>), oneOf, int, s)
 
 matchers =
   oneOf [
-    UrlParser.format HomeRoute (s "")
-  , UrlParser.format UserRoute (s "users" </> int)
-  , UrlParser.format UserStatusRoute (s "users" </> int </> s "status")
+    UrlParser.map HomeRoute (s "")
+  , UrlParser.map UserRoute (s "users" </> int)
+  , UrlParser.map UserStatusRoute (s "users" </> int </> s "status")
   ]
 ```
 
@@ -38,15 +38,15 @@ The order of the matchers makes a big difference. See these examples.
 Given you have some routes and matchers:
 
 ```elm
-import UrlParser exposing (format, s, parse, int, oneOf, (</>))
+import UrlParser exposing (s, parse, int, oneOf, (</>))
 
 type Route  = UserRoute Int | UserEditRoute Int
 
 -- match 'users/1'
-userMatcher = format UserRoute (s "users" </> int)
+userMatcher = UrlParser.map UserRoute (s "users" </> int)
 
 -- match '/uses/1/edit'
-userEditMatcher = format UserEditRoute (s "users" </> int </> s "edit")
+userEditMatcher = UrlParser.map UserEditRoute (s "users" </> int </> s "edit")
 ```
 
 ### Incorrect order
