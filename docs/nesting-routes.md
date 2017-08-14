@@ -14,14 +14,14 @@ type MainRoute
     | NotFoundRoute
 
 usersMatchers =
-    [ UrlParser.format UserRoute (int)
-    , UrlParser.format UsersRoute (s "")
+    [ UrlParser.map UserRoute (int)
+    , UrlParser.map UsersRoute (s "")
     ]
 
 mainMatchers =
-    [ UrlParser.format HomeRoute (s "")
-    , UrlParser.format AboutRoute (s "about")
-    , UrlParser.format UsersRoutes (s "users" </> (oneOf usersMatchers))
+    [ UrlParser.map HomeRoute (s "")
+    , UrlParser.map AboutRoute (s "about")
+    , UrlParser.map UsersRoutes (s "users" </> (oneOf usersMatchers))
     ]
 
 matchers =
